@@ -53,22 +53,6 @@ class User {
 	private static function hashPassword($salt,$password) {
 	  return ourhashingfunction($salt . $password);
 	}
-	
-	public function correctPassword($password) {
-	  return $this->hash === self::hashPassword($this->salt,$password);
-	}
-	
-	private static function hashPassword($salt,$password) {
-	  return ourhashingfunction($salt . $password);
-	}
-	
-	public function correctPassword($password) {
-	  return $this->hash === self::hashPassword($this->salt,$password);
-	}
-	
-	private static function hashPassword($salt,$password) {
-	  return ourhashingfunction($salt . $password);
-	}
 }
 
 ?>
