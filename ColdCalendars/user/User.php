@@ -7,9 +7,9 @@ class User {
 	private $ptft;
 	private $vacationDays;
 	private $released;
-	private $first;     Varchar(255) NOT NULL,
-	private Last       Varchar(255) NOT NULL,
-	private Login      Varchar(255) NOT NULL UNIQUE,
+	private $first;
+	private $last;
+	private $login;
 	private $hash       Varchar(255) NOT NULL,
 	private $salt
 	private $auth       Varchar(1024) NOT NULL,
@@ -44,6 +44,14 @@ class User {
 			$this->vacation = (bool)$userData[3];
 				
 	/*		*/
+	}
+	
+	public function correctPassword($password) {
+	  return $this->hash === self::hashPassword($this->salt,$password);
+	}
+	
+	private static function hashPassword($salt,$password) {
+	  return ourhashingfunction($salt . $password);
 	}
 	
 	public function correctPassword($password) {
