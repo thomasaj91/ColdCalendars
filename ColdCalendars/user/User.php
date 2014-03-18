@@ -10,10 +10,10 @@ class User {
 	private $first;
 	private $last;
 	private $login;
-	private $hash       Varchar(255) NOT NULL,
-	private $salt
-	private $auth       Varchar(1024) NOT NULL,
-	private $time       DATE,
+	private $hash;
+	private $salt;
+	private $auth;
+	private $time;
 	
 	public function User($login) {
 		$conn = DB::getNewConnection ();
@@ -44,6 +44,14 @@ class User {
 			$this->vacation = (bool)$userData[3];
 				
 	/*		*/
+	}
+	
+	public function correctPassword($password) {
+	  return $this->hash === self::hashPassword($this->salt,$password);
+	}
+	
+	private static function hashPassword($salt,$password) {
+	  return ourhashingfunction($salt . $password);
 	}
 	
 	public function correctPassword($password) {
