@@ -1,0 +1,104 @@
+DROP TABLE IF EXISTS User;
+CREATE TABLE User
+(
+    PK         Int NOT NULL AUTO_INCREMENT,
+    Type       Int NOT NULL REFERENCES UserTypes(PK),
+    PTFT       BOOL NOT NULL,
+    Vacation   Int NOT NULL DEFAULT 0,
+    Released   BOOL NOT NULL DEFAULT 0,
+    First      Varchar(255) NOT NULL,
+    Last       Varchar(255) NOT NULL,
+    Login      Varchar(255) NOT NULL UNIQUE,
+    Hash       Varchar(255) NOT NULL,
+    Salt       Varchar(255) NOT NULL,
+    Auth       Varchar(1024) NOT NULL,
+    Time       DATE,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS UserTypes;
+CREATE TABLE UserTypes
+(
+    PK    Int NOT NULL AUTO_INCREMENT,
+    Title Varchar(255) NOT NULL,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS Email;
+CREATE TABLE Email
+(
+    User_FK  Int NOT NULL REFERENCES User(PK),
+    Address  Varchar(255) NOT NULL,
+    Priority Int NOT NULL
+);
+
+DROP TABLE IF EXISTS Phone;
+CREATE TABLE Phone
+(
+    User_FK  Int NOT NULL REFERENCES User(PK),
+    Number   varchar(16) NOT NULL,
+    Priority Int NOT NULL
+);
+
+DROP TABLE IF EXISTS Shifts;
+CREATE TABLE Shifts
+(
+    PK Int NOT NULL AUTO_INCREMENT,
+    Start_time DATE NOT NULL,
+    End_time   DATE NOT NULL,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS Swaps;
+CREATE TABLE Swaps
+(
+    Shift_FK  Int NOT NULL REFERENCES Shifts(PK),
+    Prev      Int NOT NULL REFERENCES User(PK),
+    Next      Int REFERENCES User(PK),
+    Status    BOOL,
+    Timestamp DATE,
+	PRIMARY KEY (Shift_FK)
+);
+
+DROP TABLE IF EXISTS Availability;
+CREATE TABLE Availability
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Day        INT NOT NULL,
+    Start_time DATE NOT NULL,
+    End_time   DATE NOT NULL
+);
+
+DROP TABLE IF EXISTS Vacation;
+CREATE TABLE Vacation
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Status     BOOL,
+    Start_time DATE NOT NULL,
+    End_time   DATE NOT NULL
+);
+
+DROP TABLE IF EXISTS TimeOff;
+CREATE TABLE TimeOff
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Status     BOOL,
+    Start_time DATE NOT NULL,
+    end_time   DATE NOT NULL
+);
+
+DROP TABLE IF EXISTS Templates;
+CREATE TABLE Templates
+(
+    PK		INT NOT NULL AUTO_INCREMENT,
+    Title 	Varchar(255) NOT NULL,
+    Start_time	DATE NOT NULL,
+    End_time	DATE NOT NULL,
+	PRIMARY KEY (PK)
+);
+
+INSERT INTO UserTypes
+VALUES (NULL,"Employee"); 
+
+INSERT INTO User
+VALUES (NULL,1,true,0,0,"Alex","Washburn","AlexW","","","",NOW())
