@@ -7,13 +7,13 @@ class User {
 	private $ptft;
 	private $vacationDays;
 	private $released;
-	private $first;
-	private $last;
+	private $firstName;
+	private $lastName;
 	private $login;
 	private $hash;
 	private $salt;
 	private $auth;
-	private $lastcomm;
+	private $lastComm;
 	
 	public function User($login) {
 		$conn = DB::getNewConnection ();
