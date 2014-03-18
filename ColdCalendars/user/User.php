@@ -7,7 +7,7 @@ class User {
 	private $ptft;
 	private $vacationDays;
 	private $released;
-	private First      Varchar(255) NOT NULL,
+	private first      Varchar(255) NOT NULL,
 	private Last       Varchar(255) NOT NULL,
 	private Login      Varchar(255) NOT NULL UNIQUE,
 	private $hash       Varchar(255) NOT NULL,
