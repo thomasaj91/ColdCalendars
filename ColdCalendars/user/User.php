@@ -13,7 +13,7 @@ class User {
 	private $hash;
 	private $salt;
 	private $auth;
-	private $time;
+	private $lastcomm;
 	
 	public function User($login) {
 		$conn = DB::getNewConnection ();
