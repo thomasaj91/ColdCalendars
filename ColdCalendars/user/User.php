@@ -7,8 +7,8 @@ class User {
 	private $ptft;
 	private $vacationDays;
 	private $released;
-	private $first;
-	private $last;
+	private $firstName;
+	private $lastName;
 	private $login;
 	private $hash;
 	private $salt;
