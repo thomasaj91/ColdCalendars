@@ -30,8 +30,13 @@
   function createUser($dataBlob) {
   	$validation = array();
   	$validation[0] = isValidUserLogin($dataBlob['userLogin']);
-  	$validation[0] = isValidPassword($dataBlob['password']);
-  	//... 
+  	$validation[1] = isValidPassword($dataBlob['password']);
+  	$validation[2] = isValidName($dataBlob['firstName']);
+  	$validation[3] = isValidName($dataBlob['lastName']);
+  	$validation[4] = isValidBool($dataBlob['ptft']);
+  	$validation[5] = isValidTitle($dataBlob['title']);
+  	$validation[6] = isValidRange($dataBlob['vacationDays']);
+
   	
   	$goodData=true;
   	foreach($validation as $valid)
@@ -48,10 +53,48 @@
         && preg_match('^[a-zA-Z0-9]+$',$str);
   }
 
-  function isValidUser($str) {
+  function isValidPassword($str) {
   	global $MIN_PASSWORD_LENGTH;
   	return strlen($str) >= $MIN_PASSWORD_LENGTH
   	    && preg_match('^[^\x00-\x1f\x7F]$',$str);
   }
+  
+  function isValidName($str) {
+  	global $MAX_STR_LEN;
+  	return strlen($str) <= $MAX_STR_LEN
+  		&& preg_match('^[a-zA-z]+$',$str);
+  }
+  
+  function isValidBool($str) {
+  	return $str == 1 || $str == 0;
+  }
+  
+  function isValidTitle($str) {
+  	return strcasecmp($str,'Admin')
+  	    || strcasecmp($str,'Manager')
+  	    || strcasecmp($str,'Employee');
+  }
+  
+  function isValidRange($str) {
+  	global $MAX_STR_LEN;
+  	return strlen($str) <= $MAX_STR_LEN 
+  		&& preg_match('^[0-9]+$',$str);
+  }
+  
+  function deleteUser($dataBlob) {
+  	$validation = array();
+  	$validation[0] = isValidUserLogin($dataBlob['login']);
+    if(!$validation[0])
+    	return $validation;
+    $user;
+    try {
+    	$user = new User($dataBlob['login']);
+    }
+    catch (Exception $e) {
+    	return null;
+    }
+    $user->terminateUser();
+  }
+
   
 ?>
