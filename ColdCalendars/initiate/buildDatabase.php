@@ -32,4 +32,15 @@ else
   echo "Succefully built\n";
   $dbConn->close();
   /**/
+  
+sleep(2);
+  
+include_once(__DIR__.'/../user/User.php');
+	try {
+		User::create('root','lolsecurity','Fname','LName','Admin',true,0,'5558675309','admin@coldcalendars.preumbra.net');
+	}
+	catch(Exception $e) {
+		die('failed to create user root\n'.$e->getMessage());
+	}
+  
 ?>

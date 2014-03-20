@@ -4,13 +4,14 @@ ini_set('display_errors', 3);
 //  var_dump($_POST);
 
 /**/
-  if(isset($_POST) && isset($_POST['userid']) && isset($_POST['passwd'])) {
+  if(isset($_POST) && isset($_POST['login']) && isset($_POST['passwd'])) {
 
   	include_once(__DIR__.'/user/User.php');
-  	$user = new User($_POST['userid']);
+  	$user = User::load($_POST['login']);
   	if(!$user->correctPassword($_POST['passwd']))
-  	  echo "bad username & password";
+  	  die('bad username & password');
   	else {
+  		$_COOKIE['login'] = $_POST['login'];
     	$_COOKIE['authToken'] = $user->generateAuthenticationToken();
     	$user->updateCommunication();
     	header('redirect: contacts.php');
@@ -32,7 +33,7 @@ ini_set('display_errors', 3);
     </h1>
     
     <form name="login" action="home.php" method="POST">
-    Username<input type="text" name="userid"/>
+    Username<input type="text" name="login"/>
     Password<input type="password" name="passwd"/>
 <!--<input type="button" onclick="return check(this.form)" value="Login"/>
 -->

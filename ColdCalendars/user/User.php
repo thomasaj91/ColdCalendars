@@ -4,6 +4,8 @@ ini_set('display_errors', 3);
 
 include_once (__DIR__ . '/../DB.php');
 class User {
+	private static $AUTHENTICATION_TIMEOUT = 900;
+	
 	private static $qryUserExists  = "SELECT EXISTS(SELECT 1 FROM User WHERE Login = '@PARAM' LIMIT 1)";
 	private static $qryUserData    = "SELECT usr.Login, usr.First, usr.Last, typ.Title, usr.PTFT, usr.Vacation, usr.LegacyUser, usr.Salt, usr.Hash, usr.Auth, usr.Time FROM User AS usr JOIN UserType AS typ	ON usr.Title = typ.PK WHERE usr.Login = '@PARAM' LIMIT 1";
 	private static $qryUserPhone   = "SELECT phn.Number,  phn.Priority FROM Phone AS phn JOIN User AS usr ON phn.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY phn.Priority";
@@ -119,10 +121,12 @@ class User {
 	}
 	
 	public function isAuthenticated($challengeToken) {
+		$then    = new DateTime($this->lastCommunication);
+		$now     = new DateTime(date("Y-m-d H:i:s"));
+		$seconds = getSeconds($now->diff($then,true));
 		return $this->authToken === $challengeToken
-		    && strtotime("$this->lastCommunication +30 min") <= time();
+		    && $seconds <= self::$AUTHENTICATION_TIMEOUT;
 	}
-	
 	
 	private function insertUserData() {
 		$conn    = DB::getNewConnection();
@@ -182,6 +186,15 @@ class User {
 	  if ($pos === false)
 	  	return $haystack;
 	  return  substr_replace($haystack,$replace,$pos,strlen($needle));
+    }
+    
+    private static function getSeconds($interval) {
+    	return  $interval->y * 365 * 24 * 60 * 60 
+             +  $interval->m *  28 * 24 * 60
+             +  $interval->d *  24 * 60 * 60
+             +  $interval->h *  60 * 60
+             +  $interval->i *  60
+             +  $interval->s;
     }
 }
 ?>

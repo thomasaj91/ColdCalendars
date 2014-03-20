@@ -18,7 +18,7 @@
   if(!isValidAuthenticationToken($requestData['authToken']))
   	die('Improperly Formatted authentication Token');
   
-  $user = new User($requestData['login']);
+  $user = User::load($requestData['login']);
   if(!$user->isAuthenticated($requestData['authToken']))
   	die('Invlaid user authentication');
 
@@ -61,7 +61,7 @@
   	
   	if(in_array(false,$validation))
   		die(json_encode($validation));
-  	//do new user work
+  	//do User::load work
 	try {
 		User::create($dataBlob['userID'],
 					$dataBlob['password'],
@@ -139,7 +139,7 @@
   		die(json_encode($validation));
     $user;
     try {
-    	$user = new User($dataBlob['login']);
+    	$user = User::load($dataBlob['login']);
     }
     catch (Exception $e) {
     	die(json_encode(null));
@@ -157,7 +157,7 @@
   		die(json_encode($validation));
   	}
   	try {
-  		$user = new User($datablob['userID']);
+  		$user = User::load($datablob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -173,7 +173,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -189,7 +189,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -205,7 +205,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -220,7 +220,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -236,7 +236,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -252,7 +252,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -268,7 +268,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['login']);
+  		$user = User::load($dataBlob['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -283,7 +283,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -299,7 +299,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -315,7 +315,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['userID']);
+  		$user = User::load($dataBlob['userID']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -331,7 +331,7 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = new User($dataBlob['login']);
+  		$user = User::load($dataBlob['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
