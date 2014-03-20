@@ -26,19 +26,21 @@ ui.css" />
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: false,
-	   		buttons: { "Submit To": function() { var login			  = "";
-	   											 var authtoken		  = "";
-		   										 var userLogin        = $("#Login").val();
-		 	  									 var password         = $("#Passwd").val();
-		 	  									 var firstName        = $("#First_Name").val();
-		      									 var lastName         = $("#Last_Name").val();
-		      									 var vacationDays     = $("#Vacation_Days").val();
-		      									 var title		      = $("#radio").val();
-		      									 var workStatus	      = $("#radio1").val();
-		      									 var phone			  = $("#Phone").val();
-		      									 var email			  = $("#Email").val();
-		      									 var requestType 	  = "CreateUser";
-			  									 var retVal           = $.ajax('coldcalendars-production.preumbra.net/jsonEchoFile.php?json=' + JSON.stringify(login, authtoken, requestType, userLogin, passwd, firstName, lastName, workStatus, title, vacationDays, phone, email)); }, 
+	   		buttons: { "Submit To": function() { var userObject = new Object();
+
+	   											 userObject.requestType 	  = "CreateUser";
+		   										 userObject.userID        	  = $("#Login").val();
+		 	  									 userObject.password          = $("#Passwd").val();
+		 	  									 userObject.firstName         = $("#First_Name").val();
+		      									 userObject.lastName          = $("#Last_Name").val();
+		      									 userObject.vacationDays      = $("#Vacation_Days").val();
+		      									 userObject.title		      = $("#radio").val();
+		      									 userObject.workStatus	      = $("#radio1").val();
+		      									 userObject.phone			  = $("#Phone").val();
+		      									 userObject.email			  = $("#Email").val();
+		
+			  									 var retVal           = $.ajax("jsonEchoFile.php?json=" + JSON.stringify(userObject)); 
+			  									 }, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
   });
