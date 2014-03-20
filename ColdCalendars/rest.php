@@ -44,15 +44,15 @@
   
   function createUser($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob['userLogin']);
-  	$validation[1] = isValidPassword($dataBlob['password']);
-  	$validation[2] = isValidName($dataBlob['firstName']);
-  	$validation[3] = isValidName($dataBlob['lastName']);
-  	$validation[4] = isValidBool($dataBlob['workStatus']);
-  	$validation[5] = isValidTitle($dataBlob['title']);
-  	$validation[6] = isValidRange($dataBlob['vacationDays']);
-  	$validation[7] = isValidPhone($dataBlob['phone']);
-  	$validation[8] = isValidEmail($dataBlob['email']);
+  	$validation['userID'] = isValidUserLogin($dataBlob['userID']);
+  	$validation['password'] = isValidPassword($dataBlob['password']);
+  	$validation['firstName'] = isValidName($dataBlob['firstName']);
+  	$validation['lastName'] = isValidName($dataBlob['lastName']);
+  	$validation['workStatus'] = isValidBool($dataBlob['workStatus']);
+  	$validation['title'] = isValidTitle($dataBlob['title']);
+  	$validation['vacationDays'] = isValidRange($dataBlob['vacationDays']);
+  	$validation['phone'] = isValidPhone($dataBlob['phone']);
+  	$validation['email'] = isValidEmail($dataBlob['email']);
 
   	
   	//$goodData=true;
@@ -62,7 +62,20 @@
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	//do new user work
-
+	try {
+		User::create($dataBlob['userID'],
+					$dataBlob['password'],
+					$dataBlob['firstName'],
+					$dataBlob['lastName'],
+					$dataBlob['title'],
+					$dataBlob['workStatus'],
+					$dataBlob['vacationDays'],
+					$dataBlob['phone'],
+					$dataBlob['email']);
+	}
+	catch (Exception $e) {
+		die(json_encode(null));
+	}
   }  
   
   function isValidUserLogin($str) {
