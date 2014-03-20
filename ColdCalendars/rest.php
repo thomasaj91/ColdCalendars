@@ -48,7 +48,7 @@
   	$validation[1] = isValidPassword($dataBlob['password']);
   	$validation[2] = isValidName($dataBlob['firstName']);
   	$validation[3] = isValidName($dataBlob['lastName']);
-  	$validation[4] = isValidBool($dataBlob['ptft']);
+  	$validation[4] = isValidBool($dataBlob['workStatus']);
   	$validation[5] = isValidTitle($dataBlob['title']);
   	$validation[6] = isValidRange($dataBlob['vacationDays']);
   	$validation[7] = isValidPhone($dataBlob['phone']);
@@ -172,7 +172,7 @@
   function changeWorkStatus($dataBlob) {
   	$validation = array();
   	$validation[0] = isValidUserLogin($dataBlob['userID']);
-  	$validation[1] = isValidBool($dataBlob['ptft']);
+  	$validation[1] = isValidBool($dataBlob['workStatus']);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
@@ -181,7 +181,7 @@
   	catch(Exception $e) {
   		die(json_encode(null));
   	}
-  	$user->changeWorkStatus($dataBlob['ptft']);
+  	$user->changeWorkStatus($dataBlob['workStatus']);
   	echo json_encode($validation);
   }
   
