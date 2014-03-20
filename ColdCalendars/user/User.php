@@ -14,6 +14,8 @@ class User {
 	private $salt;
 	private $auth;
 	private $lastComm;
+	private $phone;
+	private $email;
 	
 	public function User($login) {
 		$conn = DB::getNewConnection ();
