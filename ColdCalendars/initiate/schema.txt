@@ -98,7 +98,4 @@ CREATE TABLE Templates
 );
 
 INSERT INTO UserTypes
-VALUES (NULL,"Employee"); 
-
-INSERT INTO User
-VALUES (NULL,1,true,0,0,"Alex","Washburn","AlexW","","","",NOW())
+VALUES (NULL,"Employee"),(NULL,"Manager"),(NULL,"Admin");
