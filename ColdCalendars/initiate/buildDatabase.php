@@ -20,7 +20,7 @@ else
 
 $sqlPayload = file_get_contents(__DIR__.'/schema.txt');
 
-$payloads = explode(';', $sqlPayload);
+//$payloads = explode(';', $sqlPayload);
 
 $success = $dbConn->multi_query($sqlPayload);
 if(!$success)
@@ -30,5 +30,6 @@ if(!$success)
     );
 else 
   echo "Succefully built\n";
+  $dbConn->close();
   /**/
 ?>

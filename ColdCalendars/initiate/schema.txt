@@ -2,22 +2,22 @@ DROP TABLE IF EXISTS User;
 CREATE TABLE User
 (
     PK         Int NOT NULL AUTO_INCREMENT,
-    Type       Int NOT NULL REFERENCES UserTypes(PK),
-    PTFT       BOOL NOT NULL,
-    Vacation   Int NOT NULL DEFAULT 0,
-    Released   BOOL NOT NULL DEFAULT 0,
+    Login      Varchar(255) NOT NULL UNIQUE,
     First      Varchar(255) NOT NULL,
     Last       Varchar(255) NOT NULL,
-    Login      Varchar(255) NOT NULL UNIQUE,
-    Hash       Varchar(255) NOT NULL,
+    Title      Int NOT NULL REFERENCES UserTypes(PK),
+    PTFT       BOOL NOT NULL,
+    Vacation   Int NOT NULL DEFAULT 0,
+    LegacyUser BOOL NOT NULL DEFAULT 0,
     Salt       Varchar(255) NOT NULL,
+    Hash       Varchar(255) NOT NULL,
     Auth       Varchar(1024) NOT NULL,
     Time       DATE,
     PRIMARY KEY (PK)
 );
 
-DROP TABLE IF EXISTS UserTypes;
-CREATE TABLE UserTypes
+DROP TABLE IF EXISTS UserType;
+CREATE TABLE UserType
 (
     PK    Int NOT NULL AUTO_INCREMENT,
     Title Varchar(255) NOT NULL,
@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS Phone;
 CREATE TABLE Phone
 (
     User_FK  Int NOT NULL REFERENCES User(PK),
-    Number   varchar(16) NOT NULL,
+    Number   Varchar(16) NOT NULL,
     Priority Int NOT NULL
 );
 
@@ -97,5 +97,23 @@ CREATE TABLE Templates
 	PRIMARY KEY (PK)
 );
 
-INSERT INTO UserTypes
-VALUES (NULL,"Employee"),(NULL,"Manager"),(NULL,"Admin");
+INSERT INTO UserType
+VALUES (NULL,"Employee"), 
+       (NULL,"Manager"),
+       (NULL,"Admin"); 
+
+INSERT INTO User
+VALUES (NULL,"AlexW","Alex","Washburn",1,true,0,false,"","","",NOW());
+
+INSERT INTO Phone
+VALUES (1,"8675309",1),
+       (1,"7124702",2);
+
+INSERT INTO Email
+VALUES (1,"winner@awesometown.com",1),
+       (1,"you.will@join.us",2);
+       
+INSERT INTO User
+VALUES (Null,"Jon","Jon","ZWX",
+       (SELECT PK FROM UserType WHERE Title LIKE 'employee'),
+       true,0,false,"","","",NOW());

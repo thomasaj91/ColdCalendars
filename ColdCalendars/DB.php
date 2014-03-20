@@ -12,6 +12,7 @@ class DB {
  	  	 	           ,self::$pass
 	  			       ,self::$name);
 	}
+	
 	public static function query($conn, $str) {
 		$resultSet = $conn->query ($str);
 		if ($resultSet === false)
@@ -23,7 +24,20 @@ class DB {
 		}
 		$resultSet->free();
 		return $resultArr;
-	}	
+	}
+	
+	public static function execute($conn, $str) {
+  	  $success = $conn->multi_query($str);
+  	  if ($success === false)
+  	  	throw new Exception("Error querying DB with SQL: $str\n" . "\nerrorno: " . $conn->errno . "\nerror: " . $conn->error );
+	}  	  	
+	
+	public static function escapeString($str) {
+		$tmp = self::getNewConnection();
+		$out = $tmp->real_escape_string($str);
+		$tmp->close();
+		return $out;
+	}
 }
 
 ?>

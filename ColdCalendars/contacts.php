@@ -38,7 +38,16 @@ ui.css" />
 		      									 var phone			  = $("#Phone").val();
 		      									 var email			  = $("#Email").val();
 		      									 var requestType 	  = "CreateUser";
-			  									 var retVal           = $.ajax('coldcalendars-production.preumbra.net/jsonEchoFile.php?json=' + JSON.stringify(login, authtoken, requestType, userLogin, passwd, firstName, lastName, workStatus, title, vacationDays, phone, email)); }, 
+/*
+		      									var myObject = new Object();
+		      									myObject.name = "John";
+		      									myObject.age = 12;
+		      									myObject.pets = ["cat", "dog"];
+												alert(JSON.stringify(myObject));
+	*/	      									 
+												
+			  									 var retVal           = $.ajax('jsonEcho.php?json=' + JSON.stringify(login, authtoken, requestType, userLogin, passwd, firstName, lastName, workStatus, title, vacationDays, phone, email)); },
+												 //var retVal           = $.ajax('jsonEcho.php?json=' + JSON.stringify(myObject)); }, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
   });
