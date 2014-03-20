@@ -112,8 +112,3 @@ VALUES (1,"8675309",1),
 INSERT INTO Email
 VALUES (1,"winner@awesometown.com",1),
        (1,"you.will@join.us",2);
-       
-INSERT INTO User
-VALUES (Null,"Jon","Jon","ZWX",
-       (SELECT PK FROM UserType WHERE Title LIKE 'employee'),
-       true,0,false,"","","",NOW());
