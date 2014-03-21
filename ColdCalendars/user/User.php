@@ -4,13 +4,15 @@ ini_set('display_errors', 3);
 
 include_once (__DIR__ . '/../DB.php');
 class User {
-	private static $AUTHENTICATION_TIMEOUT = 900;
+	private static $AUTHENTICATION_TIMEOUT = 3600;
 	
+	private static $qryUserList    = "SELECT Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
 	private static $qryUserExists  = "SELECT EXISTS(SELECT 1 FROM User WHERE Login = '@PARAM' LIMIT 1)";
 	private static $qryUserData    = "SELECT usr.Login, usr.First, usr.Last, typ.Title, usr.PTFT, usr.Vacation, usr.LegacyUser, usr.Salt, usr.Hash, usr.Auth, usr.Time FROM User AS usr JOIN UserType AS typ	ON usr.Title = typ.PK WHERE usr.Login = '@PARAM' LIMIT 1";
 	private static $qryUserPhone   = "SELECT phn.Number,  phn.Priority FROM Phone AS phn JOIN User AS usr ON phn.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY phn.Priority";
 	private static $qryUserEmail   = "SELECT eml.Address, eml.Priority FROM Email AS eml JOIN User AS usr ON eml.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY eml.Priority";
 	private static $qryInsertUser  = "INSERT INTO User VALUES (Null,'@PARAM','@PARAM','@PARAM',(SELECT PK FROM UserType WHERE Title LIKE '@PARAM'),@PARAM,@PARAM,@PARAM,'@PARAM','@PARAM','@PARAM',NOW())";
+	private static $qryUpdateUser  = "UPDATE User SET First='@PARAM', Last='@PARAM', Title = (SELECT PK FROM UserType WHERE Title LIKE '@PARAM'), PTFT=@PARAM, Vacation=@PARAM, LegacyUser=@PARAM, Salt='@PARAM', Hash='@PARAM', Auth='@PARAM', Time='@PARAM' WHERE Login = '@PARAM'";
 	private static $qryInsertPhonePrefix = "INSERT INTO Phone VALUES ";
 	private static $qryInsertPhoneSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
 	private static $qryInsertEmailPrefix = "INSERT INTO Email VALUES ";
@@ -49,7 +51,7 @@ class User {
 		$this->salt              = mcrypt_create_iv(255, MCRYPT_DEV_URANDOM);
         $this->hash              = self::hashPassword($password,$this->salt);
         $this->authToken         = null;
-        $this->lastCommunication = time();
+        $this->lastCommunication = self::getSystemTime();
 		$this->phone             = array($phone);
 		$this->email             = array($email);
         $this->insertUserData();
@@ -88,7 +90,7 @@ class User {
 		$this->login             = (string)$userData[ 0];
 		$this->firstName         = (string)$userData[ 1];
 		$this->lastName          = (string)$userData[ 2];
-		$this->title             = (int)   $userData[ 3];
+		$this->title             = (string)$userData[ 3];
 		$this->workStatus        = (bool)  $userData[ 4];
 		$this->vacationDays      = (int)   $userData[ 5];
 		$this->fired             = (bool)  $userData[ 6];
@@ -110,10 +112,10 @@ class User {
 	}	
 
 	public function commitUserData() {
-		$conn     = DB::getNewConnection();
-		$result   = DB::query($conn, str_replace ( "@PARAM", $this->login, self::$qryUserData));
-		$userData = $result[0];
-	// TODO UPDATE SQL command  	 
+		$conn    = DB::getNewConnection();
+	    $payload = $this->getUpdateUserSql();
+		$result  = DB::execute($conn, $payload);
+		$conn->close();
 	}
 	
 	public function correctPassword($password) {
@@ -123,9 +125,51 @@ class User {
 	public function isAuthenticated($challengeToken) {
 		$then    = new DateTime($this->lastCommunication);
 		$now     = new DateTime(date("Y-m-d H:i:s"));
-		$seconds = getSeconds($now->diff($then,true));
+		$seconds = self::getSeconds($now->diff($then,true));
 		return $this->authToken === $challengeToken
 		    && $seconds <= self::$AUTHENTICATION_TIMEOUT;
+	}
+	
+	public function generateAuthenticationToken() {
+		$this->authToken = mcrypt_create_iv(1024, MCRYPT_DEV_URANDOM);
+		//$this->commitUserData();
+	}
+	
+	public function getInfo() {
+		$out = array();
+    	$out['firstName']  = $this->firstName;
+    	$out['lastName']   = $this->lastName;
+    	$out['title']      = $this->title;
+    	$out['workStatus'] = $this->workStatus;
+    	return $out;
+	}
+	
+	public function isAdmin() {
+		return strcasecmp($this->title,'Admin')===0;
+	}
+	
+	public function terminateUser() {
+		$this->fired = !$this->fired;
+	}
+	
+	public function getPhoneNumbers() {
+		return $this->phone;
+	}
+	
+	public function getEmailAddresses() {
+		return $this->email;
+	}
+	
+	public function getAuthToken() {
+		return $this->authToken;	
+	}
+	
+	public function updateCommunication() {
+		$this->lastCommunication = self::getSystemTime();
+	}
+	
+	private static function getSystemTime() {
+		return date('Y-m-d H:i:s',time());
 	}
 	
 	private function insertUserData() {
@@ -134,6 +178,7 @@ class User {
 	    		 . $this->getInsertPhoneSql() .' ; '
 	    		 . $this->getInsertEmailSql() .' ; ';
 		$result  = DB::execute($conn, $payload);
+		$conn->close();
 	}
 	
 	private function getInsertUserSql() {
@@ -146,15 +191,15 @@ class User {
 				         ,$this->fired      ? 'True' : 'False'
 				         ,DB::escapeString($this->salt)
 				         ,$this->hash
-			 	         ,$this->authToken
+			 	         ,DB::escapeString($this->authToken)
 				         ,$this->lastCommunication
 		                 );
 		$sql = self::$qryInsertUser;
 		foreach($params as $param)
 			$sql = self::str_replace_once('@PARAM', $param, $sql);
 		return $sql;
-	}
-
+	}	
+	
 	private function getInsertPhoneSql() {
 		$sql   = self::$qryInsertPhonePrefix;
 		$count = count($this->phone);
@@ -180,6 +225,29 @@ class User {
         }
 		return $sql;
 	}
+	
+	private function getUpdateUserSql() {
+		$params   = array($this->firstName
+				,$this->lastName
+				,$this->title
+				,$this->workStatus ? 'True' : 'False'
+				,$this->vacationDays
+				,$this->fired      ? 'True' : 'False'
+				,DB::escapeString($this->salt)
+				,$this->hash
+				,DB::escapeString($this->authToken)
+				,$this->lastCommunication
+				,$this->login
+		);
+		$sql = self::$qryUpdateUser;
+		foreach($params as $param)
+			$sql = self::str_replace_once('@PARAM', $param, $sql);
+		//echo $sql;
+		return $sql;
+	}
+	
+	
+	
 		
 	private static function str_replace_once($needle,$replace,$haystack) {
 	  $pos = strpos($haystack,$needle);
@@ -195,6 +263,20 @@ class User {
              +  $interval->h *  60 * 60
              +  $interval->i *  60
              +  $interval->s;
+    }
+    
+    public static function getAuthenticationTimeOut() {
+    	return self::$AUTHENTICATION_TIMEOUT;
+    }
+    
+    public static function getAllLogins() {
+    	$conn    = DB::getNewConnection();
+    	$results = DB::query($conn,self::$qryUserList);
+    	$rows    = count($results);
+    	$out     = array();
+    	for($i=0; $i<$rows; $i++)
+    		$out[$i] = $results[$i][0];
+    	return $out;
     }
 }
 ?>

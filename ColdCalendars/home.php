@@ -10,11 +10,16 @@ ini_set('display_errors', 3);
   	$user = User::load($_POST['login']);
   	if(!$user->correctPassword($_POST['passwd']))
   	  die('bad username & password');
+  	else if(isset($_COOKIE['authToken']) && $user->isAuthenticated($_COOKIE['authToken'])) { ; }
   	else {
-  		$_COOKIE['login'] = $_POST['login'];
-    	$_COOKIE['authToken'] = $user->generateAuthenticationToken();
-    	$user->updateCommunication();
-    	header('redirect: contacts.php');
+  		$user->generateAuthenticationToken();
+  		
+  		setcookie('login',$_POST['login'],time()+User::getAuthenticationTimeOut());
+  		setcookie('authToken',$user->getAuthToken(),time()+User::getAuthenticationTimeOut());
+  		 
+  		$user->updateCommunication();
+  		$user->commitUserData();
+  		header('Location: contacts.php');
   	}
   }
  /**/

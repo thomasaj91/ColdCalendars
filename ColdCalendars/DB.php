@@ -17,7 +17,7 @@ class DB {
 		$resultSet = $conn->query ($str);
 		if ($resultSet === false)
 			throw new Exception("Error querying DB with SQL: $str\n" . "\nerrorno: " . $conn->errno . "\nerror: " . $conn->error );
-		$resultSet->data_seek(0);
+		//$resultSet->data_seek(0);
 		$resultArr = array();
 		for($i=0; $row = $resultSet->fetch_row(); $i++){
 			$resultArr[$i]  = $row;

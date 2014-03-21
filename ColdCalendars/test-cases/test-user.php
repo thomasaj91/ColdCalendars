@@ -4,7 +4,7 @@
 //  include_once(__DIR__.'/../initiate/buildDatabase.php');
   include_once(__DIR__.'/../user/User.php');
   
-  /* Do the isers exist? */
+  /* Do the users exist? */
   echo "Alex: ";
   var_dump(User::userExists('AlexW'));
   echo "Jon: ";
@@ -12,13 +12,18 @@
   echo "Root: ";
   var_dump(User::userExists('root'));
   
+  var_dump(User::userExists('AustinT'));
+  var_dump(User::userExists('AustinT2'));
+  
   /* Can I load the user data? */
-  $testUser = User::load('AlexW');
-  var_dump($testUser);
-  $testUser = User::load('root');
-  var_dump($testUser);
+  $alex = User::load('AlexW');
+  var_dump($alex);
+  $alex->generateAuthenticationToken();
+  var_dump($alex);
+  $root = User::load('root');
+  var_dump($root);
   User::create('JonZ', 'supersecret', 'Jon', 'Zanura', 'Employee', true, 10, '8675309', ' jczamora@uwm.edu');
-  $testUser = User::load('JonZ');
-  var_dump($testUser);
+  $jon = User::load('JonZ');
+  var_dump($jon);
   //  echo $testUser->correctPassword('');
 ?>

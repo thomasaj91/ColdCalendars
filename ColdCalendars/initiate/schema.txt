@@ -12,7 +12,7 @@ CREATE TABLE User
     Salt       Varchar(255) NOT NULL,
     Hash       Varchar(255) NOT NULL,
     Auth       Varchar(1024) NOT NULL,
-    Time       DATE,
+    Time       DATETIME,
     PRIMARY KEY (PK)
 );
 
@@ -44,8 +44,8 @@ DROP TABLE IF EXISTS Shifts;
 CREATE TABLE Shifts
 (
     PK Int NOT NULL AUTO_INCREMENT,
-    Start_time DATE NOT NULL,
-    End_time   DATE NOT NULL,
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL,
     PRIMARY KEY (PK)
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE Swaps
     Prev      Int NOT NULL REFERENCES User(PK),
     Next      Int REFERENCES User(PK),
     Status    BOOL,
-    Timestamp DATE,
+    Timestamp DATETIME,
 	PRIMARY KEY (Shift_FK)
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE Availability
 (
     User_FK    INT NOT NULL REFERENCES User(PK),
     Day        INT NOT NULL,
-    Start_time DATE NOT NULL,
-    End_time   DATE NOT NULL
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL
 );
 
 DROP TABLE IF EXISTS Vacation;
@@ -74,8 +74,8 @@ CREATE TABLE Vacation
 (
     User_FK    INT NOT NULL REFERENCES User(PK),
     Status     BOOL,
-    Start_time DATE NOT NULL,
-    End_time   DATE NOT NULL
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL
 );
 
 DROP TABLE IF EXISTS TimeOff;
@@ -83,8 +83,8 @@ CREATE TABLE TimeOff
 (
     User_FK    INT NOT NULL REFERENCES User(PK),
     Status     BOOL,
-    Start_time DATE NOT NULL,
-    end_time   DATE NOT NULL
+    Start_time DATETIME NOT NULL,
+    end_time   DATETIME NOT NULL
 );
 
 DROP TABLE IF EXISTS Templates;
@@ -92,8 +92,8 @@ CREATE TABLE Templates
 (
     PK		INT NOT NULL AUTO_INCREMENT,
     Title 	Varchar(255) NOT NULL,
-    Start_time	DATE NOT NULL,
-    End_time	DATE NOT NULL,
+    Start_time	DATETIME NOT NULL,
+    End_time	DATETIME NOT NULL,
 	PRIMARY KEY (PK)
 );
 
