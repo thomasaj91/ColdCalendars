@@ -1,4 +1,9 @@
 <?php
+$MAX_STR_LEN = 255;
+$MIN_PASSWORD_LENGTH = 8;
+$MIN_PHONE_LEN = 7;
+$MAX_PHONE_LEN = 16;
+$AUTH_STR_LEN = 1024;
 
 function isValidUserLogin($str) {
 	global $MAX_STR_LEN;
