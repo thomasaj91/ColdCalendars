@@ -51,7 +51,7 @@ class DB {
 		//	echo "Succefully built\n";
 		$dbConn->close ();
 		
-		sleep ( 2 );
+		sleep ( 2 ); /* it needs to be two seconds, do NOT change */
 		
 		include_once (__DIR__ . '/user/User.php');
 		try {

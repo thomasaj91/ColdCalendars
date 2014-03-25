@@ -4,6 +4,9 @@ ini_set('display_errors', 3);
 
 include_once (__DIR__ . '/../DB.php');
 class User {
+	
+	private static $VALID_TITLES   = array('Admin','Manager','Employee');
+	
 	private static $AUTHENTICATION_TIMEOUT = 3600;
 	
 	private static $qryUserList    = "SELECT Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
@@ -133,10 +136,20 @@ class User {
 		$conn->close();
 	}
 	
+	public function setTitle($title) {
+		if($this->isAdmin()
+		|| !in_array($title,self::$VALID_TITLES)
+		|| strcasecmp($title, 'Admin')===0)
+		  return;
+		
+		$this->title = $title;		
+	}
+	
 	public function setPassword($password) {
       $this->salt = mcrypt_create_iv(255, MCRYPT_DEV_URANDOM);
 	  $this->hash = self::hashPassword($password,$this->salt);
 	}
+	
 	
 	public function correctPassword($password) {
 		return $this->hash === self::hashPassword($password,$this->salt);
@@ -165,11 +178,31 @@ class User {
 	}
 	
 	public function isAdmin() {
-		return strcasecmp($this->title,'Admin')===0;
+		return strcasecmp($this->title,self::$VALID_TITLES[0])===0;
 	}
 	
 	public function isManager() {
-		return strcasecmp($this->title,'Manager')===0;
+		return strcasecmp($this->title,self::$VALID_TITLES[1])===0;
+	}
+
+	public function isEmployee() {
+		return strcasecmp($this->title,self::$VALID_TITLES[2])===0;
+	}
+	
+	public function isFullTime() {
+		return $this->workStatus===true;
+	}
+
+	public function isPartTime() {
+		return $this->workStatus===false;
+	}
+
+	public function setFullTime() {
+		$this->workStatus = true;
+	}
+
+	public function setPartTime() {
+		$this->workStatus = false;
 	}
 	
 	public function isTerminated() {
