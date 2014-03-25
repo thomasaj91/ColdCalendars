@@ -1,0 +1,414 @@
+User
+Auth
+
+(Admin)
+CreateUser:
+`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  First    String Alpha No Spaces include [-']	Length <= 255
+  Last     String Alpha No Spaces include [-']	Length <= 255
+  PTFT     Bool   Range [0,1]
+  Type     String Range ['Admin,'Manager','employee']
+  Vacation Int    Range [0..]
+  Password String Length >= 8
+
+Server <-
+  Array(Bool) size 7
+  /* True for valid input for each sent field */
+
+
+(Admin)
+DeleteUser:
+`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+
+Server <-
+  Bool successful?
+
+
+(Admin)
+PasswordReset:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  Password String Length >= 8
+
+Server <-
+  Bool successful?
+
+
+(Admin)
+ChangeTitle: (promote/demote)
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  Type	   [Employee | Manager]
+
+Server <-
+  Bool successful?
+
+
+(Admin)
+ChangeWorkStatus:(PT/FT)
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  PTFT	   Boolean True=FT
+
+Server <-
+  Bool successful?
+
+
+(Admin)
+ChangeVacationDays:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  Days	   Integer [0,255]
+
+Server <-
+  Bool successful?
+
+
+(Manager)
+AddToSchedule:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  Date     String YY-MM-DD
+  s-Time   String 00:00
+  e-Time   String 00:00
+
+Server <-
+  Bool successful?
+
+
+(Manager)
+RemoveFromSchedule:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  Date     String YY-MM-DD
+  s-Time   String 00:00
+  e-Time   String 00:00
+
+Server <-
+  Bool successful?
+
+
+(Manager)
+ViewTemplate:
+`'`'`'`'`'`'`'`'`
+Client -> 
+  ()
+
+Server <-
+  array(templates)
+
+(Manager)
+CreateTemplate:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Title    String AlphaNumeric No Spaces (unique) Length <= 255
+  S-Date   String YY-MM-DD
+  e-Date   String YY-MM-DD
+
+Server <-
+  Array(Bool) size 3
+  /* True for valid input for each sent field */
+
+
+(Manager)
+LoadTemplate:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Title    String AlphaNumeric No Spaces (unique) Length <= 255
+
+Server <-
+  Array(shifts)
+  /* All shifts from the date range of the specified template */
+
+
+(Manager)
+RemoveTemplate:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Title    String AlphaNumeric No Spaces (unique) Length <= 255
+
+Server <-
+  Bool successful?
+
+
+(Manager)
+ViewQueue:
+`'`'`'`'`'`'`'`'`
+Client ->
+  ()
+
+Server <-
+  array(
+    array(swaps)
+    array(vacation)
+    array(timeoff)
+  )
+
+(Manager)
+DecideSwap:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Prev     String AlphaNumeric No Spaces	Length <= 255
+  Next     String AlphaNumeric No Spaces	Length <= 255
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+  Approved Bool True
+
+Server <-
+  Array(Bool) size 6
+  /* True for valid input for each sent field */
+
+
+(Manager)
+DecideVacation:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  S-Date   String YY-MM-DD
+  E-Date   String YY-MM-DD
+  Approved Bool True
+
+Server <-
+  Array(Bool) size 4
+  /* True for valid input for each sent field */
+
+
+(Manager)
+DecideTimeOff:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login   String AlphaNumeric No Spaces	Length <= 255
+  S-Date  String YY-MM-DD
+  E-Date  String YY-MM-DD
+  Approved Bool True
+
+Server <-
+  Array(Bool) size 4
+  /* True for valid input for each sent field */
+
+
+(Manager)
+ReportExport:
+`'`'`'`'`'`'`'`'`
+Client ->
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+
+Server <-
+  CSV file download
+
+
+(Admin,Manager,Employee)
+UserPhone:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login   String AlphaNumeric No Spaces	Length <= 255
+
+Server <-
+  array(phone)
+
+
+(Admin,Manager,Employee)
+AddPhone:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Phone String Numeric + 'xX' strlen <= 16
+
+Server <-
+  Bool successful?
+
+
+(Admin,Manager,Employee)
+PhonePriority:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Phone    String Numeric + 'xX' strlen <= 16
+  Priority Int
+
+Server <-
+  array(bool) size 2
+  /* True for valid input for each sent field */
+
+
+(Admin,Manager,Employee)
+DeletePhone:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Phone String Numeric + 'xX' strlen <= 16
+
+Server <-
+  Bool successful?
+
+
+(Admin,Manager,Employee)
+UserEmail:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login   String AlphaNumeric No Spaces	Length <= 255
+
+Server <-
+  array(email)
+
+
+(Admin,Manager,Employee)
+AddEmail:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Email String (has an '@') strlen <= 255
+
+Server <-
+  Bool successful?
+
+
+(Admin,Manager,Employee)
+EmailPriority:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Email String (has an '@') strlen <= 255
+  Priority Int
+
+Server <-
+  array(bool) size 2
+  /* True for valid input for each sent field */
+
+
+(Admin,Manager,Employee)
+DeleteEmail:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Email String (has an '@') strlen <= 255
+
+Server <-
+  Bool successful?
+
+
+(Manager,Employee)
+GetUserAvailability:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login   String AlphaNumeric No Spaces	Length <= 255
+
+Server <-
+  array(availability)
+  /* Successful if your are a manager or request your own stuff */
+
+
+(Manager,Employee)
+AddAvailability:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Day      String [Sun,Mon,Tue,Wed,Thu,Fri,Sat]
+  S-Time   String 00:00
+  E-Time   String 00:00
+  
+Server <-
+  array(bool) size 3
+  /* True for valid input for each sent field */
+
+
+(Manager,Employee)
+RemoveAvailability:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Day      String [Sun,Mon,Tue,Wed,Thu,Fri,Sat]
+  S-Time   String 00:00
+  E-Time   String 00:00
+  
+Server <-
+  array(bool) size 3
+  /* True for valid input for each sent field */
+
+
+(Manager)
+GetMainActivityLog:
+`'`'`'`'`'`'`'`'`
+Client ->
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+
+Server <-
+  array(activity)
+/* Gets ALL the activity for everyone */
+
+(Manger,Employee)
+GetUserActivityLog:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+
+Server <-
+  array(activity)
+/* Gets activity for juts that user (yourself implicit)  */
+
+
+(Manager,Employee)
+RequestVacation:
+`'`'`'`'`'`'`'`'`
+Client ->
+  S-Date   String YY-MM-DD
+  E-Date   String YY-MM-DD
+
+Server <-
+  array(bool) size 2
+/* (yourself implicit)  */
+
+
+(Manager,Employee)
+RequestTimeOff:
+`'`'`'`'`'`'`'`'`
+Client ->
+  S-Date   String YY-MM-DD
+  E-Date   String YY-MM-DD
+
+Server <-
+  array(bool) size 2
+/* (yourself implicit)  */
+
+
+(Manager,Employee)
+ReleaseShift:
+`'`'`'`'`'`'`'`'`
+Client ->
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+
+Server <-
+  array(bool) size 4
+/* (yourself implicit)  */
+
+
+(Manager,Employee)
+PickUpShift:
+`'`'`'`'`'`'`'`'`
+Client ->
+  Login    String AlphaNumeric No Spaces	Length <= 255
+  S-Date   String YY-MM-DD
+  S-Time   String 00:00
+  E-Date   String YY-MM-DD
+  E-Time   String 00:00
+
+Server <-
+  array(bool) size 5
+/* (yourself implicit)  */

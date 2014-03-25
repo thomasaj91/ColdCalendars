@@ -1,0 +1,114 @@
+DROP TABLE IF EXISTS User;
+CREATE TABLE User
+(
+    PK         Int NOT NULL AUTO_INCREMENT,
+    Login      Varchar(255) NOT NULL UNIQUE,
+    First      Varchar(255) NOT NULL,
+    Last       Varchar(255) NOT NULL,
+    Title      Int NOT NULL REFERENCES UserTypes(PK),
+    PTFT       BOOL NOT NULL,
+    Vacation   Int NOT NULL DEFAULT 0,
+    LegacyUser BOOL NOT NULL DEFAULT 0,
+    Salt       Varchar(255) NOT NULL,
+    Hash       Varchar(255) NOT NULL,
+    Auth       Varchar(1024) NOT NULL,
+    Time       DATETIME,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS UserType;
+CREATE TABLE UserType
+(
+    PK    Int NOT NULL AUTO_INCREMENT,
+    Title Varchar(255) NOT NULL,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS Email;
+CREATE TABLE Email
+(
+    User_FK  Int NOT NULL REFERENCES User(PK),
+    Address  Varchar(255) NOT NULL,
+    Priority Int NOT NULL
+);
+
+DROP TABLE IF EXISTS Phone;
+CREATE TABLE Phone
+(
+    User_FK  Int NOT NULL REFERENCES User(PK),
+    Number   Varchar(16) NOT NULL,
+    Priority Int NOT NULL
+);
+
+DROP TABLE IF EXISTS Shifts;
+CREATE TABLE Shifts
+(
+    PK Int NOT NULL AUTO_INCREMENT,
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL,
+    PRIMARY KEY (PK)
+);
+
+DROP TABLE IF EXISTS Swaps;
+CREATE TABLE Swaps
+(
+    Shift_FK  Int NOT NULL REFERENCES Shifts(PK),
+    Prev      Int NOT NULL REFERENCES User(PK),
+    Next      Int REFERENCES User(PK),
+    Status    BOOL,
+    Timestamp DATETIME,
+	PRIMARY KEY (Shift_FK)
+);
+
+DROP TABLE IF EXISTS Availability;
+CREATE TABLE Availability
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Day        INT NOT NULL,
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS Vacation;
+CREATE TABLE Vacation
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Status     BOOL,
+    Start_time DATETIME NOT NULL,
+    End_time   DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS TimeOff;
+CREATE TABLE TimeOff
+(
+    User_FK    INT NOT NULL REFERENCES User(PK),
+    Status     BOOL,
+    Start_time DATETIME NOT NULL,
+    end_time   DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS Templates;
+CREATE TABLE Templates
+(
+    PK		INT NOT NULL AUTO_INCREMENT,
+    Title 	Varchar(255) NOT NULL,
+    Start_time	DATETIME NOT NULL,
+    End_time	DATETIME NOT NULL,
+	PRIMARY KEY (PK)
+);
+
+INSERT INTO UserType
+VALUES (NULL,"Employee"), 
+       (NULL,"Manager"),
+       (NULL,"Admin"); 
+
+--INSERT INTO User
+--VALUES (NULL,"AlexW","Alex","Washburn",1,true,0,false,"","","",NOW());
+--
+--INSERT INTO Phone
+--VALUES (1,"8675309",1),
+--       (1,"7124702",2);
+--
+--INSERT INTO Email
+--VALUES (1,"winner@awesometown.com",1),
+--       (1,"you.will@join.us",2);
