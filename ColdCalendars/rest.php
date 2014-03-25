@@ -31,6 +31,9 @@ function processREST() {
     || (!$user->isAdmin()   && in_array($requestData->requestType,$adminOnlyRequests))
     || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
   	return $UNAUTHORIZED;
+
+  $user->aknowledgeCommunication();
+  $user->commitUserData();
   
   switch($requestData->requestType) {
   	/* Admin Only*/
@@ -45,11 +48,11 @@ function processREST() {
   	case 'UserInfo':           return getUserInfo($requestData);
   	case 'UserPhone':          return getPhoneNumbers($requestData);
   	case 'AddPhone':           return addPhoneNumber($requestData);
-  	case 'PhonePriority':      return phonePriority($requestData);
+  	case 'PhonePriority':      return phonePriority($requestData); //TODO
   	case 'RemovePhone':        return removePhoneNumber($requestData);
   	case 'UserEmail':          return getEmails($requestData);
   	case 'AddEmail':           return addEmail($requestData);
-  	case 'EmailPriority':      return emailPriority($requestData);
+  	case 'EmailPriority':      return emailPriority($requestData); //TODO
   	case 'RemoveEmail':        return removeEmail($requestData);
   	case 'UserList':           return userList($requestData);
   	default:                   return $INVALID;

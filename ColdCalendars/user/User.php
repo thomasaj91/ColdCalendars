@@ -259,7 +259,7 @@ class User {
 		return $this->authToken;	
 	}
 	
-	public function updateCommunication() {
+	public function aknowledgeCommunication() {
 		$this->lastCommunication = self::getSystemTime();
 	}
 	
