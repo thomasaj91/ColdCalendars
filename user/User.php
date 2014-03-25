@@ -50,12 +50,11 @@ class User {
 		$this->workStatus        = $workStatus;
 		$this->vacationDays      = $vacationDays;
 		$this->fired             = false;
-		$this->salt              = mcrypt_create_iv(255, MCRYPT_DEV_URANDOM);
-        $this->hash              = self::hashPassword($password,$this->salt);
         $this->authToken         = null;
         $this->lastCommunication = self::getSystemTime();
 		$this->phone             = array($phone);
 		$this->email             = array($email);
+        setPassword($password);
         $this->insertUserData();
 	}
 
@@ -80,9 +79,7 @@ class User {
 		$results = DB::query($conn, str_replace ( "@PARAM", $login, self::$qryUserExists) );
 		$conn->close();
 		return ($results[0][0]==='1') ? true : false;
-	}
-	
-	
+	}	
 	
 	public function refreshUserData() {
 		$conn     = DB::getNewConnection();
@@ -134,6 +131,11 @@ class User {
 				.$this->getInsertEmailSql().' ; ';
 		$result  = DB::execute($conn, $payload);
 		$conn->close();
+	}
+	
+	public function setPassword($password) {
+      $this->salt = mcrypt_create_iv(255, MCRYPT_DEV_URANDOM);
+	  $this->hash = self::hashPassword($password,$this->salt);
 	}
 	
 	public function correctPassword($password) {
