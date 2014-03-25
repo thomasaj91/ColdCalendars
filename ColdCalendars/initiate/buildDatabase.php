@@ -4,8 +4,6 @@ ini_set('display_errors', 3);
 
 require_once(__DIR__.'/../DB.php');
 
-echo __DIR__.'/../DB.php';
-
 if(DB::buildDatabase())
   echo 'Built Successfully';
 else

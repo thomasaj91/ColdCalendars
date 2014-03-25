@@ -2,15 +2,40 @@
   error_reporting(E_ALL);
   ini_set('display_errors', 3);
 //  include_once(__DIR__.'/../initiate/buildDatabase.php');
-  include_once(__DIR__.'/../user/User.php');
+  require_once(__DIR__.'/../user/User.php');
+  require_once(__DIR__.'/../DB.php');
   
-  /* Do the users exist? */
-  echo "Alex: ";
-  var_dump(User::userExists('AlexW'));
-  echo "Jon: ";
-  var_dump(User::userExists('Jon'));
-  echo "Root: ";
-  var_dump(User::userExists('root'));
+  testGeneralUserFunctionality();
+  
+  function testGeneralUserFunctionality() {
+    DB::buildDatabase();
+    if(!testUserExists()){
+    	echo "UserExists Failed!\n";
+    }
+  }
+
+  function testUserExists() {
+  	$success  = true;
+  	$success &= checkUserExists('AustinT', false);
+  	$success &= checkUserExists('CalebW' , false);
+  	$success &= checkUserExists('AlexW'  , false);
+  	$success &= checkUserExists('JonZ'   , false);
+  	$success &= checkUserExists('root'   , true );
+  	return $success;
+  }
+
+  function checkUserExists($login,$expected) {
+    $success;
+  	if(!($success = (User::userExists($login) === $expected))) {
+  		echo 'Failed: ';
+  		var_dump($login);
+  		echo 'Expected: ';
+  		var_dump($expected);
+  		echo 'Actual: ';
+  		var_dump(User::userExists($login));
+  	}
+  	return $success;
+  }
   
   //var_dump(User::userExists('AustinT'));
   //var_dump(User::userExists('AustinT2'));
