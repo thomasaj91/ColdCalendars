@@ -1,5 +1,4 @@
 <?php
-
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 include_once(__DIR__.'/user/User.php');
@@ -41,6 +40,7 @@ function processREST() {
   	case 'ChangeTitle':        return changeTitle($requestData);
   	case 'ChangeWorkStatus':   return changeWorkStatus($requestData);
   	case 'ChangeVacationDays': return changeVacationDays($requestData);
+  	/* Manager only (goes here) */
   	/* All Users */
   	case 'UserInfo':           return getUserInfo($requestData);
   	case 'UserPhone':          return getPhoneNumbers($requestData);
