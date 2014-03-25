@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 3);
 $MAX_STR_LEN = 255;
 $MIN_PASSWORD_LENGTH = 8;
 $MIN_PHONE_LEN = 7;

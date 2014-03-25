@@ -1,6 +1,8 @@
 <?php
-
-require_once('validation.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 3);
+require_once(__DIR__.'/validation.php');
+require_once(__DIR__.'/../user/User.php');
 
 function validAjaxGet() {
 	return isset($_GET)
@@ -20,8 +22,10 @@ function assertValidUserPageAccess() {
 	
 	if(!$fail) {
 		try {
-		  $user = getUserObj($_COOKIE['login']); 
+		  $user = User::load($_COOKIE['login']); 
 		  $fail = !$user->isAuthenticated($_COOKIE['authToken']);
+		  if(!$fail)
+            updateSessionCommunication($user);
 		}
 		catch(Exception $e) {
 		  $fail = true; 
@@ -32,5 +36,12 @@ function assertValidUserPageAccess() {
       header('Location: home.php');
 }
 
+function updateSessionCommunication($user) {
+	$user->aknowledgeCommunication();
+	$user->commitUserData();
+	$expireTime = time()+User::getAuthenticationTimeOut();
+	setcookie('login',$_COOKIE['login'],$expireTime);
+	setcookie('authToken',$_COOKIE['authToken'],$expireTime);
+}
 
 ?>

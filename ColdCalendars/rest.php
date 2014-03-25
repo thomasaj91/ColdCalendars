@@ -32,9 +32,8 @@ function processREST() {
     || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
   	return $UNAUTHORIZED;
 
-  $user->aknowledgeCommunication();
-  $user->commitUserData();
-  
+  updateSessionCommunication($user);
+    
   switch($requestData->requestType) {
   	/* Admin Only*/
   	case 'CreateUser':         return createUser($requestData);

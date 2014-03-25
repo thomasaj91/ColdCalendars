@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
+require_once(__DIR__.'/auth/authentication.php');
 //  var_dump($_POST);
 
 /**/
@@ -21,12 +22,7 @@ ini_set('display_errors', 3);
 	  	if(isset($_COOKIE['authToken']) && $user->isAuthenticated($_COOKIE['authToken'])) { ; }
 	  	else {
 	  		$user->generateAuthenticationToken();
-	  		
-	  		setcookie('login',$_POST['login'],time()+User::getAuthenticationTimeOut());
-	  		setcookie('authToken',$user->getAuthToken(),time()+User::getAuthenticationTimeOut());
-	  		 
-	  		$user->updateCommunication();
-	  		$user->commitUserData();
+			updateSessionCommunication($user);
 	  		header('Location: contacts.php');
 	  	}
   	}
