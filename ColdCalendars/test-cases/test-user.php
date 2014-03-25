@@ -6,16 +6,20 @@ require_once (__DIR__ . '/../DB.php');
 
 testGeneralUserFunctionality ();
 testAdminUserFunctionality ();
+
 function testGeneralUserFunctionality() {
 	echo "UserExists:" . printResult ( testUserExists () );
 }
+
 function testAdminUserFunctionality() {
-	echo 'UserCreate:      ' . printResult ( testUserCreate ()       );
-	echo 'UserRemove:      ' . printResult ( testUserRemove ()       );
-	echo 'PasswordReset:   ' . printResult ( testPasswordReset ()    );
-	echo 'ChangeTitle:     ' . printResult ( testChangeTitle ()      );
-	echo 'ChangeWorkStatus:' . printResult ( testChangeWorkStatus () );
+	echo 'UserCreate:        ' . printResult ( testUserCreate ()         );
+	echo 'UserRemove:        ' . printResult ( testUserRemove ()         );
+	echo 'PasswordReset:     ' . printResult ( testPasswordReset ()      );
+	echo 'ChangeTitle:       ' . printResult ( testChangeTitle ()        );
+	echo 'ChangeWorkStatus:  ' . printResult ( testChangeWorkStatus ()   );
+	echo 'ChangeVacationDays:' . printResult ( testChangeVacationDays () );
 }
+
 function printResult($boolean) {
 	return " \t" . ($boolean ? 'Passed' : 'Failed') . "\n";
 }
@@ -228,6 +232,63 @@ function testChangeWorkStatus() {
 		$user     = User::load($login);
 		$success &= $user->isFullTime();
 		
+	} catch ( Exception $e ) {
+		$success = false;
+	}
+	if (! $success) {
+		echo 'Failed: ';
+		var_dump ( $login );
+	}
+	return $success;
+}
+
+function testChangeVacationDays() {
+	DB::buildDatabase ();
+	$success = true;
+	$login   = 'JonZ';
+	$days_1  = 10;    
+	$days_2  = 365;    
+	$days_3  = 366;    
+	$days_4  = 0;
+	$days_5  = -1;   
+	try {
+		User::create ( $login, 'supersecret', $login . '_Fname', $login . '_Lname', 'Employee', true, $days_1, '8675309', $login . '@uwm.edu' );
+
+		/* assert that you can change days when valid */
+		$user     = User::load($login);
+		$success &= $user->getVacationDays() === $days_1;
+		$user->setVacationDays($days_2);
+		$user->commitUserData();
+		$user     = User::load($login);
+		$success &= $user->getVacationDays() === $days_2;
+
+		/* assert that you can't change days when too large */
+		$user     = User::load($login);
+		$days     = $user->getVacationDays();
+		$success &= $days < $days_3;
+		$user->setVacationDays($days_3);
+		$user->commitUserData();
+		$user     = User::load($login);
+		$success &= $user->getVacationDays()=== $days;
+		
+		/* assert that you can change days to zero */
+		$user     = User::load($login);
+		$days     = $user->getVacationDays();
+		$success &= $days !== $days_4;
+		$user->setVacationDays($days_4);
+		$user->commitUserData();
+		$user     = User::load($login);
+		$success &= $user->getVacationDays() !== $days
+		         && $user->getVacationDays() === $days_4;
+
+		/* assert that you can't change days when too small */
+		$user     = User::load($login);
+		$days     = $user->getVacationDays();
+		$success &= $days > $days_5;
+		$user->setVacationDays($days_5);
+		$user->commitUserData();
+		$user     = User::load($login);
+		$success &= $user->getVacationDays()=== $days;
 	} catch ( Exception $e ) {
 		$success = false;
 	}

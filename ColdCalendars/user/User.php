@@ -205,6 +205,15 @@ class User {
 		$this->workStatus = false;
 	}
 	
+	public function getVacationDays() {
+		return $this->vacationDays;
+	}
+
+	public function setVacationDays($days) {
+		if(self::isValidVacationDays($days))
+          $this->vacationDays = $days;
+	}
+	
 	public function isTerminated() {
 		return $this->fired;
 	}
@@ -364,6 +373,10 @@ class User {
     	for($i=0; $i<$rows; $i++)
     		$out[$i] = $results[$i][0];
     	return $out;
+    }
+    
+    private static function isValidVacationDays($days) {
+    	return is_int($days) && 0 <= $days && $days <= 365;
     }
 }
 ?>
