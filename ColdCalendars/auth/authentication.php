@@ -19,16 +19,17 @@ function assertValidUserPageAccess() {
 	$fail = !validCookieDataSent();
 	
 	if(!$fail) {
-		$user;
-		try { $user = getUserObj($_COOKIE['login']); }
-		catch(Exception $e) { $fail=true; }
-		if(!$fail) {
-			$fail = !$user->isAuthenticated($_COOKIE['authToken']);
+		try {
+		  $user = getUserObj($_COOKIE['login']); 
+		  $fail = !$user->isAuthenticated($_COOKIE['authToken']);
+		}
+		catch(Exception $e) {
+		  $fail = true; 
 		}
 	}
 	
-	if($fail)
-		header('Location: home.php');
+    if($fail)
+      header('Location: home.php');
 }
 
 
