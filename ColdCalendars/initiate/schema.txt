@@ -102,13 +102,13 @@ VALUES (NULL,"Employee"),
        (NULL,"Manager"),
        (NULL,"Admin"); 
 
-INSERT INTO User
-VALUES (NULL,"AlexW","Alex","Washburn",1,true,0,false,"","","",NOW());
-
-INSERT INTO Phone
-VALUES (1,"8675309",1),
-       (1,"7124702",2);
-
-INSERT INTO Email
-VALUES (1,"winner@awesometown.com",1),
-       (1,"you.will@join.us",2);
+--INSERT INTO User
+--VALUES (NULL,"AlexW","Alex","Washburn",1,true,0,false,"","","",NOW());
+--
+--INSERT INTO Phone
+--VALUES (1,"8675309",1),
+--       (1,"7124702",2);
+--
+--INSERT INTO Email
+--VALUES (1,"winner@awesometown.com",1),
+--       (1,"you.will@join.us",2);

@@ -10,6 +10,9 @@ include_once(__DIR__.'/user/User.php');
   $MAX_PHONE_LEN = 16;
   $AUTH_STR_LEN = 1024;
   
+  $adminOnlyRequests   = array('CreateUser','DeleteUser','PasswordReset','ChangeTitle','ChangeWorkStatus','ChangeVacationDays');
+  $managerOnlyRequests = array('AddToSchedule','RemoveFromSchedule');
+  
   if(!isset($_GET) 
   || !isset($_GET['json'])
   || !isset($_COOKIE) 
@@ -36,13 +39,18 @@ include_once(__DIR__.'/user/User.php');
   if(!$user->isAuthenticated($_COOKIE['authToken']))
   	die('Invlaid user authentication 5');
 
+  if(  (!$user->isAdmin()   && in_array($requestData->requestType,$adminOnlyRequests))
+    || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
+  	die(json_encode('Unauthorized Request'));
+  
+  
   switch($requestData->requestType) {
-  	case 'CreateUser':         if(!$user->isAdmin()) die('Unauthorized Request'); else createUser($requestData); break;
-  	case 'DeleteUser':         if(!$user->isAdmin()) die('Unauthorized Request'); else deleteUser($requestData); break;
-  	case 'PasswordReset':      if(!$user->isAdmin()) die('Unauthorized Request'); else passwordReset($requestData); break;
-  	case 'ChangeTitle':        if(!$user->isAdmin()) die('Unauthorized Request'); else changeTitle($requestData); break;
-  	case 'ChangeWorkStatus':   if(!$user->isAdmin()) die('Unauthorized Request'); else changeWorkStatus($requestData); break;
-  	case 'ChangeVacationDays': if(!$user->isAdmin()) die('Unauthorized Request'); else changeVacationDays($requestData); break;
+  	case 'CreateUser':         createUser($requestData); break;
+  	case 'DeleteUser':         deleteUser($requestData); break;
+  	case 'PasswordReset':      passwordReset($requestData); break;
+  	case 'ChangeTitle':        changeTitle($requestData); break;
+  	case 'ChangeWorkStatus':   changeWorkStatus($requestData); break;
+  	case 'ChangeVacationDays': changeVacationDays($requestData); break;
   	case 'UserInfo':  getUserInfo($requestData); break;
   	case 'UserPhone': getPhoneNumbers($requestData); break;
   	case 'AddPhone': addPhoneNumber($requestData); break;
@@ -159,6 +167,10 @@ include_once(__DIR__.'/user/User.php');
     if(in_array(false,$validation))
   		die(json_encode($validation));
     $user;
+    
+    if($dataBlob->userID===$_COOKIE['login'])
+    	die(json_encode('You can\'t delete yourself. Bad Admin.'));
+    
     try {
     	$user = User::load($dataBlob->userID);
     }
@@ -262,8 +274,7 @@ include_once(__DIR__.'/user/User.php');
   
   function addPhoneNumber($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidPhone($dataBlob->phone);
+  	$validation['phone'] = isValidPhone($dataBlob->phone);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {

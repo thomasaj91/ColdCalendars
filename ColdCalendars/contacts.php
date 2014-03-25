@@ -10,23 +10,22 @@
 <body>
 
 <p>YOUR SCHEDULE</p>
-<br>
-<br>
-<br>
+<div id="Current_User_Info">
+</div>
 <br>
 <br>
 
 <button id="Create_User">Create new user</button>   
 <button id="Delete_User">Delete user</button> 
 
-<div id="Create_User_Dialog" title="Create new user">
-<p class="validateTips">All form fields are required.</p>
-<form>
+<div  id="Create_User_Dialog" title="Create new user">
+  <p class="validateTips">All form fields are required.</p>
+    <form>
 <fieldset>
 	<label for="login">Login</label>
 	<input id="Login">
 	<label for="passwd">Password</label>
-	<input id="Passwd">
+	<input type="password" id="Passwd">
 	<label for="firstName">First Name</label>
 	<input id="First_Name">
 	<label for="lastName">Last Name</label>
@@ -53,7 +52,7 @@
 </form>
 </div>
 
-<div id="Delete_User_Dialog" title="Delete existing user">
+<div  id="Delete_User_Dialog" title="Delete existing user">
 <p class="validateTips">All form fields are required.</p>
 <form>
 <fieldset>
@@ -63,26 +62,8 @@
 
 </form>
 </div>
- 
+
 <div id="Contact_List">
-  <h3>First Section</h3>
-  <div>
-    <p>
-  Content for section first
-    </p>
-  </div>
-  <h3>Second Section</h3>
-  <div>
-    <p>
-	Content For Second Section
-    </p>
-  </div>
-  <h3>Third Section</h3>
-  <div>
-    <p>
-	Content for third section
-    </p>
-  </div>
 </div>
  
 </body>

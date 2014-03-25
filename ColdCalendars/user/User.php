@@ -17,6 +17,8 @@ class User {
 	private static $qryInsertPhoneSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
 	private static $qryInsertEmailPrefix = "INSERT INTO Email VALUES ";
 	private static $qryInsertEmailSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
+	private static $qryDeletePhone = "DELETE FROM Phone WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
+	private static $qryDeleteEmail = "DELETE FROM Email WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
 	
 	private $login;
 	private $firstName;
@@ -117,6 +119,22 @@ class User {
 		$result  = DB::execute($conn, $payload);
 		$conn->close();
 	}
+
+	public function commitPhoneData() {
+		$conn    = DB::getNewConnection();
+		$payload = str_replace("@PARAM", $this->login, self::$qryDeletePhone).' ; '
+		          .$this->getInsertPhoneSql().' ; ';
+		$result  = DB::execute($conn, $payload);
+		$conn->close();
+	}
+	
+	public function commitEmailData() {
+		$conn    = DB::getNewConnection();
+		$payload = str_replace("@PARAM", $this->login, self::$qryDeleteEmail).' ; '
+				.$this->getInsertEmailSql().' ; ';
+		$result  = DB::execute($conn, $payload);
+		$conn->close();
+	}
 	
 	public function correctPassword($password) {
 		return $this->hash === self::hashPassword($password,$this->salt);
@@ -148,16 +166,46 @@ class User {
 		return strcasecmp($this->title,'Admin')===0;
 	}
 	
+	public function isManager() {
+		return strcasecmp($this->title,'Manager')===0;
+	}
+	
 	public function terminateUser() {
-		$this->fired = !$this->fired;
+		$this->fired = true;
+	}
+	
+	public function unTerminateUser() {
+		$this->fired = false;
 	}
 	
 	public function getPhoneNumbers() {
 		return $this->phone;
 	}
 	
+	public function addPhoneNumber($number) {
+		array_push($this->phone,$number);
+	}
+	
+	public function removePhoneNumber($number) {
+		if(count($this->phone) < 2 || !in_array($number,$this->phone))
+			return;
+		unset($this->phone[array_search($number,$this->phone)]);
+		$this->phone = array_values($this->phone);
+	}
+	
 	public function getEmailAddresses() {
 		return $this->email;
+	}
+	
+	public function addEmailAddress($address) {
+		array_push($this->email,$address);
+	}
+	
+	public function removeEmailAddress($address) {
+		if(count($this->email) < 2 || !in_array($address,$this->email))
+			return;
+		unset($this->email[array_search($address,$this->email)]);
+		$this->email = array_values($this->email);
 	}
 	
 	public function getAuthToken() {
