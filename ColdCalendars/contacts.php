@@ -1,3 +1,8 @@
+<?php
+require_once(__DIR__.'/auth/authentication.php');
+assertValidUserPageAccess();
+?>
+
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
