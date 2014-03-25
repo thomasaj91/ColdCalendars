@@ -185,8 +185,8 @@ include_once(__DIR__.'/user/User.php');
 
   function passwordReset($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidPassword($dataBlob->password);
+  	$validation['userID']   = isValidUserLogin($dataBlob->userID);
+  	$validation['password'] = isValidPassword($dataBlob->password);
   	if(!$validation[0] || !$validation[1]) {
   		die(json_encode($validation));
   	}
@@ -202,8 +202,8 @@ include_once(__DIR__.'/user/User.php');
   
   function changeTitle($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidTitle($dataBlob->title);
+  	$validation['userID'] = isValidUserLogin($dataBlob->userID);
+  	$validation['title']  = isValidTitle($dataBlob->title);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
@@ -218,8 +218,8 @@ include_once(__DIR__.'/user/User.php');
   
   function changeWorkStatus($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidBool($dataBlob->workStatus);
+  	$validation['userID']     = isValidUserLogin($dataBlob->userID);
+  	$validation['workStatus'] = isValidBool($dataBlob->workStatus);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
@@ -234,8 +234,8 @@ include_once(__DIR__.'/user/User.php');
   
   function changeVacationDays($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidBool($dataBlob->vacationDays);
+  	$validation['userID']       = isValidUserLogin($dataBlob->userID);
+  	$validation['vacationDays'] = isValidBool($dataBlob->vacationDays);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
@@ -278,7 +278,7 @@ include_once(__DIR__.'/user/User.php');
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->userID);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -289,12 +289,11 @@ include_once(__DIR__.'/user/User.php');
   
   function removePhoneNumber($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidPhone($dataBlob->phone);
+  	$validation['phone'] = isValidPhone($dataBlob->phone);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->userID);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -305,12 +304,12 @@ include_once(__DIR__.'/user/User.php');
   
   function phonePriority($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidPhone($dataBlob->phone);
-  	$validation[1] = isValidPriority($dataBlob->priority);
+  	$validation['phone']    = isValidPhone($dataBlob->phone);
+  	$validation['priority'] = isValidPriority($dataBlob->priority);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->login);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -333,12 +332,11 @@ include_once(__DIR__.'/user/User.php');
   
   function addEmail($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidEmail($dataBlob->email);
+  	$validation['email'] = isValidEmail($dataBlob->email);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->userID);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -349,12 +347,11 @@ include_once(__DIR__.'/user/User.php');
 
   function removeEmail($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidUserLogin($dataBlob->userID);
-  	$validation[1] = isValidEmail($dataBlob->email);
+  	$validation['email'] = isValidEmail($dataBlob->email);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->userID);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
@@ -365,12 +362,12 @@ include_once(__DIR__.'/user/User.php');
   
   function emailPriority($dataBlob) {
   	$validation = array();
-  	$validation[0] = isValidEmail($dataBlob->email);
-  	$validation[1] = isValidPriority($dataBlob->priority);
+  	$validation['email']    = isValidEmail($dataBlob->email);
+  	$validation['priority'] = isValidPriority($dataBlob->priority);
   	if(in_array(false,$validation))
   		die(json_encode($validation));
   	try {
-  		$user = User::load($dataBlob->login);
+  		$user = User::load($_COOKIE['login']);
   	}
   	catch(Exception $e) {
   		die(json_encode(null));
