@@ -24,26 +24,24 @@ function processREST() {
   if(!isset($requestData->requestType))
     return $IMPROPER;
   
-  try {
-    $user = User::load($_COOKIE['login']);
-  }
-  catch(Exception $e) {
-  	return null;
-  	//die('User::load error\n'.$e->getMessage());
-  }
-  
-  if(!$user->isAuthenticated($_COOKIE['authToken'])
+  $user = getUserObj($_COOKIE['login']);
+  if($user === null)
+    return null;
+    
+  if(   !$user->isAuthenticated($_COOKIE['authToken'])
     || (!$user->isAdmin()   && in_array($requestData->requestType,$adminOnlyRequests))
     || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
   	return $UNAUTHORIZED;
   
   switch($requestData->requestType) {
+  	/* Admin Only*/
   	case 'CreateUser':         return createUser($requestData);
   	case 'DeleteUser':         return deleteUser($requestData);
   	case 'PasswordReset':      return passwordReset($requestData);
   	case 'ChangeTitle':        return changeTitle($requestData);
   	case 'ChangeWorkStatus':   return changeWorkStatus($requestData);
   	case 'ChangeVacationDays': return changeVacationDays($requestData);
+  	/* All Users */
   	case 'UserInfo':           return getUserInfo($requestData);
   	case 'UserPhone':          return getPhoneNumbers($requestData);
   	case 'AddPhone':           return addPhoneNumber($requestData);
