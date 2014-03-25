@@ -137,12 +137,11 @@ class User {
 	}
 	
 	public function setTitle($title) {
-		if($this->isAdmin()
-		|| !in_array($title,self::$VALID_TITLES)
-		|| strcasecmp($title, 'Admin')===0)
-		  return;
-		
-		$this->title = $title;		
+		$title = ucfirst(strtolower($title));
+		if(!$this->isAdmin()
+		&& strcmp($title, 'Admin') !== 0
+		&& in_array($title,self::$VALID_TITLES))
+          $this->title = $title;		
 	}
 	
 	public function setPassword($password) {

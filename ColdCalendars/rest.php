@@ -142,7 +142,7 @@ function processREST() {
       return null;
   	
   	
-   	$user->changeTitle($dataBlob->title);
+   	$user->setTitle($dataBlob->title);
    	$user->commitUserData();
   	return $validation;
   }
@@ -159,7 +159,10 @@ function processREST() {
     if($user === null)
       return null;
   	
-  	$user->changeWorkStatus($dataBlob->workStatus);
+    if($dataBlob->workStatus)
+      $user->setFullTime();
+    else
+      $user->setPartTime();
   	$user->commitUserData();
   	return $validation;
   }
@@ -176,7 +179,7 @@ function processREST() {
     if($user === null)
       return null;
    	
-  	$user->changeVacationDays($dataBlob->vacationDays);
+  	$user->setVacationDays($dataBlob->vacationDays);
   	$user->commitUserData();
   	return $validation;
   }
@@ -319,7 +322,7 @@ function processREST() {
       $list = User::getAllLogins();
   	}
   	catch (Exception $e) {
-  		return null;
+  	  return null;
   	}
 	return $list;
   }
