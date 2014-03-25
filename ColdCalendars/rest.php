@@ -3,68 +3,60 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 include_once(__DIR__.'/user/User.php');
+include_once(__DIR__.'/auth/authentication.php');
 include_once(__DIR__.'/auth/validation.php');
 
-  $MAX_STR_LEN = 255;
-  $MIN_PASSWORD_LENGTH = 8;
-  $MIN_PHONE_LEN = 7;
-  $MAX_PHONE_LEN = 16;
-  $AUTH_STR_LEN = 1024;
-  
+echo json_encode(processREST());
+
+function processREST() {
+
+  $IMPROPER            = 'Improperly Formatted Request';
+  $INVALID             = 'Invalid Formatted Request';
+  $UNAUTHORIZED        = 'Invalid Request Specification';
+	
   $adminOnlyRequests   = array('CreateUser','DeleteUser','PasswordReset','ChangeTitle','ChangeWorkStatus','ChangeVacationDays');
   $managerOnlyRequests = array('AddToSchedule','RemoveFromSchedule');
   
-  if(!isset($_GET) 
-  || !isset($_GET['json'])
-  || !isset($_COOKIE) 
-  || !isset($_COOKIE['login'])
-  || !isset($_COOKIE['authToken']))
-    die('Improperly formated request 1');
+  if(!validAjaxGet() && !validCookieDataSent())
+    return $IMPROPER;
 
   $requestData = json_decode($_GET['json']);
   if(!isset($requestData->requestType))
-    die('Improperly Formated Request 2');
-
-  if(!isValidUserlogin($_COOKIE['login']))
-  	die('Improperly Formatted User Login 3');
-
-  if(!isValidAuthenticationToken($_COOKIE['authToken']))
-  	die('Improperly Formatted authentication Token 4');
+    return $IMPROPER;
   
   try {
-  	$user = User::load($_COOKIE['login']);
+    $user = User::load($_COOKIE['login']);
   }
   catch(Exception $e) {
-  	die('User::load error\n'.$e->getMessage());
+  	return null;
+  	//die('User::load error\n'.$e->getMessage());
   }
-  if(!$user->isAuthenticated($_COOKIE['authToken']))
-  	die('Invlaid user authentication 5');
-
-  if(  (!$user->isAdmin()   && in_array($requestData->requestType,$adminOnlyRequests))
-    || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
-  	die(json_encode('Unauthorized Request'));
   
+  if(!$user->isAuthenticated($_COOKIE['authToken'])
+    || (!$user->isAdmin()   && in_array($requestData->requestType,$adminOnlyRequests))
+    || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
+  	return $UNAUTHORIZED;
   
   switch($requestData->requestType) {
-  	case 'CreateUser':         createUser($requestData); break;
-  	case 'DeleteUser':         deleteUser($requestData); break;
-  	case 'PasswordReset':      passwordReset($requestData); break;
-  	case 'ChangeTitle':        changeTitle($requestData); break;
-  	case 'ChangeWorkStatus':   changeWorkStatus($requestData); break;
-  	case 'ChangeVacationDays': changeVacationDays($requestData); break;
-  	case 'UserInfo':  getUserInfo($requestData); break;
-  	case 'UserPhone': getPhoneNumbers($requestData); break;
-  	case 'AddPhone': addPhoneNumber($requestData); break;
-  	case 'PhonePriority': phonePriority($requestData); break;
-  	case 'RemovePhone': removePhoneNumber($requestData); break;
-  	case 'UserEmail': getEmails($requestData); break;
-  	case 'AddEmail': addEmail($requestData); break;
-  	case 'EmailPriority': emailPriority($requestData); break;
-  	case 'RemoveEmail': removeEmail($requestData); break;
-  	case 'UserList': userList($requestData); break;
-  	default: die('Invalid Request Specification');
+  	case 'CreateUser':         return createUser($requestData);
+  	case 'DeleteUser':         return deleteUser($requestData);
+  	case 'PasswordReset':      return passwordReset($requestData);
+  	case 'ChangeTitle':        return changeTitle($requestData);
+  	case 'ChangeWorkStatus':   return changeWorkStatus($requestData);
+  	case 'ChangeVacationDays': return changeVacationDays($requestData);
+  	case 'UserInfo':           return getUserInfo($requestData);
+  	case 'UserPhone':          return getPhoneNumbers($requestData);
+  	case 'AddPhone':           return addPhoneNumber($requestData);
+  	case 'PhonePriority':      return phonePriority($requestData);
+  	case 'RemovePhone':        return removePhoneNumber($requestData);
+  	case 'UserEmail':          return getEmails($requestData);
+  	case 'AddEmail':           return addEmail($requestData);
+  	case 'EmailPriority':      return emailPriority($requestData);
+  	case 'RemoveEmail':        return removeEmail($requestData);
+  	case 'UserList':           return userList($requestData);
+  	default:                   return $INVALID;
   }
-  
+}  
   
   function createUser($dataBlob) {
   	$validation = array();
@@ -84,7 +76,7 @@ include_once(__DIR__.'/auth/validation.php');
   	// 	$goodData &= $valid;
   	
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
+  		return $validation;
   	//do User::load work
 	try {
 		User::create($dataBlob->userID,
@@ -98,240 +90,249 @@ include_once(__DIR__.'/auth/validation.php');
 					$dataBlob->email);
 	}
 	catch (Exception $e) {
-		die(json_encode(null));
+		return null;
 	}
-	echo json_encode($validation);
+	return $validation;
   }  
   
   function deleteUser($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+
     if(in_array(false,$validation))
-  		die(json_encode($validation));
-    $user;
-    
+  		return $validation;
+
     if($dataBlob->userID===$_COOKIE['login'])
-    	die(json_encode('You can\'t delete yourself. Bad Admin.'));
-    
-    try {
-    	$user = User::load($dataBlob->userID);
-    }
-    catch (Exception $e) {
-    	die(json_encode(null));
-    }
-    $user->terminateUser();
+    	return 'You can\'t delete yourself. Bad Admin.';
+
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+
+  	$user->terminateUser();
     $user->commitUserData();
-    echo json_encode($validation);
-    //
+    return $validation;
   }
 
   function passwordReset($dataBlob) {
   	$validation = array();
   	$validation['userID']   = isValidUserLogin($dataBlob->userID);
   	$validation['password'] = isValidPassword($dataBlob->password);
-  	if(!$validation[0] || !$validation[1]) {
-  		die(json_encode($validation));
-  	}
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+
+    if(in_array(false,$validation))
+  		return $validation;
+  	
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+    
   	$user->setPassword($dataBlob->password);
   	$user->commitUserData();
-  	echo json_encode($validation);
+  	return $validation;
   }
   
   function changeTitle($dataBlob) {
   	$validation = array();
   	$validation['userID'] = isValidUserLogin($dataBlob->userID);
   	$validation['title']  = isValidTitle($dataBlob->title);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	$user->changeTitle($dataBlob->title);
-  	echo json_encode($validation);
+  		return $validation;
+
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+  	
+  	
+   	$user->changeTitle($dataBlob->title);
+   	$user->commitUserData();
+  	return $validation;
   }
   
   function changeWorkStatus($dataBlob) {
   	$validation = array();
   	$validation['userID']     = isValidUserLogin($dataBlob->userID);
   	$validation['workStatus'] = isValidBool($dataBlob->workStatus);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+  		return $validation;
+
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+  	
   	$user->changeWorkStatus($dataBlob->workStatus);
-  	echo json_encode($validation);
+  	$user->commitUserData();
+  	return $validation;
   }
   
   function changeVacationDays($dataBlob) {
   	$validation = array();
   	$validation['userID']       = isValidUserLogin($dataBlob->userID);
   	$validation['vacationDays'] = isValidBool($dataBlob->vacationDays);
-  	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+
+   	if(in_array(false,$validation))
+  		return $validation;
+
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+   	
   	$user->changeVacationDays($dataBlob->vacationDays);
-  	echo json_encode($validation);
+  	$user->commitUserData();
+  	return $validation;
   }
   
   function getUserInfo($dataBlob) {
   	if(!isValidUserLogin($dataBlob->userID))
-  		die(json_encode(null));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	echo json_encode($user->getInfo());
+  		return null;
+
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+  	  	
+   	return $user->getInfo();
   }
   
   function getPhoneNumbers($dataBlob) {
   	if(!isValidUserLogin($dataBlob->userID))
-  		die(json_encode(null));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	echo json_encode($user->getPhoneNumbers());
+  	  return null;
+  	
+    $user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+
+    return $user->getPhoneNumbers();
   }
   
   function addPhoneNumber($dataBlob) {
   	$validation = array();
   	$validation['phone'] = isValidPhone($dataBlob->phone);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+  		return $validation;
+
+  	$user = getUserObj($_COOKIE['login']);
+    if($user === null)
+      return null;
+  	
   	$user->addPhoneNumber($dataBlob->phone);
   	$user->commitPhoneData();
-  	echo json_encode($validation);
+  	return $validation;
   }
   
   function removePhoneNumber($dataBlob) {
   	$validation = array();
   	$validation['phone'] = isValidPhone($dataBlob->phone);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+  		return $validation;
+
+  	$user = getUserObj($_COOKIE['login']);
+    if($user === null)
+      return null;
+      	
   	$user->removePhoneNumber($dataBlob->phone);
   	$user->commitPhoneData();
-  	echo json_encode($validation);
+  	return $validation;
   }
   
   function phonePriority($dataBlob) {
   	$validation = array();
   	$validation['phone']    = isValidPhone($dataBlob->phone);
   	$validation['priority'] = isValidPriority($dataBlob->priority);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	$user->changePhoneNumberPriority($dataBlob->phone,$dataBlob->priority);
-  	echo json_encode($validation);
+  		return $validation;
+
+  	$user = getUserObj($_COOKIE['login']);
+    if($user === null)
+      return null;
+
+    $user->changePhoneNumberPriority($dataBlob->phone,$dataBlob->priority);
+    $user->commitPhoneData();
+  	return $validation;
   }
   
   function getEmails($dataBlob) {
   	if(!isValidUserLogin($dataBlob->userID))
-  		die(json_encode(null));
-  	try {
-  		$user = User::load($dataBlob->userID);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	echo json_encode($user->getEmailAddresses());
+  		return null;
+
+  	$user = getUserObj($dataBlob->userID);
+    if($user === null)
+      return null;
+
+    return $user->getEmailAddresses();
   }
   
   function addEmail($dataBlob) {
   	$validation = array();
   	$validation['email'] = isValidEmail($dataBlob->email);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	$user->addEmail($dataBlob->email);
+  	  return $validation;
+
+  	$user = getUserObj($_COOKIE['login']);
+    if($user === null)
+      return null;
+
+    $user->addEmail($dataBlob->email);
   	$user->commitEmailData();
-  	echo json_encode($validation);
+  	return $validation;
   }
 
   function removeEmail($dataBlob) {
   	$validation = array();
   	$validation['email'] = isValidEmail($dataBlob->email);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
+  	  return $validation;
+  	
+  	$user = getUserObj($_COOKIE['login']);
+  	if($user === null)
+  	  return null;
+  	
   	$user->removeEmail($dataBlob->email);
   	$user->commitEmailData();
-  	echo json_encode($validation);
+  	return $validation;
   }
   
   function emailPriority($dataBlob) {
   	$validation = array();
   	$validation['email']    = isValidEmail($dataBlob->email);
   	$validation['priority'] = isValidPriority($dataBlob->priority);
+
   	if(in_array(false,$validation))
-  		die(json_encode($validation));
-  	try {
-  		$user = User::load($_COOKIE['login']);
-  	}
-  	catch(Exception $e) {
-  		die(json_encode(null));
-  	}
-  	$user->changeEmailPriority($dataBlob->email,$dataBlob->priority);
-  	echo json_encode($validation);
+  	  return $validation;
+
+  	$user = getUserObj($_COOKIE['login']);
+    if($user === null)
+      return null;
+
+    $user->changeEmailPriority($dataBlob->email,$dataBlob->priority);
+    $user->commitEmailData();
+  	return $validation;
   }
   
   function userList($dataBlob) {
   	$list;
+
   	try {
-		$list = User::getAllLogins();
+      $list = User::getAllLogins();
   	}
   	catch (Exception $e) {
-  		die(json_encode(null));
+  		return null;
   	}
-	echo json_encode($list);
+	return $list;
+  }
+
+  
+  
+  function getUserObj($login) {
+  	$user;
+  	try { $user = User::load($login); }
+  	catch(Exception $e) { return null; }
+    return $user;  	 
   }
   
 ?>
