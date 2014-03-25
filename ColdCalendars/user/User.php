@@ -172,6 +172,10 @@ class User {
 		return strcasecmp($this->title,'Manager')===0;
 	}
 	
+	public function isTerminated() {
+		return $this->fired;
+	}
+	
 	public function terminateUser() {
 		$this->fired = true;
 	}
