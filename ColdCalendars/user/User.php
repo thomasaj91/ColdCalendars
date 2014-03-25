@@ -54,7 +54,7 @@ class User {
         $this->lastCommunication = self::getSystemTime();
 		$this->phone             = array($phone);
 		$this->email             = array($email);
-        setPassword($password);
+        $this->setPassword($password);
         $this->insertUserData();
 	}
 
