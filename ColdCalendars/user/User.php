@@ -9,19 +9,19 @@ class User {
 	
 	private static $AUTHENTICATION_TIMEOUT = 3600;
 	
-	private static $qryUserList    = "SELECT Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
-	private static $qryUserExists  = "SELECT EXISTS(SELECT 1 FROM User WHERE Login = '@PARAM' LIMIT 1)";
-	private static $qryUserData    = "SELECT usr.Login, usr.First, usr.Last, typ.Title, usr.PTFT, usr.Vacation, usr.LegacyUser, usr.Salt, usr.Hash, usr.Auth, usr.Time FROM User AS usr JOIN UserType AS typ	ON usr.Title = typ.PK WHERE usr.Login = '@PARAM' LIMIT 1";
-	private static $qryUserPhone   = "SELECT phn.Number,  phn.Priority FROM Phone AS phn JOIN User AS usr ON phn.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY phn.Priority";
-	private static $qryUserEmail   = "SELECT eml.Address, eml.Priority FROM Email AS eml JOIN User AS usr ON eml.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY eml.Priority";
-	private static $qryInsertUser  = "INSERT INTO User VALUES (Null,'@PARAM','@PARAM','@PARAM',(SELECT PK FROM UserType WHERE Title LIKE '@PARAM'),@PARAM,@PARAM,@PARAM,'@PARAM','@PARAM','@PARAM',NOW())";
-	private static $qryUpdateUser  = "UPDATE User SET First='@PARAM', Last='@PARAM', Title = (SELECT PK FROM UserType WHERE Title LIKE '@PARAM'), PTFT=@PARAM, Vacation=@PARAM, LegacyUser=@PARAM, Salt='@PARAM', Hash='@PARAM', Auth='@PARAM', Time='@PARAM' WHERE Login = '@PARAM'";
+	private static $qryUserList          = "SELECT Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
+	private static $qryUserExists        = "SELECT EXISTS(SELECT 1 FROM User WHERE Login = '@PARAM' LIMIT 1)";
+	private static $qryUserData          = "SELECT usr.Login, usr.First, usr.Last, typ.Title, usr.PTFT, usr.Vacation, usr.LegacyUser, usr.Salt, usr.Hash, usr.Auth, usr.Time FROM User AS usr JOIN UserType AS typ	ON usr.Title = typ.PK WHERE usr.Login = '@PARAM' LIMIT 1";
+	private static $qryUserPhone         = "SELECT phn.Number,  phn.Priority FROM Phone AS phn JOIN User AS usr ON phn.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY phn.Priority";
+	private static $qryUserEmail         = "SELECT eml.Address, eml.Priority FROM Email AS eml JOIN User AS usr ON eml.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY eml.Priority";
+	private static $qryInsertUser        = "INSERT INTO User VALUES (Null,'@PARAM','@PARAM','@PARAM',(SELECT PK FROM UserType WHERE Title LIKE '@PARAM'),@PARAM,@PARAM,@PARAM,'@PARAM','@PARAM','@PARAM',NOW())";
+	private static $qryUpdateUser        = "UPDATE User SET First='@PARAM', Last='@PARAM', Title = (SELECT PK FROM UserType WHERE Title LIKE '@PARAM'), PTFT=@PARAM, Vacation=@PARAM, LegacyUser=@PARAM, Salt='@PARAM', Hash='@PARAM', Auth='@PARAM', Time='@PARAM' WHERE Login = '@PARAM'";
 	private static $qryInsertPhonePrefix = "INSERT INTO Phone VALUES ";
 	private static $qryInsertPhoneSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
 	private static $qryInsertEmailPrefix = "INSERT INTO Email VALUES ";
 	private static $qryInsertEmailSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
-	private static $qryDeletePhone = "DELETE FROM Phone WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
-	private static $qryDeleteEmail = "DELETE FROM Email WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
+	private static $qryDeletePhone       = "DELETE FROM Phone WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
+	private static $qryDeleteEmail       = "DELETE FROM Email WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
 	
 	private $login;
 	private $firstName;
@@ -240,6 +240,14 @@ class User {
 		$this->phone = array_values($this->phone);
 	}
 	
+	public function setPhoneNumberPriority($number, $priority) {
+		if($priority <= 0 || count($this->phone) < $priority)
+		  return;
+		$this->removePhoneNumber($number);
+		array_splice($number, $priority-1, 0, $this->phone);
+		$this->phone = array_values($this->phone);
+	}
+	
 	public function getEmailAddresses() {
 		return $this->email;
 	}
@@ -254,6 +262,15 @@ class User {
 		unset($this->email[array_search($address,$this->email)]);
 		$this->email = array_values($this->email);
 	}
+
+	public function setEmailAddressPriority($address, $priority) {
+		if($priority <= 0 || count($this->email) < $priority)
+			return;
+		$this->removePhoneNumber($address);
+		array_splice($address, $priority-1, 0, $this->email);
+		$this->email = array_values($this->email);
+	}
+	
 	
 	public function getAuthToken() {
 		return $this->authToken;	

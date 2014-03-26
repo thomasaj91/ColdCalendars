@@ -80,14 +80,14 @@ function processREST() {
   	//do User::load work
 	try {
 		User::create($dataBlob->userID,
-					$dataBlob->password,
-					$dataBlob->firstName,
-					$dataBlob->lastName,
-					$dataBlob->title,
-					$dataBlob->workStatus,
-					$dataBlob->vacationDays,
-					$dataBlob->phone,
-					$dataBlob->email);
+			 		 $dataBlob->password,
+					 $dataBlob->firstName,
+					 $dataBlob->lastName,
+					 $dataBlob->title,
+					 $dataBlob->workStatus,
+					 $dataBlob->vacationDays,
+					 $dataBlob->phone,
+					 $dataBlob->email);
 	}
 	catch (Exception $e) {
 		return null;
@@ -117,7 +117,7 @@ function processREST() {
   function passwordReset($dataBlob) {
   	$validation = array();
   	$validation['userID']   = isValidUserLogin($dataBlob->userID);
-  	$validation['password'] = isValidPassword($dataBlob->password);
+  	$validation['password'] = isValidPassword( $dataBlob->password);
 
     if(in_array(false,$validation))
   		return $validation;
@@ -252,7 +252,7 @@ function processREST() {
     if($user === null)
       return null;
 
-    $user->changePhoneNumberPriority($dataBlob->phone,$dataBlob->priority);
+    $user->setPhoneNumberPriority($dataBlob->phone,$dataBlob->priority);
     $user->commitPhoneData();
   	return $validation;
   }
@@ -312,7 +312,7 @@ function processREST() {
     if($user === null)
       return null;
 
-    $user->changeEmailPriority($dataBlob->email,$dataBlob->priority);
+    $user->setEmailAddressPriority($dataBlob->email,$dataBlob->priority);
     $user->commitEmailData();
   	return $validation;
   }
@@ -328,8 +328,6 @@ function processREST() {
   	}
 	return $list;
   }
-
-  
   
   function getUserObj($login) {
   	$user;

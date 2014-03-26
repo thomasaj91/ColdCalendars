@@ -8,7 +8,14 @@ testGeneralUserFunctionality ();
 testAdminUserFunctionality ();
 
 function testGeneralUserFunctionality() {
-	echo "UserExists:" . printResult ( testUserExists () );
+	echo 'UserExists:        ' . printResult ( testUserExists () );
+	echo 'UserList:        ' . printResult ( testUserExists () );
+// 	echo 'PhoneAdd:          ' . printResult ( testUserExists () );
+// 	echo 'PhoneRemove:       ' . printResult ( testUserExists () );
+// 	echo 'PhonePriority:     ' . printResult ( testUserExists () );
+// 	echo 'EmailAdd:          ' . printResult ( testUserExists () );
+// 	echo 'EmailRemove:       ' . printResult ( testUserExists () );
+// 	echo 'EmailPriority:     ' . printResult ( testUserExists () );
 }
 
 function testAdminUserFunctionality() {
@@ -299,37 +306,33 @@ function testChangeVacationDays() {
 	return $success;
 }
 
-// var_dump(User::userExists('AustinT'));
-// var_dump(User::userExists('AustinT2'));
+/* Old Tests
+ $alex = User::load('AlexW');
+ var_dump($alex);
+ $alex->generateAuthenticationToken();
+ var_dump($alex);
+ $root = User::load ( 'root' );
+ var_dump ( $root );
+ User::create ( 'JonZ', 'supersecret', 'Jon', 'Zanura', 'Employee', true, 10, '8675309', ' jczamora@uwm.edu' );
+ $jon = User::load ( 'JonZ' );
+ var_dump ( $jon );
+ echo $testUser->correctPassword('');
+ $jon->addPhoneNumber('5555555555');
+ $jon->addPhoneNumber('1234567890');
+ var_dump($jon);
+ $jon->removePhoneNumber('5555555555');
+ var_dump($jon);
+ $jon->commitPhoneData();
+ $jon = User::load('JonZ');
+ var_dump($jon);
 
-/* Can I load the user data? */
-// $alex = User::load('AlexW');
-// var_dump($alex);
-// $alex->generateAuthenticationToken();
-// var_dump($alex);
-$root = User::load ( 'root' );
-var_dump ( $root );
-User::create ( 'JonZ', 'supersecret', 'Jon', 'Zanura', 'Employee', true, 10, '8675309', ' jczamora@uwm.edu' );
-$jon = User::load ( 'JonZ' );
-var_dump ( $jon );
-// echo $testUser->correctPassword('');
-/**
- * $jon->addPhoneNumber('5555555555');
- * $jon->addPhoneNumber('1234567890');
- * var_dump($jon);
- * $jon->removePhoneNumber('5555555555');
- * var_dump($jon);
- * $jon->commitPhoneData();
- * $jon = User::load('JonZ');
- * var_dump($jon);
- */
-$jon->addEmailAddress ( 'JonZ@gmail.com' );
-$jon->addEmailAddress ( 'JonZ@yahoo.com' );
-var_dump ( $jon );
-$jon->removeEmailAddress ( 'JonZ@yahoo.com' );
-var_dump ( $jon );
-$jon->commitEmailData ();
-$jon = User::load ( 'JonZ' );
-var_dump ( $jon );
-
+ $jon->addEmailAddress ( 'JonZ@gmail.com' );
+ $jon->addEmailAddress ( 'JonZ@yahoo.com' );
+ var_dump ( $jon );
+ $jon->removeEmailAddress ( 'JonZ@yahoo.com' );
+ var_dump ( $jon );
+ $jon->commitEmailData ();
+ $jon = User::load ( 'JonZ' );
+ var_dump ( $jon );
+*/
 ?>
