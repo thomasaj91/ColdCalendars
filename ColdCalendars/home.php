@@ -2,12 +2,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 require_once(__DIR__.'/auth/authentication.php');
+require_once(__DIR__.'/lib/User.php');
 //  var_dump($_POST);
 
 /**/
   if(isset($_POST) && isset($_POST['login']) && isset($_POST['passwd'])) {
 
-  	include_once(__DIR__.'/user/User.php');
   	$error = false;
   	try {
   		$user = User::load($_POST['login']);

@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
-require_once(__DIR__.'/user/User.php');
+require_once(__DIR__.'/lib/User.php');
 require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
 

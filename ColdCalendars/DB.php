@@ -1,4 +1,6 @@
 <?php
+require_once (__DIR__ . '/lib/User.php');
+
 class DB {
 	private static $host = 'preumbranet.domaincommysql.com';
 	private static $name = 'cold_calendars_test';
@@ -53,7 +55,6 @@ class DB {
 		
 		sleep ( 2 ); /* it needs to be two seconds, do NOT change */
 		
-		include_once (__DIR__ . '/user/User.php');
 		try {
 			User::create ( 'root', 'lolsecurity', 'Fname', 'LName', 'Admin', true, 0, '5558675309', 'admin@coldcalendars.preumbra.net' );
 		} catch ( Exception $e ) {
