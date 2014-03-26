@@ -32,7 +32,7 @@ function processREST() {
     || (!$user->isManager() && in_array($requestData->requestType,$managerOnlyRequests)))
   	return $UNAUTHORIZED;
 
-  updateSessionCommunication($user);
+  updateSessionCommunication($user,$_COOKIE['login'],$_COOKIE['authToken']);
     
   switch($requestData->requestType) {
   	/* Admin Only*/

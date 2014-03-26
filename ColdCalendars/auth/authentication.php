@@ -25,7 +25,7 @@ function assertValidUserPageAccess() {
 		  $user = User::load($_COOKIE['login']); 
 		  $fail = !$user->isAuthenticated($_COOKIE['authToken']);
 		  if(!$fail)
-            updateSessionCommunication($user);
+            updateSessionCommunication($user,$_COOKIE['login'],$_COOKIE['authToken']);
 		}
 		catch(Exception $e) {
 		  $fail = true; 
@@ -36,12 +36,12 @@ function assertValidUserPageAccess() {
       header('Location: home.php');
 }
 
-function updateSessionCommunication($user) {
+function updateSessionCommunication($user,$login,$auth) {
 	$user->aknowledgeCommunication();
 	$user->commitUserData();
 	$expireTime = time()+User::getAuthenticationTimeOut();
-	setcookie('login',$_COOKIE['login'],$expireTime);
-	setcookie('authToken',$_COOKIE['authToken'],$expireTime);
+	setcookie('login',$login,$expireTime);
+	setcookie('authToken',$auth,$expireTime);
 }
 
 ?>

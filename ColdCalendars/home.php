@@ -19,10 +19,13 @@ require_once(__DIR__.'/auth/authentication.php');
   	  //die('bad username & password');
   	  $error = true;
   	if(!$error)  {
-	  	if(isset($_COOKIE['authToken']) && $user->isAuthenticated($_COOKIE['authToken'])) { ; }
+	  	if(isset($_COOKIE['authToken']) && $user->isAuthenticated($_COOKIE['authToken'])) {
+	  		updateSessionCommunication($user,$_COOKIE['login'],$_COOKIE['authToken']);
+	  	}
 	  	else {
 	  		$user->generateAuthenticationToken();
-			updateSessionCommunication($user);
+	  		/* Set Cookie info twice */
+	  		updateSessionCommunication($user,$_POST['login'],$user->getAuthToken());
 	  		header('Location: contacts.php');
 	  	}
   	}
