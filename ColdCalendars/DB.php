@@ -33,6 +33,23 @@ class DB {
 		return $out;
 	}
 	
+	public static function getSystemTime() {
+		return date('Y-m-d H:i:s',time());
+	}
+	
+	public static function str_replace_once($needle,$replace,$haystack) {
+		$pos = strpos($haystack,$needle);
+		if ($pos === false)
+			return $haystack;
+		return  substr_replace($haystack,$replace,$pos,strlen($needle));
+	}
+
+	public static function injectParamaters($params,$sql) {
+		foreach($params as $param)
+			$sql = DB::str_replace_once('@PARAM', $param, $sql);
+		return $sql;
+	}
+	
 	public static function buildDatabase() {
 		$dbConn = self::getNewConnection ();
 		if ($dbConn->connect_error)

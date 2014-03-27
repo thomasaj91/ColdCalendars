@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 
-include_once (__DIR__ . '/../DB.php');
+require_once(__DIR__ . '/../DB.php');
 class User {
 	
 	private static $VALID_TITLES   = array('Admin','Manager','Employee');
@@ -54,7 +54,7 @@ class User {
 		$this->vacationDays      = $vacationDays;
 		$this->fired             = false;
         $this->authToken         = null;
-        $this->lastCommunication = self::getSystemTime();
+        $this->lastCommunication = DB::getSystemTime();
 		$this->phone             = array($phone);
 		$this->email             = array($email);
         $this->setPassword($password);
@@ -277,11 +277,7 @@ class User {
 	}
 	
 	public function aknowledgeCommunication() {
-		$this->lastCommunication = self::getSystemTime();
-	}
-	
-	private static function getSystemTime() {
-		return date('Y-m-d H:i:s',time());
+		$this->lastCommunication = DB::getSystemTime();
 	}
 	
 	private function insertUserData() {
@@ -308,7 +304,7 @@ class User {
 		                 );
 		$sql = self::$qryInsertUser;
 		foreach($params as $param)
-			$sql = self::str_replace_once('@PARAM', $param, $sql);
+			$sql = DB::str_replace_once('@PARAM', $param, $sql);
 		return $sql;
 	}	
 	
@@ -319,7 +315,7 @@ class User {
         	$params = array($this->login,$this->phone[$i],$i+1);
             $next   = self::$qryInsertPhoneSuffix;
             foreach($params as $param)
-        	    $next = self::str_replace_once('@PARAM', $param, $next);
+        	    $next = DB::str_replace_once('@PARAM', $param, $next);
         	$sql .= ($i===0?'':', ') . $next;
         }
 		return $sql;
@@ -332,7 +328,7 @@ class User {
         	$params = array($this->login,$this->email[$i],$i+1);
             $next   = self::$qryInsertEmailSuffix;
             foreach($params as $param)
-        	    $next = self::str_replace_once('@PARAM', $param, $next);
+        	    $next = DB::str_replace_once('@PARAM', $param, $next);
         	$sql .= ($i===0?'':', ') . $next;
         }
 		return $sql;
@@ -353,21 +349,10 @@ class User {
 		);
 		$sql = self::$qryUpdateUser;
 		foreach($params as $param)
-			$sql = self::str_replace_once('@PARAM', $param, $sql);
-		//echo $sql;
+			$sql = DB::str_replace_once('@PARAM', $param, $sql);
 		return $sql;
 	}
-	
-	
-	
-		
-	private static function str_replace_once($needle,$replace,$haystack) {
-	  $pos = strpos($haystack,$needle);
-	  if ($pos === false)
-	  	return $haystack;
-	  return  substr_replace($haystack,$replace,$pos,strlen($needle));
-    }
-    
+		    
     private static function getSeconds($interval) {
     	return  $interval->y * 365 * 24 * 60 * 60 
              +  $interval->m *  28 * 24 * 60
@@ -394,5 +379,16 @@ class User {
     private static function isValidVacationDays($days) {
     	return is_int($days) && 0 <= $days && $days <= 365;
     }
+    
+    public function getAllShifts($start,$end) {
+    	
+    
+    }
+    
+    public function getThisWeeksShift() {
+      return getAllshift($startOfThisWeek, $endOfThisWeek);		
+    }
+    
+    
 }
 ?>
