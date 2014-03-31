@@ -231,7 +231,7 @@ function processREST() {
   
   function addPhoneNumber($dataBlob) {
   	$validation = array();
-  	$validation['phone'] = isValidPhone($dataBlob->phone);
+  	$validation['phone'] = (int)isValidPhone($dataBlob->phone);
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -247,7 +247,7 @@ function processREST() {
   
   function removePhoneNumber($dataBlob) {
   	$validation = array();
-  	$validation['phone'] = isValidPhone($dataBlob->phone);
+  	$validation['phone'] = (int)isValidPhone($dataBlob->phone);
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -263,8 +263,8 @@ function processREST() {
   
   function phonePriority($dataBlob) {
   	$validation = array();
-  	$validation['phone']    = isValidPhone($dataBlob->phone);
-  	$validation['priority'] = isValidPriority($dataBlob->priority);
+  	$validation['phone']    = (int)isValidPhone($dataBlob->phone);
+  	$validation['priority'] = (int)isValidPriority($dataBlob->priority);
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -291,7 +291,7 @@ function processREST() {
   
   function addEmail($dataBlob) {
   	$validation = array();
-  	$validation['email'] = isValidEmail($dataBlob->email);
+  	$validation['email'] = (int)isValidEmail($dataBlob->email);
 
   	if(in_array(false,$validation))
   	  return $validation;
@@ -300,14 +300,14 @@ function processREST() {
     if($user === null)
       return null;
 
-    $user->addEmail($dataBlob->email);
+    $user->addEmailAddress($dataBlob->email);
   	$user->commitEmailData();
   	return $validation;
   }
 
   function removeEmail($dataBlob) {
   	$validation = array();
-  	$validation['email'] = isValidEmail($dataBlob->email);
+  	$validation['email'] = (int)isValidEmail($dataBlob->email);
 
   	if(in_array(false,$validation))
   	  return $validation;
@@ -323,8 +323,8 @@ function processREST() {
   
   function emailPriority($dataBlob) {
   	$validation = array();
-  	$validation['email']    = isValidEmail($dataBlob->email);
-  	$validation['priority'] = isValidPriority($dataBlob->priority);
+  	$validation['email']    = (int)isValidEmail($dataBlob->email);
+  	$validation['priority'] = (int)isValidPriority($dataBlob->priority);
 
   	if(in_array(false,$validation))
   	  return $validation;
@@ -352,10 +352,10 @@ function processREST() {
   
   function addShift($dataBlob) { //TODO
   	$validation = array();
-  	$validation['userID'] = isValidUserLogin($dataBlob->userID);
-  	$validation['date'] = isValidDate($dataBlob->date);
-  	$validation['start'] = isValidTime($dataBlob->start);
-  	$validation['end'] = isValidTime($dataBlob->end);
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['date'] = (int)isValidDate($dataBlob->date);
+  	$validation['start'] = (int)isValidTime($dataBlob->start);
+  	$validation['end'] = (int)isValidTime($dataBlob->end);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -370,10 +370,10 @@ function processREST() {
   }
   function removeShift($datablob){ //TODO
   	$validation = array();
-  	$validation['userID'] = isValidUserLogin($dataBlob->userID);
-  	$validation['date'] = isValidDate($dataBlob->date);
-  	$validation['start'] = isValidTime($dataBlob->start);
-  	$validation['end'] = isValidTime($dataBlob->end);
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['date'] = (int)isValidDate($dataBlob->date);
+  	$validation['start'] = (int)isValidTime($dataBlob->start);
+  	$validation['end'] = (int)isValidTime($dataBlob->end);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -411,13 +411,13 @@ function processREST() {
   }
   function approveSwap($dataBlob){ //TODO
 	$validation = array();
-	$validation['prev'] = isValidUserLogin($dataBlob->prev);
-	$validation['next'] = isValidUserLogin($dataBlob->next);
-	$validation['startDate'] = isValidDate($dataBlob->startDate);
-	$validation['startTime'] = isValidTime($dataBlob->startTime);
-	$validation['endDate'] = isValidDate($dataBlob->endDate);
-	$validation['endTime'] = isValidTime($dataBlob->endTime);
-	$validation['approved'] = isValidBool($dataBlob->approved);
+	$validation['prev'] = (int)isValidUserLogin($dataBlob->prev);
+	$validation['next'] = (int)isValidUserLogin($dataBlob->next);
+	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
+	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
+	$validation['approved'] = (int)isValidBool($dataBlob->approved);
 	
 	if(in_array(false,$validation))
 		return $validation;
@@ -447,9 +447,9 @@ function processREST() {
   }
   function addAvailability($dataBlob){ //TODO
   	$validation = array();
-  	$validation['day'] = isValidDay($dataBlob->day);
-  	$validation['start'] = isValidTime($dataBlob->start);
-  	$validation['end'] = isValidTime($dataBlob->end);
+  	$validation['day'] = (int)isValidDay($dataBlob->day);
+  	$validation['start'] = (int)isValidTime($dataBlob->start);
+  	$validation['end'] = (int)isValidTime($dataBlob->end);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -464,9 +464,9 @@ function processREST() {
   }
   function removeAvailability($dataBlob) { //TODO
   	$validation = array();
-  	$validation['day'] = isValidDay($dataBlob->day);
-  	$validation['start'] = isValidTime($dataBlob->start);
-  	$validation['end'] = isValidTime($dataBlob->end);
+  	$validation['day'] = (int)isValidDay($dataBlob->day);
+  	$validation['start'] = (int)isValidTime($dataBlob->start);
+  	$validation['end'] = (int)isValidTime($dataBlob->end);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -482,10 +482,10 @@ function processREST() {
   
   function releaseShift($dataBlob) { //TODO
   	$validation = array();
-  	$validation['startDate'] = isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = isValidTime($dataBlob->endTime);
+  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
+  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -499,11 +499,11 @@ function processREST() {
   }
   function pickUpShift($requestData) { //TODO
   	$validation = array();
-  	$validation['userID'] = isValidUserLogin($dataBlob->userID);
-  	$validation['startDate'] = isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = isValidTime($dataBlob->endTime);
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
+  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
   	
   	if(in_array(false,$validation))
   		return $validation;
