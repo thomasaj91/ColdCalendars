@@ -66,4 +66,37 @@ function isValidPriority($str) {
 	&& $str !== '0';
 }
 
+function isValidTime($str) {
+	global $MAX_STR_LEN;
+	$parts = explode(':',$str);
+	list($hour,$minute) = explode(':',$str);
+	return strlen($str) <= $MAX_STR_LEN
+	&& preg_match('/^[0-9]+[:][0-9]+$/',$str)
+	&& ((int)$hour >= 0 && (int)$hour <= 23)
+	&& ((int)$minute >= 0 && (int)$minute <= 59);
+}
+
+function isValidDate($str) {
+	global $MAX_STR_LEN;
+	list($year,$month,$day) = explode('-',$str);
+	return strlen($str) <= MAX_STR_LEN
+	&& preg_match('/^[0-9]+[-][0-9]+[-][0-9]$/',$str)
+	&& (int)$year > 0
+	&& ((int)$month > 0 && (int)$month < 12)
+	&& ((int)$day > 0 && (int)$day < 31);
+}
+
+function isValidDay($str) {
+	global $MAX_STR_LEN;
+	return strlen($str) <= MAX_STR_LEN
+	&& preg_match('/^[a-zA-Z]+$/')
+	&& (strcasecmp($str,'Sun') 
+	|| strcasecmp($str,'Mon')
+	|| strcasecmp($str,'Tue')
+	|| strcasecmp($str,'Wed')
+	|| strcasecmp($str,'Thu')
+	|| strcasecmp($str,'Fri')
+	|| strcasecmp($str,'Sat'));
+}
+
 ?>
