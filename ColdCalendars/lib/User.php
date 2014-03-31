@@ -20,8 +20,8 @@ class User {
 	private static $qryInsertPhoneSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
 	private static $qryInsertEmailPrefix = "INSERT INTO Email VALUES ";
 	private static $qryInsertEmailSuffix = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
-	private static $qryDeletePhone       = "DELETE FROM Phone WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
-	private static $qryDeleteEmail       = "DELETE FROM Email WHERE (SELECT PK FROM User WHERE Login = '@PARAM')";
+	private static $qryDeletePhone       = "DELETE FROM Phone WHERE User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')";
+	private static $qryDeleteEmail       = "DELETE FROM Email WHERE User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')";
 	
 	private $login;
 	private $firstName;
@@ -307,7 +307,7 @@ class User {
 			$sql = DB::str_replace_once('@PARAM', $param, $sql);
 		return $sql;
 	}	
-	
+		
 	private function getInsertPhoneSql() {
 		$sql   = self::$qryInsertPhonePrefix;
 		$count = count($this->phone);
@@ -335,7 +335,7 @@ class User {
 	}
 	
 	private function getUpdateUserSql() {
-		$params   = array($this->firstName
+		$params = array($this->firstName
 				,$this->lastName
 				,$this->title
 				,$this->workStatus ? 'True' : 'False'

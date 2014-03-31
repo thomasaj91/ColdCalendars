@@ -80,6 +80,7 @@ function checkUserCreate($login, $expected) {
 	}
 	return $success;
 }
+
 function testUserRemove() {
 	DB::buildDatabase ();
 	$success  = true;
