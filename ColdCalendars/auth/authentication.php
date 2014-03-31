@@ -44,4 +44,15 @@ function updateSessionCommunication($user,$login,$auth) {
 	setcookie('authToken',$auth,$expireTime);
 }
 
+function terminateSessionCommunication($user,$login,$auth) {
+	$user->terminateCommunication();
+	$user->commitUserData();
+	$expireTime = time() - User::getAuthenticationTimeOut();
+// 	setcookie('login',$login,$expireTime);
+// 	setcookie('authToken',$auth,$expireTime);
+ 	setcookie('login','',$expireTime);
+ 	setcookie('authToken','',$expireTime);
+}
+
+
 ?>

@@ -158,7 +158,8 @@ class User {
 		$then    = new DateTime($this->lastCommunication);
 		$now     = new DateTime(date("Y-m-d H:i:s"));
 		$seconds = self::getSeconds($now->diff($then,true));
-		return $this->authToken === $challengeToken
+		return $this->authToken !== null
+		    && $this->authToken === $challengeToken
 		    && $seconds <= self::$AUTHENTICATION_TIMEOUT;
 	}
 	
@@ -275,6 +276,12 @@ class User {
 	public function getAuthToken() {
 		return $this->authToken;	
 	}
+
+	public function terminateCommunication() {
+	    $this->authToken = null;
+	    $this->aknowledgeCommunication();
+	}
+	
 	
 	public function aknowledgeCommunication() {
 		$this->lastCommunication = DB::getSystemTime();
@@ -302,6 +309,7 @@ class User {
 			 	         ,DB::escapeString($this->authToken)
 				         ,$this->lastCommunication
 		                 );
+		
 		$sql = self::$qryInsertUser;
 		foreach($params as $param)
 			$sql = DB::str_replace_once('@PARAM', $param, $sql);

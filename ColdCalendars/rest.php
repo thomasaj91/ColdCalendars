@@ -75,6 +75,7 @@ function processREST() {
   	case 'RequestTimeOff':     return requestTimeOff($requestData);		//TODO sprint 3
   	case 'ReleaseShift':       return releaseShift($requestData);
   	case 'PickUpShift':        return pickUpShift($requestData);
+  	case 'LogoutUser':         return logoutUser();
   	default:                   return $INVALID;
   }
 }  
@@ -514,6 +515,14 @@ function processREST() {
   	
   	$shift->pickUpShift($dataBlob->userID,$dataBlob->startDate,$dataBlob->startTime,$dataBlob->endDate,$dataBlob->endTime);
   	$shift->commitShiftData();
+  }
+
+  function logoutUser() {
+  	$user = getUserObj($_COOKIE['login']);
+  	if($user === null)
+  		return null;
+  	terminateSessionCommunication($user,$_COOKIE['login'],$_COOKIE['authToken']);
+  	return 1;
   }
   
   function getUserObj($login) {

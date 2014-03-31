@@ -12,7 +12,7 @@ function loadContactsPage() {
       });
 	  
 	  $("#Logout").click(function () {
-		  window.location.href = "home.php";
+		  logUserOut();
 	  });
 	  
 	  $("#Delete_User").click(function() {
@@ -295,6 +295,13 @@ function loadUser()
   
   function callback(param) {
 	  alert(param);
+  }
+  
+  function logUserOut() {
+    var obj = new Object();
+    obj.requestType = "LogoutUser";
+    $retJson = ajaxGetJSON(obj);
+    window.location.href = "home.php";
   }
   
   $(document).ready(function() {
