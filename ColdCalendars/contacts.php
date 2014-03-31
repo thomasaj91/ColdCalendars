@@ -14,8 +14,8 @@ assertValidUserPageAccess();
   <script src="js/contacts.js"></script> 
 </head>
 <body>
-
-<p>YOUR SCHEDULE</p>
+<button id='Logout'>Logout</button>
+<div id='Schedule'></div>
 <div id="Current_User_Info">
 </div>
 <br>
@@ -27,46 +27,61 @@ assertValidUserPageAccess();
 <div  id="Create_User_Dialog" title="Create new user">
   <p class="validateTips">All form fields are required.</p>
     <form>
-<fieldset>
-	<label for="login">Login</label>
-	<input id="Login">
-	<label for="passwd">Password</label>
-	<input type="password" id="Passwd">
-	<label for="firstName">First Name</label>
-	<input id="First_Name">
-	<label for="lastName">Last Name</label>
-	<input id="Last_Name">
-	<label for="phone">Phone #</label>
-	<input id="Phone">
-	<label for="email">Email</label>
-	<input id="Email">
-	<label for="vacationDays">Vacation Days</label>
-	<input id="Vacation_Days">
-</fieldset>
+		<table>
+			<tr>
+				<td><label for="login">Login</label></td>
+				<td><input id="Login"></td>
+			</tr>
+			<tr>
+				<td><label for="passwd">Password</label></td>
+				<td><input type="password" id="Passwd"></td>
+			</tr>
+			<tr>
+				<td><label for="firstName">First Name</label></td>
+				<td><input id="First_Name"></td>
+			</tr>
+			<tr>
+				<td><label for="lastName">Last Name</label></td>
+				<td><input id="Last_Name"></td>
+			</tr>
+			<tr>
+				<td><label for="phone">Phone #</label></td>
+				<td><input id="Phone"></td>
+			</tr>
+			<tr>
+				<td><label for="email">Email</label></td>
+				<td><input id="Email"></td>
+			</tr>
+			<tr>
+				<td><label for="vacationDays">Vacation Days</label></td>
+				<td><input id="Vacation_Days"></td>
+			</tr>
+		</table>
+		
+		<div id="Title_Choices">
+			<input type="radio" id="Title1" name="Title" value="Admin"><label for="radio1">Admin</label>
+			<input type="radio" id="Title2" name="Title" value="Employee"><label for="radio2">Employee</label>
+			<input type="radio" id="Title3" name="Title" value="Manager"><label for="radio3">Manager</label>
+		</div>
+		
+		<div id="Work_Status">
+			<input type="radio" id="Work_Status" name="WorkStatus" value="False"><label for="radio4">Part Time</label>
+			<input type="radio" id="Work_Status" name="WorkStatus" value="True"><label for="radio5">Full Time</label>
+		</div>
 
-<div id="Title_Choices">
-	<input type="radio" id="Title1" name="Title" value="Admin"><label for="radio1">Admin</label>
-	<input type="radio" id="Title2" name="Title" value="Employee"><label for="radio2">Employee</label>
-	<input type="radio" id="Title3" name="Title" value="Manager"><label for="radio3">Manager</label>
-</div>
-
-<div id="Work_Status">
-	<input type="radio" id="Work_Status" name="WorkStatus" value="False"><label for="radio4">Part Time</label>
-	<input type="radio" id="Work_Status" name="WorkStatus" value="True"><label for="radio5">Full Time</label>
-</div>
-
-</form>
+	</form>
 </div>
 
 <div  id="Delete_User_Dialog" title="Delete existing user">
-<p class="validateTips">All form fields are required.</p>
-<form>
-<fieldset>
-	<label for="Deletelogin">Login</label>
-	<input id="DeleteLogin">
-</fieldset>
-
-</form>
+	<p class="validateTips">All form fields are required.</p>
+		<form>
+			<table>
+				<tr>
+					<td><label for="Deletelogin">Login</label></td>
+					<td><input id="DeleteLogin"></td>
+				</tr>
+			</table>
+		</form>
 </div>
 
 <div id="Contact_List">
