@@ -513,7 +513,7 @@ function processREST() {
   	if($user === null)
   		return null;
   	
-  	$shift->pickUpShift($dataBlob->userID,$dataBlob->startDate,$dataBlob->startTime,$dataBlob->endDate,$dataBlob->endTime);
+  	$shift->pickUpShift($dataBlob->userID);
   	$shift->commitShiftData();
   }
 
