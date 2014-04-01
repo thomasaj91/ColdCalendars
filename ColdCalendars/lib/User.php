@@ -309,11 +309,11 @@ class User {
 			 	         ,DB::escapeString($this->authToken)
 				         ,$this->lastCommunication
 		                 );
-		
-		$sql = self::$qryInsertUser;
-		foreach($params as $param)
-			$sql = DB::str_replace_once('@PARAM', $param, $sql);
-		return $sql;
+		return DB::injectParamaters($params, self::$qryInsertUser);
+// 		$sql = self::$qryInsertUser;
+// 		foreach($params as $param)
+// 			$sql = DB::str_replace_once('@PARAM', $param, $sql);
+// 		return $sql;
 	}	
 		
 	private function getInsertPhoneSql() {
