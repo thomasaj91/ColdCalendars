@@ -304,6 +304,13 @@ function loadUser()
 	  alert(param);
   }
   
+  function logUserOut() {
+	    var obj = new Object();
+	    obj.requestType = "LogoutUser";
+	    $retJson = ajaxGetJSON(obj);
+	    window.location.href = "home.php";
+	  }
+  
   $(document).ready(function() {
 	  setTimeout(loadContactsPage,1);
   });
