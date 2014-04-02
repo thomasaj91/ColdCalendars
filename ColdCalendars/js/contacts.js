@@ -12,7 +12,8 @@ function loadContactsPage() {
       });
 	  
 	  $("#Logout").click(function () {
-		  window.location.href = "home.php";
+		  logUserOut();
+		  //window.location.href = "home.php";
 	  });
 	  
 	  $("#Delete_User").click(function() {
