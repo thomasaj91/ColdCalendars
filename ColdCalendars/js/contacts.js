@@ -12,7 +12,7 @@ function loadContactsPage() {
       });
 	  
 	  $("#Logout").click(function () {
-		  logUserOut();
+		  window.location.href = "home.php";
 	  });
 	  
 	  $("#Delete_User").click(function() {
@@ -20,7 +20,7 @@ function loadContactsPage() {
       });
 	  
 	  $("#Add_Phone_Button").one('click', function() {
-		  var newPhone = $('<input>').insertAfter('#Current_User_Info > div > .phoneList').attr('id','New_Number');
+		  var newPhone = $('<input>').insertAfter('#Current_User_Info > div > table > tbody > tr > td > .phoneList').attr('id','New_Number');
 		  $('<button>').insertAfter(newPhone).text('Submit').attr('id','Submit_Phone');
       });
 	  
@@ -50,7 +50,7 @@ function loadContactsPage() {
       });
 	  
 	  $("#Add_Email_Button").one('click', function() {
-		  var newEmail = $('<input>').insertAfter('#Current_User_Info > div > .emailList').attr('id','New_Email');
+		  var newEmail = $('<input>').insertAfter('#Current_User_Info > div > table > tbody > tr > td > .emailList').attr('id','New_Email');
 		  $('<button>').insertAfter(newEmail).text('Submit').attr('id','Submit_Email');
       });
 	  
@@ -190,38 +190,6 @@ function loadUser()
 				async: false
 				});
 		var list = jQuery.parseJSON(retVal.responseText); 
-		
-		//*********************************************************
-		var days  = ['SUN','MON','TUES','WED','THURS','FRI','SAT'];
-		var elem1  = $('#Schedule').empty();
-		var table = $('<table>').appendTo(elem1);
-		
-		var element = '<tr><td></td>';
-		for(var i in days)
-		{
-			element += '<td>';
-			element += days[i];
-			element += '</td>';
-		}
-		
-		element+='</tr>';
-		table.append(element);
-		
-		for(var e in list){
-			element = '<tr><td>';
-			var info1   = getInfoByLogin(list[e]);
-			element += info1.firstName + ' ' + info1.lastName + '</td>';
-			for(var i in days)
-			{
-				element += '<td>';
-				element += 'X';
-				element += '</td>';
-			}
-			element += '</tr>';
-			table.append(element);			
-		}
-		
-		//*********************************************************
 
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
@@ -238,27 +206,66 @@ function loadUser()
 		$('#'+parseCookie().login+'_h3').remove().appendTo($('#Current_User_Info'));
 		$('#'+parseCookie().login+'_div').remove().appendTo($('#Current_User_Info'));
 		
-		var addPhoneButton = $('<button>').text('Add Phone Number').attr('id','Add_Phone_Button');
-		$('#Current_User_Info > div > .phoneList').prepend(addPhoneButton);
-		
-		var addEmailButton = $('<button>').text('Add Email Address').attr('id','Add_Email_Button');
-		$('#Current_User_Info > div > .emailList').prepend(addEmailButton);
+		appendAddRemovePhoneButton();
+		appendAddRemoveEmailButton();
 		
 		$("#Contact_List").accordion();
   }
+
+  function appendAddRemovePhoneButton() {	  
+	  //'+' button
+	  var addButtonData = $('<td>').appendTo('#Phone_Header');	  
+	  var addPhoneButton = $('<button>').text('+').attr('id','Add_Phone_Button').appendTo(addButtonData);
+	  
+	  //'-' button
+	  var removeButtonData = $('<td>').appendTo('#Phone_Header');
+	  var removePhoneButton = $('<button>').text('-').attr('id','Remove_Phone_Button').appendTo(removeButtonData);
+  }
   
+  function appendAddRemoveEmailButton() {
+	  //'+' button
+	  var addButtonData = $('<td>').appendTo('#Email_Header');	  
+	  var addEmailButton = $('<button>').text('+').attr('id','Add_Email_Button').appendTo(addButtonData);
+	  
+	  //'-' button
+	  var removeButtonData = $('<td>').appendTo('#Email_Header');
+	  var removeEmailButton = $('<button>').text('-').attr('id','Remove_Email_Button').appendTo(removeButtonData);
+  }
+
   function appendUserDataTo(elem,info,phones,emails,login) {
 	  $('<h3>').appendTo(elem).text(info.lastName + ', ' + info.firstName).attr('id',login+'_h3');
 	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
-	  $('<p>').appendTo(div).text('Title: ' + info.title)
-	  $('<p>').appendTo(div).text('Work Status: '+ (info.workStatus ? 'FT' : 'PT'));
-	  var li1 = $('<ul>').appendTo(div).attr('class','phoneList');
-	  var li2 = $('<ul>').appendTo(div).attr('class','emailList');
+	  
+	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
+	  var userRow = $('<tr>');
+	  
+	  //Format user title/work status
+	  var employeeData = $('<td>').appendTo(userRow).attr('valign','top');
+	  $('<p>').appendTo(employeeData).text('Title: ' + info.title)
+	  $('<p>').appendTo(employeeData).text('Work Status: '+ (info.workStatus ? 'FT' : 'PT'));
+	  
+	  //Format user phone list
+	  var phoneData = $('<td>').appendTo(userRow).attr('valign','top');
+	  var phoneHeaderTable = $('<table>').appendTo(phoneData);
+	  var phoneHeaderTableRow = $('<tr>').appendTo(phoneHeaderTable).attr('id','Phone_Header');
+	  var phoneHeaderTableData = $('<td>').appendTo(phoneHeaderTableRow);
+	  var phoneHeader = $('<p>').appendTo(phoneHeaderTableData).text('Phone');
+	  var li1 = $('<ul>').insertAfter(phoneHeaderTable).attr('class','phoneList');
 	  for(var e in phones)
 		  $('<li>').appendTo(li1).text(phones[e]);
+	  
+	  //Format user email list
+	  var emailData = $('<td>').attr('valign','top');
+	  var emailHeaderTable = $('<table>').appendTo(emailData);
+	  var emailHeaderTableRow = $('<tr>').appendTo(emailHeaderTable).attr('id','Email_Header');
+	  var emailHeaderTableData = $('<td>').appendTo(emailHeaderTableRow);
+	  var emailHeader = $('<p>').appendTo(emailHeaderTableData).text('Email');
+	  var li2 = $('<ul>').insertAfter(emailHeaderTable).attr('class','emailList');
 	  for(var a in emails)
 		  $('<li>').appendTo(li2).text(emails[a]);
+	  userRow.append(emailData);
 	  
+	  table.append(userRow);  
   }
   
   function getInfoByLogin(login) {
@@ -295,13 +302,6 @@ function loadUser()
   
   function callback(param) {
 	  alert(param);
-  }
-  
-  function logUserOut() {
-    var obj = new Object();
-    obj.requestType = "LogoutUser";
-    $retJson = ajaxGetJSON(obj);
-    window.location.href = "home.php";
   }
   
   $(document).ready(function() {
