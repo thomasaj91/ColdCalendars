@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href='fullcalendar/fullcalendar.css' rel='stylesheet' />
-<link href='fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
-<script src='lib/jquery.min.js'></script>
-<script src='lib/jquery-ui.custom.min.js'></script>
-<script src='fullcalendar/fullcalendar.min.js'></script>
+<link href='../fullcalendar/fullcalendar.css' rel='stylesheet' />
+<link href='../fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src='../fullcalendar/fullcalendar.min.js'></script>
 <script>
 
 	$(document).ready(function() {
-	
-		var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
 		
 		$('#calendar').fullCalendar({
 			header: {
@@ -21,53 +17,21 @@
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
-			editable: true,
-			events: [
-				{
-					title: 'All Day Event',
-					start: new Date(y, m, 1)
-				},
-				{
-					title: 'Long Event',
-					start: new Date(y, m, d-5),
-					end: new Date(y, m, d-2)
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d-3, 16, 0),
-					allDay: false
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d+4, 16, 0),
-					allDay: false
-				},
-				{
-					title: 'Meeting',
-					start: new Date(y, m, d, 10, 30),
-					allDay: false
-				},
-				{
-					title: 'Lunch',
-					start: new Date(y, m, d, 12, 0),
-					end: new Date(y, m, d, 14, 0),
-					allDay: false
-				},
-				{
-					title: 'Birthday Party',
-					start: new Date(y, m, d+1, 19, 0),
-					end: new Date(y, m, d+1, 22, 30),
-					allDay: false
-				},
-				{
-					title: 'Click for Google',
-					start: new Date(y, m, 28),
-					end: new Date(y, m, 29),
-					url: 'http://google.com/'
-				}
-			]
+			selectable: true,
+			selectHelper: true,
+	        dayClick: function (dateSelected, allDay, jsEvent, view) {
+		            $("#Add_Shift").dialog(
+		            {
+		    	   		height: 225,
+		    	   		width: 350,
+		    	   		modal: true,
+		    	   		resizable: false,
+		    	   		draggable: true,
+		    	   		buttons: { "Add Shift": function() { alert('wow, only took 3 hours') }, 
+		    		   		  		"Cancel": function() { $(this).dialog("close"); } }
+	            });
+	        },
+		    editable: true
 		});
 		
 	});
@@ -90,6 +54,22 @@
 </style>
 </head>
 <body>
-<div id='calendar'></div>
+	<div id='Add_Shift' title='Add Shift' style='display:none'>
+		<table>
+			<tr>
+				<td><label>Employee Name</label></td>
+				<td><input id='Employee_Name' type='text'></td>
+			</tr>
+			<tr>
+				<td><label>Shift Start Time</label></td>
+				<td><input id='Shift_Start' type='text'></td>
+			</tr>
+			<tr>
+				<td><label>Shift End Time</label></td>
+				<td><input id='Shift_End' type='text'></td>
+			</tr>
+		</table>	 
+	</div>
+	<div id='calendar'></div>
 </body>
 </html>
