@@ -4,9 +4,12 @@
 <link href='../fullcalendar/fullcalendar.css' rel='stylesheet' />
 <link href='../fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="../css/jquery.timepicker.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src='../fullcalendar/fullcalendar.min.js'></script>
+<script src='../js/jquery.timepicker.js'></script>
+<script src='../js/jquery.timepicker.min.js'></script>
 <script>
 
 	$(document).ready(function() {
@@ -22,7 +25,7 @@
 	        dayClick: function (dateSelected, allDay, jsEvent, view) {
 		            $("#Add_Shift").dialog(
 		            {
-		    	   		height: 225,
+		    	   		height: 300,
 		    	   		width: 350,
 		    	   		modal: true,
 		    	   		resizable: false,
@@ -33,6 +36,10 @@
 	        },
 		    editable: true
 		});
+
+		$('#Shift_Start').timepicker({ 'scrollDefaultNow': true });
+
+		$('#Shift_End').timepicker({ 'scrollDefaultNow': true });
 		
 	});
 
@@ -62,11 +69,11 @@
 			</tr>
 			<tr>
 				<td><label>Shift Start Time</label></td>
-				<td><input id='Shift_Start' type='text'></td>
+				<td><p><input id='Shift_Start' type='text' class='time' /></p></td>
 			</tr>
 			<tr>
 				<td><label>Shift End Time</label></td>
-				<td><input id='Shift_End' type='text'></td>
+				<td><p><input id='Shift_End' type='text' class='time' /></p></td>
 			</tr>
 		</table>	 
 	</div>
