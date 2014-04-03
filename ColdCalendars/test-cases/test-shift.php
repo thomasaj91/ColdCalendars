@@ -22,12 +22,14 @@ require_once (__DIR__ . '/../DB.php');
   $shift = Shift::load( $login, $start, $end);
   var_dump($shift);
   
+  $shift->approve();
+  $shift = Shift::load( $savior, $start, $end);
+  var_dump($shift);
   
-  /*
-  $conn = DB::getNewConnection();
-  $res = DB::query($conn, 'SELECT * FROM Shift');
-  var_dump($res);
-  $res = DB::query($conn, 'SELECT * FROM Swap');
-  var_dump($res);
-  */
+  /**/
+  sleep(2);
+  $conn  = DB::getNewConnection();
+  var_dump(DB::query($conn, 'SELECT * FROM Shift'));
+  var_dump(DB::query($conn, 'SELECT * FROM Swap' ));
+  /**/
 ?>

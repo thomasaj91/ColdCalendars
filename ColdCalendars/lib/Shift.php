@@ -52,6 +52,20 @@ WHERE Shift_FK IN
 AND Prev = 
 (SELECT PK FROM User WHERE Login = '@PARAM')";
 		
+	private static $qryInsertNewOwner = "
+set @pk :=
+ (SELECT PK FROM Shift
+  JOIN Swap
+  ON   Swap.Shift_FK = Shift.PK
+  WHERE Shift.Start_time = '@PARAM'
+  AND   Shift.End_time   = '@PARAM'
+  AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+  LIMIT 1);
+INSERT INTO Swap VALUES
+(@pk,
+ (SELECT PK FROM User WHERE Login = '@PARAM')
+ ,NULL,False,NULL,NOW());";
+	
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -75,6 +89,7 @@ AND Prev =
 		else { //load shift
 			$conn    = DB::getNewConnection();
 			$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
+			var_dump($results);
 			$conn->close();
 			$shiftData       = $results[0];
 			$this->owner     = $login;		
@@ -129,6 +144,8 @@ AND Prev =
 	
 	/* Set DB.Released = True  */
 	public function relsease() {
+		if($this->isReleased())
+			return;
 		$this->released = true;
 		$this->update();
 	}
@@ -143,6 +160,8 @@ AND Prev =
 
 	/* Set DB.approved = False */	
 	public function reject() {
+		if(!$this->isPickedUp())
+			return;
 		$this->approved = false;
 		$this->update();
 	}
@@ -151,6 +170,8 @@ AND Prev =
 	 * Create new Swap Record for new owner
 	 */	
 	public function approve() {
+		if(!$this->isPickedUp())
+			return;
 	  $this->approved = true;
 	  $this->update();
 	  $this->transferResponsiblity();
@@ -169,6 +190,21 @@ AND Prev =
 		$res  = DB::execute($conn, $sql);
 		$conn->close();
 	}
-
+	
+	private function transferResponsiblity() {
+		$params = array($this->startTime
+				       ,$this->endTime
+			           ,$this->owner
+				       ,$this->pickuper);
+		$sql  = DB::injectParamaters($params, self::$qryInsertNewOwner);
+		$conn = DB::getNewConnection();
+		$res  = DB::execute($conn, $sql);
+		$conn->close();
+		/* Maybe don't do this and mark the object as dirty? */
+		$this->owner    = $this->pickuper;
+		$this->pickuper = null;
+		$this->released = false;
+		$this->approved = null;
+	}
 }
 ?>
