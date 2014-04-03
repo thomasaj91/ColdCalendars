@@ -66,6 +66,16 @@ INSERT INTO Swap VALUES
  (SELECT PK FROM User WHERE Login = '@PARAM')
  ,NULL,False,NULL,NOW());";
 	
+	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
+         JOIN Swap
+         ON   Swap.Shift_FK = Shift.PK
+         WHERE Shift.Start_time = '@PARAM'
+         AND   Shift.End_time   = '@PARAM'
+         AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+         LIMIT 1);
+    DELETE FROM Swap WHERE Shift_FK = @pk;
+    DELETE FROM Shift WHERE PK = @pk;";
+	
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -87,9 +97,10 @@ INSERT INTO Swap VALUES
 			return;
 		}
 		else { //load shift
+			if(!self::exists($login, $start, $end))
+				throw new Exception("Shift Does Not Exist");
 			$conn    = DB::getNewConnection();
 			$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
-			var_dump($results);
 			$conn->close();
 			$shiftData       = $results[0];
 			$this->owner     = $login;		
@@ -109,6 +120,19 @@ INSERT INTO Swap VALUES
       return new Shift($login, $start, $end, false);
 	}
 
+	public static function delete($login,$start,$end) {
+		$sql  = DB::injectParamaters(array($start,$end,$login), self::$qryDeleteShift);
+		$conn = DB::getNewConnection();
+		$res  = DB::execute($conn, $sql);
+		$conn->close();
+	}
+
+	public static function exists($login,$start,$end) {
+		$conn    = DB::getNewConnection();
+		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
+		return count($results) !== 0;
+	}
+	
 	public function getStartTime() {
 		return $this->startTime;
 	}
@@ -151,7 +175,7 @@ INSERT INTO Swap VALUES
 	}
 	
 	/* Set DB.Next = PK of $login */	
-	public function pickUp($login) {
+	public function pickup($login) {
 	  if(!$this->isReleased())
 	  	return;
 	  $this->pickuper = $login;
@@ -205,6 +229,10 @@ INSERT INTO Swap VALUES
 		$this->pickuper = null;
 		$this->released = false;
 		$this->approved = null;
+	}
+	
+	public static function toDateString($date, $time) {
+		return "$date $time";
 	}
 }
 ?>

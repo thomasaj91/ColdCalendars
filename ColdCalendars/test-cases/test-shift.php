@@ -25,6 +25,12 @@ require_once (__DIR__ . '/../DB.php');
   $shift->approve();
   $shift = Shift::load( $savior, $start, $end);
   var_dump($shift);
+
+  Shift::delete( $login, $start, $end);
+  try { $shift = Shift::load( $savior, $start, $end); }
+  catch(Exception $e) { echo "good,got error...\n".$e->getMessage(); }
+  var_dump($shift);
+  
   
   /**/
   sleep(2);
