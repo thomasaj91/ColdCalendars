@@ -50,6 +50,16 @@
 		    		   	"Cancel": function() { $(this).dialog("close"); } }
 	            });
 	        },
+	        eventClick: function(){
+	            $('#Shift_Options').dialog(
+			            {
+			    	   		height: 175,
+			    	   		width: 175,
+			    	   		modal: true,
+			    	   		resizable: false,
+			    	   		draggable: true
+		            });
+	        },
 		    editable: true
 		});
 
@@ -88,6 +98,19 @@
 </style>
 </head>
 <body>
+	<div id='Shift_Options' title='Shift Options' style='display:none'>
+		<table>
+			<tr>
+				<td><button>Release Shift</button></td>
+			</tr>
+			<tr>
+				<td><button>Pickup Shift</button></td>
+			</tr>
+			<tr>
+				<td><button>Delete Shift</button></td>
+			</tr>
+		</table>
+	</div>
 	<div id='Add_Shift' title='Add Shift' style='display:none'>
 		<table>
 			<tr>
