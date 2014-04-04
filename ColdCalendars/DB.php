@@ -25,7 +25,8 @@ class DB {
 		$success = $conn->multi_query ( $str );
 		if ($success === false)
 			throw new Exception ( "Error querying DB with SQL: $str\n" . "\nerrorno: " . $conn->errno . "\nerror: " . $conn->error );
-	}
+    }
+    
 	public static function escapeString($str) {
 		$tmp = self::getNewConnection ();
 		$out = $tmp->real_escape_string ( $str );

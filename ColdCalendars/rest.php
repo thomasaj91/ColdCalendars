@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 require_once(__DIR__.'/lib/User.php');
+require_once(__DIR__.'/lib/Shift.php');
 require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
 
@@ -45,17 +46,17 @@ function processREST() {
   	/* Manager only (goes here) */
   	case 'AddToSchedule':      return addShift($requestData);
   	case 'RemoveFromSchedule': return removeShift($requestData);
+  	case 'ViewQueue':          return viewQueue($requestData);
+  	case 'DecideSwap':         return decideSwap($requestData);
+  	case 'DecideVacation':     return approveVacation($requestData);	//TODO sprint 3
+  	case 'DecideTimeOff':      return approveTimeOff($requestData);		//TODO sprint 3
+  	case 'ReportExport';       return export($requestData);				//TODO sprint 3
+  	case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
   	case 'ViewSchedule':       return viewSchedule($requestData);
   	case 'ViewTemplate':       return viewTemplate($requestData);		//TODO sprint 3
   	case 'CreateTemplate':     return createTemplate($requestData);		//TODO sprint 3
   	case 'LoadTemplate':       return loadTemplate($requestData);		//TODO sprint 3
   	case 'RemoveTemplate':     return removeTemplate($requestData);		//TODO sprint 3
-  	case 'ViewQueue':          return viewQueue($requestData);
-  	case 'DecideSwap':         return approveSwap($requestData);
-  	case 'DecideVacation':     return approveVacation($requestData);	//TODO sprint 3
-  	case 'DecideTimeOff':      return approveTimeOff($requestData);		//TODO sprint 3
-  	case 'ReportExport';       return export($requestData);				//TODO sprint 3
-  	case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
   	/* All Users */
   	case 'UserInfo':           return getUserInfo($requestData);
   	case 'UserPhone':          return getPhoneNumbers($requestData);
@@ -67,6 +68,7 @@ function processREST() {
   	case 'EmailPriority':      return emailPriority($requestData); 		//TODO
   	case 'RemoveEmail':        return removeEmail($requestData);
   	case 'UserList':           return userList($requestData);
+  	case 'UserListInfo':       return userListInfo($requestData);
   	case 'GetUserAvailability':return userAvailability($requestData);
   	case 'AddAvailability':    return addAvailability($requestData);
   	case 'RemoveAvailability': return removeAvailability($requestData);
@@ -351,25 +353,34 @@ function processREST() {
 	return $list;
   }
   
-  function addShift($dataBlob) { //TODO
+  function userListInfo($dataBlob) {
+  	$list;
+  
+  	try {
+  		$list = User::getAllNames();
+  	}
+  	catch (Exception $e) {
+  		return null;
+  	}
+  	return $list;
+  }
+  
+  function addShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['date'] = (int)isValidDate($dataBlob->date);
-  	$validation['start'] = (int)isValidTime($dataBlob->start);
-  	$validation['end'] = (int)isValidTime($dataBlob->end);
+  	$validation['date']   = (int)isValidDate($dataBlob->date);
+  	$validation['start']  = (int)isValidTime($dataBlob->start);
+  	$validation['end']    = (int)isValidTime($dataBlob->end);
   	
   	if(in_array(false,$validation))
   		return $validation;
-  	
-  	$user = getUserObj($_COOKIE['login']);
-  	if($user === null)
-  		return null;
-  	
-  	$shift->addShift($dataBlob->userID,$dataBlob->shift,$dataBlob->start,$dataBlob->end);
-  	$shift->commitShiftData();
+
+  	/* maybe pass in correctly formatted start & end times (no date prefix) */
+  	Shift::create($dataBlob->userID, Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end));
   	return $validation;
   }
-  function removeShift($datablob){ //TODO
+  
+  function removeShift($datablob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
   	$validation['date'] = (int)isValidDate($dataBlob->date);
@@ -379,17 +390,62 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   	 
-  	$user = getUserObj($_COOKIE['login']);
-  	if($user === null)
-  		return null;
-  	 
-  	$shift->removeShift($dataBlob->userID,$dataBlob->date,$dataBlob->start,$dataBlob->end);
-  	$shift->commitShiftData();
+  	Shift::delete($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end));
   	return $validation;
   }
+  
+  function decideSwap($dataBlob) {
+	$validation = array();
+	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+	$validation['endDate']   = (int)isValidDate($dataBlob->endDate);
+	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+	$validation['approved']  = (int)isValidTime($dataBlob->approved);
+	
+	if(in_array(false,$validation))
+		return $validation;
+	 
+	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+	if($dataBlob->approved)
+      $shift->approve();
+    else
+   	  $shift->reject();
+	return $validation;
+  }
+
+  function releaseShift($dataBlob) {
+  	$validation = array();
+  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
+  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
+  
+  	if(in_array(false,$validation))
+  		return $validation;
+  
+  	Shift::load($_COOKIE['login'], Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+  	$shift->release();
+  	return $validation;
+  }
+  
+  function pickUpShift($requestData) {
+  	$validation = array();
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
+  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
+  	 
+  	if(in_array(false,$validation))
+  		return $validation;
+  
+  	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+  	$shift->pickup($_COOKIE['login']);
+  }
+
   function viewSchedule($dataBlob){ //TODO
   	$list;
-  	
+  	 
   	try {
   		$list = Shift::getAllShifts($start,$end); //pass a start time and end time to define the range of shifts that should be passed back
   	}
@@ -400,38 +456,16 @@ function processREST() {
   }
   
   function viewQueue($dataBlob){ //TODO
-	$list;
-	
-	try {
-		$list = Queue::getQueue(); // not sure what to do with this
-	}
-	catch (Exception $e) {
-		return null;
-	}
-	return $list;
-  }
-  function approveSwap($dataBlob){ //TODO
-	$validation = array();
-	$validation['prev'] = (int)isValidUserLogin($dataBlob->prev);
-	$validation['next'] = (int)isValidUserLogin($dataBlob->next);
-	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
-	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
-	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
-	$validation['approved'] = (int)isValidBool($dataBlob->approved);
-	
-	if(in_array(false,$validation))
-		return $validation;
-	 
-	$user = getUserObj($_COOKIE['login']);
-	if($user === null)
-		return null;
-	 
-	$swap->approveSwap($dataBlob->prev,$dataBlob->next,$dataBlob->startDate,$dataBlob->startTime,$dataBlob->endDate,$dataBlob->endTime,$dataBlob->approved);
-	$swap->commitSwapData();
-	return $validation;
-  }
+  	$list;
   
+  	try {
+  		$list = Queue::getQueue(); // not sure what to do with this
+  	}
+  	catch (Exception $e) {
+  		return null;
+  	}
+  	return $list;
+  }
 
   function userAvailability($dataBlob) { //TODO
   	//$validation = array();
@@ -479,42 +513,6 @@ function processREST() {
   	$user->removeAvailability($dataBlob->day,$dataBlob->start,$dataBlob->end);
   	$user->commitAvailabilityData();
   	return $validation;
-  }
-  
-  function releaseShift($dataBlob) { //TODO
-  	$validation = array();
-  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
-  	
-  	if(in_array(false,$validation))
-  		return $validation;
-  	
-  	$user = getUserObj($_COOKIE['login']);
-  	if($user === null)
-  		return null;
-  	
-  	$shift->releaseShift($dataBlob->startDate,$dataBlob->startTime,$dataBlob->endDate,$dataBlob->endTime);
-  	$shift->commitShiftData();
-  }
-  function pickUpShift($requestData) { //TODO
-  	$validation = array();
-  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
-  	
-  	if(in_array(false,$validation))
-  		return $validation;
-  	 
-  	$user = getUserObj($_COOKIE['login']);
-  	if($user === null)
-  		return null;
-  	
-  	$shift->pickUpShift($dataBlob->userID);
-  	$shift->commitShiftData();
   }
 
   function logoutUser() {

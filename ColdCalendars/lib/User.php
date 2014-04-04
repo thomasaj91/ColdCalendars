@@ -10,6 +10,7 @@ class User {
 	private static $AUTHENTICATION_TIMEOUT = 3600;
 	
 	private static $qryUserList          = "SELECT Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
+	private static $qryUserListInfo      = "SELECT CONCAT(First, \" \", Last), Login FROM User WHERE LegacyUser = false ORDER BY Last, First, Login";
 	private static $qryUserExists        = "SELECT EXISTS(SELECT 1 FROM User WHERE Login = '@PARAM' LIMIT 1)";
 	private static $qryUserData          = "SELECT usr.Login, usr.First, usr.Last, typ.Title, usr.PTFT, usr.Vacation, usr.LegacyUser, usr.Salt, usr.Hash, usr.Auth, usr.Time FROM User AS usr JOIN UserType AS typ	ON usr.Title = typ.PK WHERE usr.Login = '@PARAM' LIMIT 1";
 	private static $qryUserPhone         = "SELECT phn.Number,  phn.Priority FROM Phone AS phn JOIN User AS usr ON phn.User_FK = usr.PK WHERE usr.Login = '@PARAM' ORDER BY phn.Priority";
@@ -382,6 +383,11 @@ class User {
     	for($i=0; $i<$rows; $i++)
     		$out[$i] = $results[$i][0];
     	return $out;
+    }
+    
+     public static function getAllNames() {
+    	$conn    = DB::getNewConnection();
+    	return DB::query($conn,self::$qryUserListInfo);
     }
     
     private static function isValidVacationDays($days) {

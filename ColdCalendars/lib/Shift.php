@@ -52,6 +52,30 @@ WHERE Shift_FK IN
 AND Prev = 
 (SELECT PK FROM User WHERE Login = '@PARAM')";
 		
+	private static $qryInsertNewOwner = "
+set @pk :=
+ (SELECT PK FROM Shift
+  JOIN Swap
+  ON   Swap.Shift_FK = Shift.PK
+  WHERE Shift.Start_time = '@PARAM'
+  AND   Shift.End_time   = '@PARAM'
+  AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+  LIMIT 1);
+INSERT INTO Swap VALUES
+(@pk,
+ (SELECT PK FROM User WHERE Login = '@PARAM')
+ ,NULL,False,NULL,NOW());";
+	
+	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
+         JOIN Swap
+         ON   Swap.Shift_FK = Shift.PK
+         WHERE Shift.Start_time = '@PARAM'
+         AND   Shift.End_time   = '@PARAM'
+         AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+         LIMIT 1);
+    DELETE FROM Swap WHERE Shift_FK = @pk;
+    DELETE FROM Shift WHERE PK = @pk;";
+	
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -73,6 +97,8 @@ AND Prev =
 			return;
 		}
 		else { //load shift
+			if(!self::exists($login, $start, $end))
+				throw new Exception("Shift Does Not Exist");
 			$conn    = DB::getNewConnection();
 			$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
 			$conn->close();
@@ -94,6 +120,19 @@ AND Prev =
       return new Shift($login, $start, $end, false);
 	}
 
+	public static function delete($login,$start,$end) {
+		$sql  = DB::injectParamaters(array($start,$end,$login), self::$qryDeleteShift);
+		$conn = DB::getNewConnection();
+		$res  = DB::execute($conn, $sql);
+		$conn->close();
+	}
+
+	public static function exists($login,$start,$end) {
+		$conn    = DB::getNewConnection();
+		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
+		return count($results) !== 0;
+	}
+	
 	public function getStartTime() {
 		return $this->startTime;
 	}
@@ -129,12 +168,14 @@ AND Prev =
 	
 	/* Set DB.Released = True  */
 	public function relsease() {
+		if($this->isReleased())
+			return;
 		$this->released = true;
 		$this->update();
 	}
 	
 	/* Set DB.Next = PK of $login */	
-	public function pickUp($login) {
+	public function pickup($login) {
 	  if(!$this->isReleased())
 	  	return;
 	  $this->pickuper = $login;
@@ -143,6 +184,8 @@ AND Prev =
 
 	/* Set DB.approved = False */	
 	public function reject() {
+		if(!$this->isPickedUp())
+			return;
 		$this->approved = false;
 		$this->update();
 	}
@@ -151,6 +194,8 @@ AND Prev =
 	 * Create new Swap Record for new owner
 	 */	
 	public function approve() {
+		if(!$this->isPickedUp())
+			return;
 	  $this->approved = true;
 	  $this->update();
 	  $this->transferResponsiblity();
@@ -169,6 +214,25 @@ AND Prev =
 		$res  = DB::execute($conn, $sql);
 		$conn->close();
 	}
-
+	
+	private function transferResponsiblity() {
+		$params = array($this->startTime
+				       ,$this->endTime
+			           ,$this->owner
+				       ,$this->pickuper);
+		$sql  = DB::injectParamaters($params, self::$qryInsertNewOwner);
+		$conn = DB::getNewConnection();
+		$res  = DB::execute($conn, $sql);
+		$conn->close();
+		/* Maybe don't do this and mark the object as dirty? */
+		$this->owner    = $this->pickuper;
+		$this->pickuper = null;
+		$this->released = false;
+		$this->approved = null;
+	}
+	
+	public static function toDateString($date, $time) {
+		return "$date $time";
+	}
 }
 ?>

@@ -57,8 +57,7 @@ CREATE TABLE Swap
     Next      Int REFERENCES User(PK),
     Released  BOOL NOT NULL, 
     Approved  BOOL,
-    Timestamp DATETIME,
-	PRIMARY KEY (Shift_FK)
+    Timestamp DATETIME
 );
 
 DROP TABLE IF EXISTS Availability;
