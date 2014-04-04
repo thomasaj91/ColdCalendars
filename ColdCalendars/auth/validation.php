@@ -99,4 +99,25 @@ function isValidDay($str) {
 	|| strcasecmp($str,'Sat'));
 }
 
+/* Expects 'YYYY-MM-DD HH:MM:SS' */
+function isValidDateTime($str) {
+	$example = 'YYYY-MM-DD HH:MM:SS';
+	if( strlen($str) !== strlen($example)
+     || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/', $str))
+		return false;
+
+	$year  = (int)substr($str, 0,4);
+	$month = (int)substr($str, 5,2);
+	$date  = (int)substr($str, 8,2);
+	$hour  = (int)substr($str,11,2);
+	$min   = (int)substr($str,14,2);
+	$sec   = (int)substr($str,17,2);
+	return 1970 <= $year  && $year  <= 9999
+	    &&    1 <= $month && $month <= 12 
+	    &&    1 <= $date  && $month <= 31 
+	    &&    0 <= $hour  && $hour  <= 23 
+	    &&    0 <= $min   && $min   <= 59
+	    &&    0 <= $sec   && $sec   <= 59;
+}
+
 ?>
