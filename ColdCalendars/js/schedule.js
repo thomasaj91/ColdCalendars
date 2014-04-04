@@ -53,6 +53,7 @@ $(document).ready(function() {
 					}, 
 	    		   	"Cancel": function() { $(this).dialog("close"); } }
             });
+            loadNames();
         },
         eventClick: function(){
             $('#Shift_Options').dialog(
