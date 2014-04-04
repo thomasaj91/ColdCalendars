@@ -13,11 +13,11 @@ function loadNames() {
 			list[e] = list[e].join();
 		}
 		
-		$( "#tags" ).autocomplete({
+		$( "#Employee_Name" ).autocomplete({
 		      source: list
 		    });
 }
 
 $(document).ready(function() {
-	  loadNames();
+	  setTimeOut(loadNames,1);
 });
