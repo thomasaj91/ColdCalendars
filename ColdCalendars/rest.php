@@ -355,50 +355,47 @@ function processREST() {
   function addShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['date']   = (int)isValidDate($dataBlob->date);
-  	$validation['start']  = (int)isValidTime($dataBlob->start);
-  	$validation['end']    = (int)isValidTime($dataBlob->end);
+  	$validation['startTime']  = (int)isValidTime($dataBlob->startTime);
+  	$validation['endTime']    = (int)isValidTime($dataBlob->endTime);
   	
   	if(in_array(false,$validation))
   		return $validation;
 
   	/* maybe pass in correctly formatted start & end times (no date prefix) */
-  	Shift::create($dataBlob->userID, Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end));
+  	Shift::create($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
   	return $validation;
   }
   
   function removeShift($datablob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['date'] = (int)isValidDate($dataBlob->date);
-  	$validation['start'] = (int)isValidTime($dataBlob->start);
-  	$validation['end'] = (int)isValidTime($dataBlob->end);
-  	
+	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+  	  	
   	if(in_array(false,$validation))
   		return $validation;
   	 
-  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
   	   return null;
   	
-  	Shift::delete($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end));
+  	Shift::delete($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
   	return $validation;
   }
   
   function decideSwap($dataBlob) {
 	$validation = array();
-	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
 	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endDate']   = (int)isValidDate($dataBlob->endDate);
 	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
 	$validation['approved']  = (int)isValidTime($dataBlob->approved);
 	
 	if(in_array(false,$validation))
 		return $validation;
 
-	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
 		return null;
 	
-	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+	Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
 	if($dataBlob->approved)
       $shift->approve();
     else
@@ -408,18 +405,16 @@ function processREST() {
 
   function releaseShift($dataBlob) {
   	$validation = array();
-  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
-  
+	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+  	  
   	if(in_array(false,$validation))
   		return $validation;
   
-  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
   		return null;
   	
-  	Shift::load($_COOKIE['login'], Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+  	Shift::load($_COOKIE['login'],$dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
   	$shift->release();
   	return $validation;
   }
@@ -427,18 +422,16 @@ function processREST() {
   function pickUpShift($requestData) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['startDate'] = (int)isValidDate($dataBlob->startDate);
-  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-  	$validation['endDate'] = (int)isValidDate($dataBlob->endDate);
-  	$validation['endTime'] = (int)isValidTime($dataBlob->endTime);
-  	 
+	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+  	  	 
   	if(in_array(false,$validation))
   		return $validation;
   
-  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
   		return null;
   	 
-  	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
+  	Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
   	$shift->pickup($_COOKIE['login']);
   }
 
