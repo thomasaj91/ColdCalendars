@@ -68,7 +68,6 @@ function processREST() {
   	case 'EmailPriority':      return emailPriority($requestData); 		//TODO
   	case 'RemoveEmail':        return removeEmail($requestData);
   	case 'UserList':           return userList($requestData);
-  	case 'UserListInfo':       return userListInfo($requestData);
   	case 'GetUserAvailability':return userAvailability($requestData);
   	case 'AddAvailability':    return addAvailability($requestData);
   	case 'RemoveAvailability': return removeAvailability($requestData);
@@ -353,18 +352,6 @@ function processREST() {
 	return $list;
   }
   
-  function userListInfo($dataBlob) {
-  	$list;
-  
-  	try {
-  		$list = User::getAllNames();
-  	}
-  	catch (Exception $e) {
-  		return null;
-  	}
-  	return $list;
-  }
-  
   function addShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
@@ -390,6 +377,9 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   	 
+  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  	   return null;
+  	
   	Shift::delete($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end));
   	return $validation;
   }
@@ -404,7 +394,10 @@ function processREST() {
 	
 	if(in_array(false,$validation))
 		return $validation;
-	 
+
+	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+		return null;
+	
 	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
 	if($dataBlob->approved)
       $shift->approve();
@@ -423,6 +416,9 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   
+  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  		return null;
+  	
   	Shift::load($_COOKIE['login'], Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
   	$shift->release();
   	return $validation;
@@ -439,6 +435,9 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   
+  	if(!Shift::exists($dataBlob->userID,Shift::toDateString($dataBlob->date, $dataBlob->start), Shift::toDateString($dataBlob->date, $dataBlob->end)))
+  		return null;
+  	 
   	Shift::load($dataBlob->userID, Shift::toDateString($dataBlob->startDate, $dataBlob->startTime), Shift::toDateString($dataBlob->endDate, $dataBlob->endTime));
   	$shift->pickup($_COOKIE['login']);
   }
@@ -528,6 +527,13 @@ function processREST() {
   	try { $user = User::load($login); }
   	catch(Exception $e) { return null; }
     return $user;  	 
+  }
+
+  function getShiftObj($login,$start,$end) {
+  	$shift;
+  	try { $shift = Shift::load($login,$start,$end); }
+  	catch(Exception $e) { return null; }
+    return $shift;  	 
   }
 
 ?>
