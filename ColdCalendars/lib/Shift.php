@@ -4,7 +4,7 @@ ini_set('display_errors', 3);
 
 require_once(__DIR__ . '/../DB.php');
 class Shift {
-	
+
 	private static $qryCreateShift = "set @pk := (SELECT AUTO_INCREMENT
 FROM information_schema.tables
 WHERE table_name = 'Shift'
@@ -18,7 +18,7 @@ VALUES (@pk,
         (SELECT PK FROM User WHERE Login = '@PARAM')
         ,NULL,False,NULL,NOW());
 ";
-	
+
 		private static $qryLoadShift = "SELECT 
     Start_time,
     End_time,
@@ -51,7 +51,7 @@ WHERE Shift_FK IN
  AND   End_time   = '@PARAM')
 AND Prev = 
 (SELECT PK FROM User WHERE Login = '@PARAM')";
-		
+
 	private static $qryInsertNewOwner = "
 set @pk :=
  (SELECT PK FROM Shift
@@ -65,7 +65,7 @@ INSERT INTO Swap VALUES
 (@pk,
  (SELECT PK FROM User WHERE Login = '@PARAM')
  ,NULL,False,NULL,NOW());";
-	
+
 	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
          JOIN Swap
          ON   Swap.Shift_FK = Shift.PK
@@ -75,7 +75,7 @@ INSERT INTO Swap VALUES
          LIMIT 1);
     DELETE FROM Swap WHERE Shift_FK = @pk;
     DELETE FROM Shift WHERE PK = @pk;";
-	
+
 	private static $qryGetAllShifts = "SELECT 
     User.Login,
     Start_time,
@@ -90,17 +90,17 @@ INSERT INTO Swap VALUES
 	ON   swp.Shift_FK  = Swap.Shift_FK
 	AND  swp.Timestamp = Swap.Timestamp
     JOIN User
-    ON   Swap.Shift_FK = User.PK
+    ON   Swap.Prev = User.PK
     WHERE Shift.Start_time >= '@PARAM'
     AND   Shift.End_time   <= '@PARAM'";
-	
+
 	private $owner;
 	private $pickuper;
 	private $released;
 	private $approved;
 	private $startTime;
 	private $endTime;
-	
+
 	public function Shift($login,$start,$end,$create) {
 		if($create) {
 			$conn = DB::getNewConnection();
@@ -129,11 +129,11 @@ INSERT INTO Swap VALUES
 			$this->endTime   = $end;
 		}
 	}
-	
+
 	public static function create($login,$start,$end) {
 	  return new Shift($login, $start, $end, true);
 	}
-	
+
 	public static function load($login,$start,$end) {
       return new Shift($login, $start, $end, false);
 	}
@@ -150,7 +150,7 @@ INSERT INTO Swap VALUES
 		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
 		return count($results) !== 0;
 	}
-	
+
 	public function getStartTime() {
 		return $this->startTime;
 	}
@@ -158,7 +158,7 @@ INSERT INTO Swap VALUES
 	public function getEndTime() {
 		return $this->startEnd;
 	}
-	
+
 	/* Return DB.Prev */
 	public function getOwner() {
 		return $this->owner;
@@ -173,17 +173,17 @@ INSERT INTO Swap VALUES
 	public function isPickedUp() {
 		return $this->pickuper !== NULL;
 	}
-	
+
 	/* True iff DB.Approved !== NULL */
 	public function isDecided() {
 	    return $this->approved !== NULL;
 	}
-	
+
 	/* True iff DB.Approved === True */
 	public function isApproved() {
 		return ($this->approved === NULL) ? false : $this->approved; 
 	}
-	
+
 	/* Set DB.Released = True  */
 	public function relsease() {
 		if($this->isReleased())
@@ -191,7 +191,7 @@ INSERT INTO Swap VALUES
 		$this->released = true;
 		$this->update();
 	}
-	
+
 	/* Set DB.Next = PK of $login */	
 	public function pickup($login) {
 	  if(!$this->isReleased())
@@ -232,7 +232,7 @@ INSERT INTO Swap VALUES
 		$res  = DB::execute($conn, $sql);
 		$conn->close();
 	}
-	
+
 	private function transferResponsiblity() {
 		$params = array($this->startTime
 				       ,$this->endTime
@@ -248,18 +248,26 @@ INSERT INTO Swap VALUES
 		$this->released = false;
 		$this->approved = null;
 	}
-	
+
 	public static function toDateString($date, $time) {
 		return "$date $time";
 	}
-	
+
 	public static function getAllShifts($start,$end) {
 		$conn = DB::getNewConnection();
 		$sql  = DB::injectParamaters(array($start,$end), self::$qryGetAllShifts);
 		$res  = DB::query($conn, $sql);
 		$out  = array();
-		foreach($res as $row)
-			array_push($out, self::load($row[0], $row[1], $row[2]));
+		var_dump($res);
+		
+		$limit = count($res);
+		for($i = 0; $i < $limit; $i++)
+			$out[$i] = self::load($res[$i][0],$res[$i][1],$res[$i][2]);
+		
+		var_dump($out);
+		//foreach($res as $row)
+			//array_push($out, self::load($row[0], $row[1], $row[2]));
+		$conn->close();
 		return $out;
 	}
 }
