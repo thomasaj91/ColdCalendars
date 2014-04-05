@@ -436,8 +436,14 @@ function processREST() {
   }
 
   function viewSchedule($dataBlob){ //TODO
-  	$list;
-  	 
+  	$validation = array();
+  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
+  	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+
+  	if(in_array(false,$validation))
+  		return $validation;
+  	
+  	$list;  	 
   	try {
   		$list = Shift::getAllShifts($start,$end); //pass a start time and end time to define the range of shifts that should be passed back
   	}

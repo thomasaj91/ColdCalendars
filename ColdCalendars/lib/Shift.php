@@ -76,6 +76,24 @@ INSERT INTO Swap VALUES
     DELETE FROM Swap WHERE Shift_FK = @pk;
     DELETE FROM Shift WHERE PK = @pk;";
 	
+	private static $qryGetAllShifts = "SELECT 
+    User.Login,
+    Start_time,
+    End_time
+    FROM Shift
+	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	  FROM Swap
+	  GROUP BY Shift_FK
+	) AS swp
+	ON   swp.Shift_FK  = Shift.PK
+	JOIN Swap
+	ON   swp.Shift_FK  = Swap.Shift_FK
+	AND  swp.Timestamp = Swap.Timestamp
+    JOIN User
+    ON   Swap.Shift_FK = User.PK
+    WHERE Shift.Start_time >= '@PARAM'
+    AND   Shift.End_time   <= '@PARAM'";
+	
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -233,6 +251,16 @@ INSERT INTO Swap VALUES
 	
 	public static function toDateString($date, $time) {
 		return "$date $time";
+	}
+	
+	public static function getAllShifts($start,$end) {
+		$conn = DB::getNewConnection();
+		$sql  = DB::injectParamaters(array($start,$end), self::$qryGetAllShifts);
+		$res  = DB::query($conn, $sql);
+		$out  = array();
+		foreach($res as $row)
+			array_push($out, self::load($row[0], $row[1], $row[2]));
+		return $out;
 	}
 }
 ?>
