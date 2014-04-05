@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+	loadSchedulePage();
 	$('#calendar').fullCalendar({
 		header: {
 			left: 'prev,next today',
@@ -27,9 +27,10 @@ $(document).ready(function() {
 		    	   				var endTime   = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes());
 		    	   				
 		    	   				var shiftObject = new Object();
-		    	   				shiftObject.userID	  = employeeName;
-		    	   				shiftObject.startTime = startTime;
-		    	   				shiftObject.endTime	  = endTime;
+		    	   				shiftObject.requestType = 'AddToSchedule';
+		    	   				shiftObject.userID	  = employeeName.split(',')[1];
+		    	   				shiftObject.startTime = dateObjectToDateString(startTime);
+		    	   				shiftObject.endTime	  = dateObjectToDateString(endTime);
 		    	   				
 		    	   				var retVal = $.ajax({
 										url: "rest.php",
@@ -76,10 +77,29 @@ $(document).ready(function() {
 
 function loadSchedulePage()
 {
+	
+	loadAllShifts();
+	
 }
 
 function loadAllShifts()
 {
+	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+	var startTime = new Date(y, m, 1);
+	var endTime = new Date(y, m+1, 1);
+	
+	var shiftListObject = new Object();
+	shiftListObject.requestType = 'ViewSchedule';
+	shiftListObject.startTime = dateObjectToDateString(startTime);
+	shiftListObject.endTime	  = dateObjectToDateString(endTime);
+	
+	var retVal = $.ajax({
+		url: "rest.php",
+		data: "json="+JSON.stringify(shiftListObject),
+		dataType: "json",
+		async: false
+		});
+	var obj = jQuery.parseJSON(retVal.responseText);
 }
 
 function parseTime(timeString)
@@ -87,7 +107,7 @@ function parseTime(timeString)
   if (timeString == '') return null;
   var d = new Date();
   var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/);
-  d.setHours( parseInt(time[1]) + ( ( parseInt(time[1]) < 12 && time[4] ) ? 12 : 0) );
+  d.setHours( parseInt(time[1])===12 && time[4]!=='p'?0:(parseInt(time[1]) + ( ( parseInt(time[1]) < 12 && time[4] ) ? 12 : 0)) );
   d.setMinutes( parseInt(time[3]) || 0 );
   d.setSeconds(0, 0);
   return d;
