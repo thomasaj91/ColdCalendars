@@ -68,6 +68,7 @@ function processREST() {
   	case 'EmailPriority':      return emailPriority($requestData); 		//TODO
   	case 'RemoveEmail':        return removeEmail($requestData);
   	case 'UserList':           return userList($requestData);
+  	case 'UserListInfo':       return userListInfo($requestData);
   	case 'GetUserAvailability':return userAvailability($requestData);
   	case 'AddAvailability':    return addAvailability($requestData);
   	case 'RemoveAvailability': return removeAvailability($requestData);
@@ -350,6 +351,18 @@ function processREST() {
   	  return null;
   	}
 	return $list;
+  }
+  
+  function userListInfo($dataBlob) {
+  	$list;
+  
+  	try {
+  		$list = User::getAllNames();
+  	}
+  	catch (Exception $e) {
+  		return null;
+  	}
+  	return $list;
   }
   
   function addShift($dataBlob) {
