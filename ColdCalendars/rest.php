@@ -355,8 +355,8 @@ function processREST() {
   function addShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-  	$validation['startTime']  = (int)isValidTime($dataBlob->startTime);
-  	$validation['endTime']    = (int)isValidTime($dataBlob->endTime);
+  	$validation['startTime']  = (int)isValidDateTime($dataBlob->startTime);
+  	$validation['endTime']    = (int)isValidDateTime($dataBlob->endTime);
   	
   	if(in_array(false,$validation))
   		return $validation;
@@ -369,8 +369,8 @@ function processREST() {
   function removeShift($datablob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
   	  	
   	if(in_array(false,$validation))
   		return $validation;
@@ -385,9 +385,9 @@ function processREST() {
   function decideSwap($dataBlob) {
 	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
-	$validation['approved']  = (int)isValidTime($dataBlob->approved);
+	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
+	$validation['approved']  = (int)isValidBool($dataBlob->approved);
 	
 	if(in_array(false,$validation))
 		return $validation;
@@ -405,8 +405,8 @@ function processREST() {
 
   function releaseShift($dataBlob) {
   	$validation = array();
-	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
   	  
   	if(in_array(false,$validation))
   		return $validation;
@@ -422,8 +422,8 @@ function processREST() {
   function pickUpShift($requestData) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
   	  	 
   	if(in_array(false,$validation))
   		return $validation;
@@ -437,8 +437,8 @@ function processREST() {
 
   function viewSchedule($dataBlob){ //TODO
   	$validation = array();
-  	$validation['startTime'] = (int)isValidTime($dataBlob->startTime);
-  	$validation['endTime']   = (int)isValidTime($dataBlob->endTime);
+  	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+  	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
 
   	if(in_array(false,$validation))
   		return $validation;
