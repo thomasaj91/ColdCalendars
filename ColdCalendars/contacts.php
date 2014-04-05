@@ -4,6 +4,7 @@ assertValidUserPageAccess();
 ?>
 
 <!DOCTYPE html>
+<html>
 <head>
   <meta charset="utf-8" />
   <title>Employee View</title>
@@ -24,7 +25,7 @@ assertValidUserPageAccess();
 <button id="Create_User">Create new user</button>   
 <button id="Delete_User">Delete user</button> 
 
-<div  id="Create_User_Dialog" title="Create new user">
+<div  id="Create_User_Dialog" title="Create new user" style='display:none'>
   <p class="validateTips">All form fields are required.</p>
     <form>
 		<table>
@@ -72,7 +73,7 @@ assertValidUserPageAccess();
 	</form>
 </div>
 
-<div  id="Delete_User_Dialog" title="Delete existing user">
+<div  id="Delete_User_Dialog" title="Delete existing user" style='display:none'>
 	<p class="validateTips">All form fields are required.</p>
 		<form>
 			<table>
@@ -84,7 +85,40 @@ assertValidUserPageAccess();
 		</form>
 </div>
 
+<div  id="Add_Phone_Dialog" title="Add Phone Number" style='display:none'>
+		<form>
+			<table>
+				<tr>
+					<td><label>Phone Number</label></td>
+					<td><input id="New_Number"></td>
+				</tr>
+			</table>
+		</form>
+</div>
+
+<div  id="Remove_Phone_Dialog" title="Remove Phone Number" style='display:none'>
+		<form id='Phone_Number_Remove_List'>
+		</form>
+</div>
+
+<div  id="Add_Email_Dialog" title="Add Email" style='display:none'>
+		<form>
+			<table>
+				<tr>
+					<td><label>Email Address</label></td>
+					<td><input id="New_Email"></td>
+				</tr>
+			</table>
+		</form>
+</div>
+
+<div  id="Remove_Email_Dialog" title="Remove Email" style='display:none'>
+		<form id='Email_Address_Remove_List'>
+		</form>
+</div>
+
 <div id="Contact_List">
 </div>
  
 </body>
+</html>
