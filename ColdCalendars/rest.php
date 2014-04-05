@@ -458,9 +458,10 @@ function processREST() {
   	
   	$list;  	 
   	try {
-  		$list = Shift::getAllShifts($start,$end); //pass a start time and end time to define the range of shifts that should be passed back
+  		$list = Shift::getAllShifts($dataBlob->startTime,$dataBlob->endTime); //pass a start time and end time to define the range of shifts that should be passed back
   	}
   	catch (Exception $e) {
+  		//echo $e->getMessage();
   		return null;
   	}
   	return $list;
