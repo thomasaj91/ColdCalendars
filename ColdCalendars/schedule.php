@@ -11,6 +11,7 @@
 <script src='../js/jquery.timepicker.js'></script>
 <script src='../js/jquery.timepicker.min.js'></script>
 <script src='../js/schedule.js'></script>
+<script src='../js/main.js'></script>
 <style>
 
 	body {
