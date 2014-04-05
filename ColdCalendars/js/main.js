@@ -48,3 +48,13 @@
                 return str;
         }
 
+        function dateObjectToDateString(date){
+        	var temp = $.datepicker.formatDate('yy-mm-dd', date); 
+        	var hours = date.getHours();
+        	var minutes = date.getMinutes();
+        	var seconds = date.getSeconds();
+        	return $.datepicker.formatDate('yy-mm-dd', date) + " "
+        	     + (hours <10 ? "0"+hours : hours) + ":"
+        	     + (minutes <10 ? "0"+minutes : minutes) + ":"
+        	     + (seconds <10 ? "0"+ seconds : seconds);
+        }
