@@ -65,15 +65,29 @@ function loadContactsPage() {
 		  resizable: false,
 		  draggable: true,
 		  buttons: { "Submit": function() {
-					  var values = [];
-					  var cbs = document.forms['Phone_Number_Remove_List'].elements['numbers'];
-					  for(var i=0,cbLen=cbs.length;i<cbLen;i++){
-					    if(cbs[i].checked){
-					      values.push(cbs[i].value);
+					  
+			  		  var phoneObject = new Object();
+			  		  phoneObject.requestType = 'RemovePhone';
+			  		  
+					  var checkBoxes = document.forms['Phone_Number_Remove_List'].elements['numbers'];
+					  
+					  //Loop thru list, find checked checkboxes/send phone # to server
+					  for(var i=0;i<checkBoxes.length;i++){
+					    if(checkBoxes[i].checked){
+					      phoneObject.phone = checkBoxes[i].value;
+					      
+					      var obj = ajaxGetJSON(phoneObject);
+					      
+						  if(obj === null) {
+								 alert('unexpected server error');
+						  }
+						  else if(obj['phone']===0)
+						  {
+							 alert('Invalid phone number. Unable to remove.');
+					      }
 					    } 
 					  }
-					  alert('You selected: ' + values.join(', '));
-			  					
+					  location.reload();				
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
@@ -125,14 +139,27 @@ function loadContactsPage() {
 		  resizable: false,
 		  draggable: true,
 		  buttons: { "Submit": function() {
-					  var values = [];
-					  var cbs = document.forms['Email_Address_Remove_List'].elements['emails'];
-					  for(var i=0,cbLen=cbs.length;i<cbLen;i++){
-					    if(cbs[i].checked){
-					      values.push(cbs[i].value);
+					  //var values = [];
+					  var emailObject = new Object();
+			  		  emailObject.requestType = 'RemoveEmail';
+			  		  
+					  var checkBoxes = document.forms['Email_Address_Remove_List'].elements['emails'];
+					  for(var i=0;i<checkBoxes.length;i++){
+					    if(checkBoxes[i].checked){
+					      emailObject.email = checkBoxes[i].value;
+					      
+					      var obj = ajaxGetJSON(emailObject);
+					      
+						  if(obj === null) {
+								 alert('unexpected server error');
+						  }
+						  else if(obj['phone']===0)
+						  {
+							 alert('Invalid email address. Unable to remove.');
+					      }
 					    } 
 					  }
-					  alert('You selected: ' + values.join(', '));
+					  location.reload();
 			  					
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
