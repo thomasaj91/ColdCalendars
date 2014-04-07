@@ -319,7 +319,7 @@ function processREST() {
   	if($user === null)
   	  return null;
   	
-  	$user->removeEmail($dataBlob->email);
+  	$user->removeEmailAddress($dataBlob->email);
   	$user->commitEmailData();
   	return $validation;
   }
