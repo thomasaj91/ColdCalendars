@@ -151,6 +151,17 @@ INSERT INTO Swap VALUES
 		return count($results) !== 0;
 	}
 
+	public function getInfo() {
+		$out = array();
+		$out['owner']     =  $this->owner;
+		$out['pickuper']  = ($this->pickuper !== null) ? $this->pickuper : 'Null';
+		$out['startTime'] =  $this->startTime;
+		$out['endTime']   =  $this->endTime;
+		$out['released']  =  $this->released;
+		$out['approved']  = ($this->approved !== null) ? $this->approved : 'Null';
+		return $out;
+	}
+	
 	public function getStartTime() {
 		return $this->startTime;
 	}
@@ -258,15 +269,13 @@ INSERT INTO Swap VALUES
 		$sql  = DB::injectParamaters(array($start,$end), self::$qryGetAllShifts);
 		$res  = DB::query($conn, $sql);
 		$out  = array();
-		var_dump($res);
+//		var_dump($res);
+// 		$limit = count($res);
+// 		for($i = 0; $i < $limit; $i++)
+// 			$out[$i] = self::load($res[$i][0],$res[$i][1],$res[$i][2]);
 		
-		$limit = count($res);
-		for($i = 0; $i < $limit; $i++)
-			$out[$i] = self::load($res[$i][0],$res[$i][1],$res[$i][2]);
-		
-		var_dump($out);
-		//foreach($res as $row)
-			//array_push($out, self::load($row[0], $row[1], $row[2]));
+		foreach($res as $row)
+			array_push($out, (self::load($row[0], $row[1], $row[2])->getInfo() ));
 		$conn->close();
 		return $out;
 	}
