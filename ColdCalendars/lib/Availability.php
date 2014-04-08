@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 3);
 require_once(__DIR__ . '/../DB.php');
+
 class VacationRequest {
   private static $qryCreateAvailability = "INSERT INTO Availability VALUES ((SELECT PK FROM User WHERE Login = '@PARAM'),@PARAM,'@PARAM','@PARAM');";  
   private static $qryLoadAvailability   = "
@@ -21,6 +22,12 @@ AND   Day        =  @PARAM
 AND   Start_time = '@PARAM'
 AND   End_time   = '@PARAM'";
   
+  private static $qryGetAllAvailability = "
+SELECT Day, Start_time, End_time
+FROM   Availability
+JOIN   User
+ON     User_FK    = PK
+WHERE  Login      = '@PARAM'";
   
   private static $DAYS = array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
   private $login;
@@ -63,6 +70,17 @@ AND   End_time   = '@PARAM'";
     $conn->close();
   }
 
+  public static function getUsersAvailability($login) {
+    $conn   = DB::getNewConnection();
+    $sql    = DB::injectParamaters(array($login), self::$qryDeleteAvailability);
+    $result = DB::query($conn, $sql);
+    $conn->close();
+    $out = array();
+    foreach($result as $row)
+      array_push($out, (self::load($login, self::numToDay($row[0]), $row[1], $row[2])->getInfo() ));
+    return $out;
+  }
+  
   public static function exists($login, $day, $start, $end) {
     $params = array($login, self::dayToNum($day), DB::timeToDateTime($start),DB::timeToDateTime($end));
     $conn   = DB::getNewConnection();
@@ -79,6 +97,22 @@ AND   End_time   = '@PARAM'";
         'startTime' => $this->startTime,
         'endTiem'   => $this->endTime
         );
+  }
+
+  public function getLogin() {
+    return $this->login;
+  }
+  
+  public function getDay() {
+    return $this->day;
+  }
+  
+  public function getStartTime() {
+    return $this->startTime;
+  }
+  
+  public function getEndTime() {
+    return $this->endTime;
   }
   
   private static function numToDay($number) {
