@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	loadSchedulePage();
+
 	$('#calendar').fullCalendar({
 		header: {
 			left: 'prev,next today',
@@ -25,7 +25,7 @@ $(document).ready(function() {
 		    	   				//Formatted Shift Times
 		    	   				var startTime = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftStart.getHours(), shiftStart.getMinutes());
 		    	   				var endTime   = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes());
-		    	   				
+
 		    	   				var shiftObject = new Object();
 		    	   				shiftObject.requestType = 'AddToSchedule';
 		    	   				shiftObject.userID	  = employeeName.split(',')[1];
@@ -69,6 +69,8 @@ $(document).ready(function() {
 	    editable: true
 	});
 
+	loadSchedulePage();
+	
 	$('#Shift_Start').timepicker({ 'scrollDefaultNow': true });
 
 	$('#Shift_End').timepicker({ 'scrollDefaultNow': true });
@@ -77,9 +79,8 @@ $(document).ready(function() {
 
 function loadSchedulePage()
 {
-	
+	setUserType();
 	loadAllShifts();
-	
 }
 
 function loadAllShifts()
@@ -89,7 +90,7 @@ function loadAllShifts()
 	var endTime = new Date(y, m+1, 1);
 	
 	var shiftListObject = new Object();
-	shiftListObject.requestType = 'ViewSchedule';
+	shiftListObject.requestType = "ViewSchedule";
 	shiftListObject.startTime = dateObjectToDateString(startTime);
 	shiftListObject.endTime	  = dateObjectToDateString(endTime);
 	
@@ -100,6 +101,41 @@ function loadAllShifts()
 		async: false
 		});
 	var obj = jQuery.parseJSON(retVal.responseText);
+	
+	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
+		for(var e in obj){
+			if(obj[e]===0)
+				alert('invalid field: '+e);
+		}	
+	}
+	else {
+		for(var e in obj) {
+			var startTime = new Date(obj[e]["startTime"]);
+			var endTime = new Date(obj[e]["endTime"]);
+			var title = obj[e]["owner"];
+			var color = '#0000ff';
+
+			if(parseCookie().login === title)
+				color = '#00ff00';
+			if(obj[e]["released"] === true)
+				color = '#ff0000';
+			
+			$('#calendar').fullCalendar('renderEvent',
+					{
+						title: title,
+						start: startTime,
+						end:   endTime,
+						allDay: false,
+						color: color
+					},true);
+			$('#calendar').fullCalendar('unselect');
+		}
+		
+	}
+		
+		
+		
+	
 }
 
 function parseTime(timeString)

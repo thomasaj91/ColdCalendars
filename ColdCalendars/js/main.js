@@ -68,3 +68,13 @@ function ajaxGetJSON(obj) {
 		});
 	return jQuery.parseJSON(retVal.responseText); 	  
 }
+
+function setUserType() {
+	var requestObject = new Object();
+	requestObject.requestType = "UserInfo";
+	requestObject.userID = parseCookie().login;
+	
+	var retval = ajaxGetJSON(requestObject);
+	
+	window.userType = retval['title'];
+}
