@@ -37,6 +37,10 @@ class DB {
 	public static function getSystemTime() {
 		return date('Y-m-d H:i:s',time());
 	}
+
+	public static function timeToDateTime($time) {
+	    return '1970-01-01 '.$time;
+	}
 	
 	public static function str_replace_once($needle,$replace,$haystack) {
 		$pos = strpos($haystack,$needle);

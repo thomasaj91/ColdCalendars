@@ -103,7 +103,7 @@ INSERT INTO Swap VALUES
 
 	public function Shift($login,$start,$end,$create) {
 		if($create) {
-			$conn = DB::getNewConnection();
+		  $conn = DB::getNewConnection();
 			DB::execute($conn,DB::injectParamaters(array($start,$end,$login), self::$qryCreateShift));
 		    $conn->close();
 			$this->owner     = $login;
@@ -115,8 +115,6 @@ INSERT INTO Swap VALUES
 			return;
 		}
 		else { //load shift
-			if(!self::exists($login, $start, $end))
-				throw new Exception("Shift Does Not Exist");
 			$conn    = DB::getNewConnection();
 			$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
 			$conn->close();
@@ -131,11 +129,15 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function create($login,$start,$end) {
+	  if(self::exists($login, $start, $end))
+		throw new Exception("Shift Already Exists");
 	  return new Shift($login, $start, $end, true);
 	}
 
 	public static function load($login,$start,$end) {
-      return new Shift($login, $start, $end, false);
+	  if(self::exists($login, $start, $end))
+		throw new Exception("Shift Does NOT Exists");
+	  return new Shift($login, $start, $end, false);
 	}
 
 	public static function delete($login,$start,$end) {
