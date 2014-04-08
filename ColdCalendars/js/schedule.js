@@ -79,9 +79,8 @@ $(document).ready(function() {
 
 function loadSchedulePage()
 {
-	
+	setUserType();
 	loadAllShifts();
-	
 }
 
 function loadAllShifts()
