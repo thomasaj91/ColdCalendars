@@ -73,7 +73,7 @@ DROP TABLE IF EXISTS Vacation;
 CREATE TABLE Vacation
 (
     User_FK    INT NOT NULL REFERENCES User(PK),
-    Status     BOOL,
+    Approved   BOOL,
     Start_time DATETIME NOT NULL,
     End_time   DATETIME NOT NULL
 );
@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS TimeOff;
 CREATE TABLE TimeOff
 (
     User_FK    INT NOT NULL REFERENCES User(PK),
-    Status     BOOL,
+    Approved   BOOL,
     Start_time DATETIME NOT NULL,
     end_time   DATETIME NOT NULL
 );
