@@ -5,6 +5,25 @@ ini_set('display_errors', 3);
 require_once(__DIR__ . '/../DB.php');
 class Shift {
 
+  
+  private static $qryShiftExists = "
+      SELECT EXISTS(SELECT 1	FROM Shift
+	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	  FROM Swap
+	  GROUP BY Shift_FK
+	) AS swp
+	ON   swp.Shift_FK  = Shift.PK
+	JOIN Swap
+	ON   swp.Shift_FK  = Swap.Shift_FK
+	AND  swp.Timestamp = Swap.Timestamp
+	LEFT JOIN User
+	ON   Swap.Next = User.PK
+	WHERE Shift.Start_time = '@PARAM'
+	AND   Shift.End_time   = '@PARAM'
+	AND   Swap.Prev =
+	(SELECT PK FROM User WHERE Login = '@PARAM') LIMIT 1)
+";
+  
 	private static $qryCreateShift = "set @pk := (SELECT AUTO_INCREMENT
 FROM information_schema.tables
 WHERE table_name = 'Shift'
@@ -148,9 +167,13 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function exists($login,$start,$end) {
-		$conn    = DB::getNewConnection();
-		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
-		return count($results) !== 0;
+// 		$conn    = DB::getNewConnection();
+// 		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
+// 		return count($results) !== 0;
+	  $conn = DB::getNewConnection();
+	  $results = DB::query($conn, DB::injectParamaters(array($start,$end,$login), self::$qryShiftExists));
+	  $conn->close();
+	  return ($results [0] [0] === '1') ? true : false;	   
 	}
 
 	public function getInfo() {
@@ -160,7 +183,7 @@ INSERT INTO Swap VALUES
 		$out['startTime'] =  $this->startTime;
 		$out['endTime']   =  $this->endTime;
 		$out['released']  =  $this->released;
-		$out['approved']  = ($this->approved !== null) ? $this->approved : 'Null';
+		$out['approved']  = ($this->approved !== null) ? (int) $this->approved : 'Null';
 		return $out;
 	}
 	

@@ -5,6 +5,17 @@ require_once(__DIR__ . '/../DB.php');
 
 class VacationRequest {
   private static $qryCreateAvailability = "INSERT INTO Availability VALUES ((SELECT PK FROM User WHERE Login = '@PARAM'),@PARAM,'@PARAM','@PARAM');";  
+
+  private static $qryAvailabilityExists = "
+SELECT EXISTS(SELECT 1
+FROM  Availability
+JOIN  User
+ON    User_FK    = PK
+WHERE Login      = '@PARAM'
+AND   Day        =  @PARAM
+AND   Start_time = '@PARAM'
+AND   End_time   = '@PARAM')";
+  
   private static $qryLoadAvailability   = "
 SELECT Login, Day, Start_time, End_time
 FROM  Availability
@@ -70,6 +81,19 @@ WHERE  Login      = '@PARAM'";
     $conn->close();
   }
 
+  public static function exists($login, $day, $start, $end) {
+//     $params = array($login, self::dayToNum($day), DB::timeToDateTime($start),DB::timeToDateTime($end));
+//     $conn   = DB::getNewConnection();
+//     $sql    = DB::injectParamaters($params, self::$qryLoadAvailability);
+//     $result = DB::query($conn, $sql);
+//     $conn->close();
+//     return count($result) !== 0;
+    $conn = DB::getNewConnection();
+    $results = DB::query($conn, DB::injectParamaters(array($start,$end,$login), self::$qryAvailabilityExists));
+    $conn->close();
+    return ($results [0] [0] === '1') ? true : false;	   
+  }
+
   public static function getUsersAvailability($login) {
     $conn   = DB::getNewConnection();
     $sql    = DB::injectParamaters(array($login), self::$qryDeleteAvailability);
@@ -79,16 +103,7 @@ WHERE  Login      = '@PARAM'";
     foreach($result as $row)
       array_push($out, (self::load($login, self::numToDay($row[0]), $row[1], $row[2])->getInfo() ));
     return $out;
-  }
-  
-  public static function exists($login, $day, $start, $end) {
-    $params = array($login, self::dayToNum($day), DB::timeToDateTime($start),DB::timeToDateTime($end));
-    $conn   = DB::getNewConnection();
-    $sql    = DB::injectParamaters($params, self::$qryLoadAvailability);
-    $result = DB::query($conn, $sql);
-    $conn->close();
-    return count($result) !== 0;
-  }
+  }  
   
   public function getInfo() {
     return array(

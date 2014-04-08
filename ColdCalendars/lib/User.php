@@ -73,7 +73,7 @@ class User {
   }
   public static function userExists($login) {
     $conn = DB::getNewConnection();
-    $results = DB::query($conn, str_replace("@PARAM", $login, self::$qryUserExists));
+    $results = DB::query($conn, DB::injectParamaters(array($login), self::$qryUserExists));
     $conn->close();
     return ($results [0] [0] === '1') ? true : false;
   }
