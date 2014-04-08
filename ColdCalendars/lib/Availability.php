@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 3);
 require_once(__DIR__ . '/../DB.php');
 
-class VacationRequest {
+class Availability {
   private static $qryCreateAvailability = "INSERT INTO Availability VALUES ((SELECT PK FROM User WHERE Login = '@PARAM'),@PARAM,'@PARAM','@PARAM');";  
 
   private static $qryAvailabilityExists = "
@@ -14,7 +14,8 @@ ON    User_FK    = PK
 WHERE Login      = '@PARAM'
 AND   Day        =  @PARAM
 AND   Start_time = '@PARAM'
-AND   End_time   = '@PARAM')";
+AND   End_time   = '@PARAM'
+LIMIT 1)";
   
   private static $qryLoadAvailability   = "
 SELECT Login, Day, Start_time, End_time
@@ -51,7 +52,7 @@ WHERE  Login      = '@PARAM'";
   	  $params = array($login, self::dayToNum($day), DB::timeToDateTime($start),DB::timeToDateTime($end));
   	  $conn   = DB::getNewConnection();
   	  $sql    = DB::injectParamaters($params, self::$qryCreateAvailability);
-  	  $result = DB::query($conn, $sql);
+  	  $result = DB::execute($conn, $sql);
   	  $conn->close();
   	}
   	else {
@@ -63,21 +64,21 @@ WHERE  Login      = '@PARAM'";
   }
   
   public static function create($login, $day, $start, $end) {
-    assertNonExistance($login, $day, $start, $end);
-    return new Availability($login, $start, $end, true);
+    self::assertNonExistance($login, $day, $start, $end);
+    return new Availability($login, $day, $start, $end, true);
   }
   
   public static function load($login, $day, $start, $end) {
-    assertExistance($login, $day, $start, $end);
-    return new Availability($login, $start, $end, false);
+    self::assertExistance($login, $day, $start, $end);
+    return new Availability($login, $day, $start, $end, false);
   }
 
   public static function delete($login, $day, $start, $end) {
-    assertExistance($login, $day, $start, $end);
+    self::assertExistance($login, $day, $start, $end);
     $params = array($login, self::dayToNum($day), DB::timeToDateTime($start),DB::timeToDateTime($end));
     $conn   = DB::getNewConnection();
     $sql    = DB::injectParamaters($params, self::$qryDeleteAvailability);
-    $result = DB::query($conn, $sql);
+    $result = DB::execute($conn, $sql);
     $conn->close();
   }
 
@@ -88,8 +89,9 @@ WHERE  Login      = '@PARAM'";
 //     $result = DB::query($conn, $sql);
 //     $conn->close();
 //     return count($result) !== 0;
-    $conn = DB::getNewConnection();
-    $results = DB::query($conn, DB::injectParamaters(array($start,$end,$login), self::$qryAvailabilityExists));
+    $conn    = DB::getNewConnection();
+    $sql     = DB::injectParamaters(array($login,self::dayToNum($day),DB::timeToDateTime($start),DB::timeToDateTime($end)), self::$qryAvailabilityExists);
+    $results = DB::query($conn, $sql);
     $conn->close();
     return ($results [0] [0] === '1') ? true : false;	   
   }
