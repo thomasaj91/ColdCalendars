@@ -59,5 +59,9 @@
 		</table>	 
 	</div>
 	<div id='calendar'></div>
+	<input type="radio" class = 'filter' name = "filter" id = "no_filter" value = "0" checked> Don't Filter </input>
+	<input type="radio" class = 'filter' name = "filter" id = "me_filter" value = "1"> Filter My Shifts </input>
+	<input type="radio" class = 'filter' name = "filter" id = "emp_filter" value = "2"> Filter Only Employee Shifts</input>
+	<input type="radio" class = 'filter' name = "filter" id = "man_filter" value = "3"> Filter Only Manager Shifts</input>
 </body>
 </html>
