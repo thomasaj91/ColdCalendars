@@ -2,6 +2,8 @@ function loadContactsPage() {
 	  loadUser();
 	  createPhoneNumberRemovalList();
 	  createEmailAddressRemovalList();
+	  setUserType();
+	  hideAdminButtons();
 	  
 	  $('input:text').val('');
 	  
@@ -437,6 +439,16 @@ function loadUser()
  	    obj.requestType = "LogoutUser";
   	    $retJson = ajaxGetJSON(obj);
   	    window.location.href = "home.php";
+  }
+  
+  function hideAdminButtons()
+  {
+	    //If not an Admin, hide Create/Delete user buttons
+	  	if(window.userType != 'Admin')
+	  	{
+	  		$('#Create_User').hide();
+	  		$('#Delete_User').hide();
+	  	}
   }
 
   
