@@ -154,7 +154,7 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function load($login,$start,$end) {
-	  if(self::exists($login, $start, $end))
+	  if(!self::exists($login, $start, $end))
 		throw new Exception("Shift Does NOT Exists");
 	  return new Shift($login, $start, $end, false);
 	}
