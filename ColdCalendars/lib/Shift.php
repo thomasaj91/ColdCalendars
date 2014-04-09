@@ -176,6 +176,10 @@ INSERT INTO Swap VALUES
 	  return ($results [0] [0] === '1') ? true : false;	   
 	}
 
+	public static function getAllUndecidedSwaps($start, $end) {
+	  
+	}
+	
 	public function getInfo() {
 		$out = array();
 		$out['owner']     =  $this->owner;
