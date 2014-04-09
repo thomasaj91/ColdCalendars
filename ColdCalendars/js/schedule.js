@@ -75,6 +75,8 @@ $(document).ready(function() {
 
 	$('#Shift_End').timepicker({ 'scrollDefaultNow': true });
 	
+	refreshShifts();
+	
 });
 
 function loadSchedulePage()
@@ -132,14 +134,143 @@ function loadAllShifts()
 		}
 		
 	}
-		
-		
-		
-	
 }
 
-function parseTime(timeString)
-{
+function refreshShifts() {
+		
+	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+	var startTime = new Date(y, m, 1);
+	var endTime = new Date(y, m+1, 1);
+	
+	var shiftListObject = new Object();
+	shiftListObject.requestType = "ViewSchedule";
+	shiftListObject.startTime = dateObjectToDateString(startTime);
+	shiftListObject.endTime	  = dateObjectToDateString(endTime);
+	
+	var retVal = $.ajax({
+		url: "rest.php",
+		data: "json="+JSON.stringify(shiftListObject),
+		dataType: "json",
+		async: false
+		});
+	var obj = jQuery.parseJSON(retVal.responseText);
+	
+	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
+		for(var e in obj){
+			if(obj[e]===0)
+				alert('invalid field: '+e);
+		}	
+	}
+	
+    $(".filter").change(function () {
+    	//alert('something changed');
+    	if($('#no_filter').is(':checked')) { 
+    		//alert("it's checked");
+    		$('#calendar').fullCalendar('removeEvents');
+    		for(var e in obj) {
+				var startTime = new Date(obj[e]["startTime"]);
+				var endTime = new Date(obj[e]["endTime"]);
+				var title = obj[e]["owner"];
+				var color = '#0000ff';
+
+				if(parseCookie().login === title)
+					color = '#00ff00';
+				if(obj[e]["released"] === true)
+					color = '#ff0000';
+				
+				$('#calendar').fullCalendar('renderEvent',
+						{
+							title: title,
+							start: startTime,
+							end:   endTime,
+							allDay: false,
+							color: color
+						},true);
+				$('#calendar').fullCalendar('unselect');
+    		}
+    	}
+    	else if($('#me_filter').is(':checked')) {
+    		//alert("it's checked");
+    		$('#calendar').fullCalendar('removeEvents');
+    		for(var e in obj) {
+				var startTime = new Date(obj[e]["startTime"]);
+				var endTime = new Date(obj[e]["endTime"]);
+				var title = obj[e]["owner"];
+				var color = '#0000ff';
+
+				if(parseCookie().login === title){
+					color = '#00ff00';
+					if(obj[e]["released"] === true)
+						color = '#ff0000';
+					$('#calendar').fullCalendar('renderEvent',
+							{
+								title: title,
+								start: startTime,
+								end:   endTime,
+								allDay: false,
+								color: color
+							},true);
+					
+					$('#calendar').fullCalendar('unselect');
+				}
+    		}
+    	}
+    	else if($('#emp_filter').is(':checked')) {
+    		//alert("it's checked");
+    		$('#calendar').fullCalendar('removeEvents');
+    		for(var e in obj) {
+				var startTime = new Date(obj[e]["startTime"]);
+				var endTime = new Date(obj[e]["endTime"]);
+				var title = obj[e]["owner"];
+				var color = '#0000ff';
+
+				if(parseCookie().login === title)
+					color = '#00ff00';
+				if(obj[e]["released"] === true)
+					color = '#ff0000';
+				if(obj[e]["title" === "Employee"]) {
+					$('#calendar').fullCalendar('renderEvent',
+							{
+								title: title,
+								start: startTime,
+								end:   endTime,
+								allDay: false,
+								color: color
+							},true);
+					$('#calendar').fullCalendar('unselect');
+				}
+    		}
+    	}
+    	else if($('#man_filter').is(':checked')) {
+    		//alert("it's checked");
+    		$('#calendar').fullCalendar('removeEvents');
+    		for(var e in obj) {
+				var startTime = new Date(obj[e]["startTime"]);
+				var endTime = new Date(obj[e]["endTime"]);
+				var title = obj[e]["owner"];
+				var color = '#0000ff';
+
+				if(parseCookie().login === title)
+					color = '#00ff00';
+				if(obj[e]["released"] === true)
+					color = '#ff0000';
+				if(obj[e]["title"] === "Manager") {
+					$('#calendar').fullCalendar('renderEvent',
+							{
+								title: title,
+								start: startTime,
+								end:   endTime,
+								allDay: false,
+								color: color
+							},true);
+					$('#calendar').fullCalendar('unselect');
+				}
+    		}
+    	}
+    });
+}
+
+function parseTime(timeString) {
   if (timeString == '') return null;
   var d = new Date();
   var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/);
