@@ -96,13 +96,7 @@ function loadAllShifts()
 	shiftListObject.startTime = dateObjectToDateString(startTime);
 	shiftListObject.endTime	  = dateObjectToDateString(endTime);
 	
-	var retVal = $.ajax({
-		url: "rest.php",
-		data: "json="+JSON.stringify(shiftListObject),
-		dataType: "json",
-		async: false
-		});
-	var obj = jQuery.parseJSON(retVal.responseText);
+	var obj = ajaxGetJSON(shiftListObject);
 	
 	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
 		for(var e in obj){
@@ -112,8 +106,8 @@ function loadAllShifts()
 	}
 	else {
 		for(var e in obj) {
-			var startTime = new Date(obj[e]["startTime"]);
-			var endTime = new Date(obj[e]["endTime"]);
+			var startTime = stringToDateObject(obj[e]["startTime"]);
+			var endTime   = stringToDateObject(obj[e]["endTime"  ]);
 			var title = obj[e]["owner"];
 			var color = '#0000ff';
 
@@ -137,23 +131,16 @@ function loadAllShifts()
 }
 
 function refreshShifts() {
-		
-	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+	var date      = new Date(), y = date.getFullYear(), m = date.getMonth();
 	var startTime = new Date(y, m, 1);
-	var endTime = new Date(y, m+1, 1);
+	var endTime   = new Date(y, m+1, 1);
 	
 	var shiftListObject = new Object();
 	shiftListObject.requestType = "ViewSchedule";
-	shiftListObject.startTime = dateObjectToDateString(startTime);
-	shiftListObject.endTime	  = dateObjectToDateString(endTime);
+	shiftListObject.startTime   = dateObjectToDateString(startTime);
+	shiftListObject.endTime	    = dateObjectToDateString(endTime);
 	
-	var retVal = $.ajax({
-		url: "rest.php",
-		data: "json="+JSON.stringify(shiftListObject),
-		dataType: "json",
-		async: false
-		});
-	var obj = jQuery.parseJSON(retVal.responseText);
+	var obj = ajaxGetJSON(shiftListObject);
 	
 	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
 		for(var e in obj){
@@ -162,111 +149,14 @@ function refreshShifts() {
 		}	
 	}
 	
-    $(".filter").change(function () {
-    	//alert('something changed');
-    	if($('#no_filter').is(':checked')) { 
-    		//alert("it's checked");
-    		$('#calendar').fullCalendar('removeEvents');
-    		for(var e in obj) {
-				var startTime = new Date(obj[e]["startTime"]);
-				var endTime = new Date(obj[e]["endTime"]);
-				var title = obj[e]["owner"];
-				var color = '#0000ff';
-
-				if(parseCookie().login === title)
-					color = '#00ff00';
-				if(obj[e]["released"] === true)
-					color = '#ff0000';
-				
-				$('#calendar').fullCalendar('renderEvent',
-						{
-							title: title,
-							start: startTime,
-							end:   endTime,
-							allDay: false,
-							color: color
-						},true);
-				$('#calendar').fullCalendar('unselect');
-    		}
-    	}
-    	else if($('#me_filter').is(':checked')) {
-    		//alert("it's checked");
-    		$('#calendar').fullCalendar('removeEvents');
-    		for(var e in obj) {
-				var startTime = new Date(obj[e]["startTime"]);
-				var endTime = new Date(obj[e]["endTime"]);
-				var title = obj[e]["owner"];
-				var color = '#0000ff';
-
-				if(parseCookie().login === title){
-					color = '#00ff00';
-					if(obj[e]["released"] === true)
-						color = '#ff0000';
-					$('#calendar').fullCalendar('renderEvent',
-							{
-								title: title,
-								start: startTime,
-								end:   endTime,
-								allDay: false,
-								color: color
-							},true);
-					
-					$('#calendar').fullCalendar('unselect');
-				}
-    		}
-    	}
-    	else if($('#emp_filter').is(':checked')) {
-    		//alert("it's checked");
-    		$('#calendar').fullCalendar('removeEvents');
-    		for(var e in obj) {
-				var startTime = new Date(obj[e]["startTime"]);
-				var endTime = new Date(obj[e]["endTime"]);
-				var title = obj[e]["owner"];
-				var color = '#0000ff';
-
-				if(parseCookie().login === title)
-					color = '#00ff00';
-				if(obj[e]["released"] === true)
-					color = '#ff0000';
-				if(obj[e]["title" === "Employee"]) {
-					$('#calendar').fullCalendar('renderEvent',
-							{
-								title: title,
-								start: startTime,
-								end:   endTime,
-								allDay: false,
-								color: color
-							},true);
-					$('#calendar').fullCalendar('unselect');
-				}
-    		}
-    	}
-    	else if($('#man_filter').is(':checked')) {
-    		//alert("it's checked");
-    		$('#calendar').fullCalendar('removeEvents');
-    		for(var e in obj) {
-				var startTime = new Date(obj[e]["startTime"]);
-				var endTime = new Date(obj[e]["endTime"]);
-				var title = obj[e]["owner"];
-				var color = '#0000ff';
-
-				if(parseCookie().login === title)
-					color = '#00ff00';
-				if(obj[e]["released"] === true)
-					color = '#ff0000';
-				if(obj[e]["title"] === "Manager") {
-					$('#calendar').fullCalendar('renderEvent',
-							{
-								title: title,
-								start: startTime,
-								end:   endTime,
-								allDay: false,
-								color: color
-							},true);
-					$('#calendar').fullCalendar('unselect');
-				}
-    		}
-    	}
+    $("#Only_Me_Filter").change(function () {
+    	var fliter  = $(this).is(':checked');
+    	$('.fc-event').each(function() {
+          if(fliter && $(this).find('.fc-event-title').html() !== parseCookie().login)
+    	    $(this).hide();
+    	  else
+   		    $(this).show();
+    	});
     });
 }
 

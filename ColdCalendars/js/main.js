@@ -69,6 +69,18 @@ function ajaxGetJSON(obj) {
 	return jQuery.parseJSON(retVal.responseText); 	  
 }
 
+function stringToDateObject(str){
+	var obj = new Date();
+	obj.setYear( parseInt(str.substr(0,4)));
+	obj.setMonth(parseInt(str.substr(5,2))-1,
+			     parseInt(str.substr(8,2)));
+	obj.setHours(parseInt(str.substr(11,2)),
+			     parseInt(str.substr(14,2)),
+			     parseInt(str.substr(17,2)),
+			     0);
+	return obj;
+}
+
 function setUserType() {
 	var requestObject = new Object();
 	requestObject.requestType = "UserInfo";
