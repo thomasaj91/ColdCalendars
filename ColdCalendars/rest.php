@@ -468,14 +468,16 @@ function processREST() {
   }
   
   function viewQueue($dataBlob){ //TODO
-  	$list;
-  
-  	try {
-  		$list = Queue::getQueue(); // not sure what to do with this
-  	}
-  	catch (Exception $e) {
-  		return null;
-  	}
+    $validation = array();
+    $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+    $validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
+    
+    if(in_array(false,$validation))
+      return $validation;
+     
+    $list;
+  	try { $list = Shift::getAllUndecidedSwaps($dataBlob->startTime, $dataBlob->endTime); } // not sure what to do with this
+  	catch (Exception $e) { return null; }
   	return $list;
   }
 

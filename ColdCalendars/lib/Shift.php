@@ -94,6 +94,30 @@ INSERT INTO Swap VALUES
     WHERE Shift.Start_time >= '@PARAM'
     AND   Shift.End_time   <= '@PARAM'";
 
+	private static $qryUndecidedSwaps = "
+SELECT 
+    User.Login,
+	Start_time,
+    End_time,
+    Released, 
+    Approved
+	FROM Shift
+	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	  FROM Swap
+	  GROUP BY Shift_FK
+	) AS  swp
+	ON    swp.Shift_FK  = Shift.PK
+	JOIN  Swap
+	ON    swp.Shift_FK  = Swap.Shift_FK
+	AND   swp.Timestamp = Swap.Timestamp
+	LEFT JOIN User
+	ON    Swap.Prev = User.PK
+	WHERE Shift.Start_time >= '@PARAM'
+	AND   Shift.End_time   <= '@PARAM'
+    AND   Next IS NOT NULL
+    AND   Approved IS NULL
+    ";
+	
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -151,13 +175,14 @@ INSERT INTO Swap VALUES
 		return count($results) !== 0;
 	}
 
-<<<<<<< HEAD
 	public static function getAllUndecidedSwaps($start, $end) {
-	  ; 
+		$conn    = DB::getNewConnection();
+		$results = DB::query($conn,DB::injectParamaters(array($end,$login), self::$qryLoadShift));
+		$out = array();
+		foreach($results as $row)
+		  array_push($out, self::load($row[0], $start[1], $end[2]))
+        return $out;
 	}
-	
-=======
->>>>>>> e8850dc37b6372e183c552e3e1d6a5c689e6bbff
 	public function getInfo() {
 		$out = array();
 		$out['owner']     =  $this->owner;
