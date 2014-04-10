@@ -180,7 +180,7 @@ SELECT
 		$results = DB::query($conn,DB::injectParamaters(array($end,$login), self::$qryLoadShift));
 		$out = array();
 		foreach($results as $row)
-		  array_push($out, self::load($row[0], $start[1], $end[2]))
+		  array_push($out, self::load($row[0], $start[1], $end[2]));
         return $out;
 	}
 	public function getInfo() {
