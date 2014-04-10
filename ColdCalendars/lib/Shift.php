@@ -177,7 +177,7 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function getAllUndecidedSwaps($start, $end) {
-	  
+	  ; 
 	}
 	
 	public function getInfo() {
