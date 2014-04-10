@@ -117,7 +117,7 @@ SELECT
     AND   Next IS NOT NULL
     AND   Approved IS NULL
     ";
-	
+
 	private $owner;
 	private $pickuper;
 	private $released;
@@ -177,10 +177,14 @@ SELECT
 
 	public static function getAllUndecidedSwaps($start, $end) {
 		$conn    = DB::getNewConnection();
-		$results = DB::query($conn,DB::injectParamaters(array($end,$login), self::$qryLoadShift));
+		$results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryUndecidedSwaps));
 		$out = array();
 		foreach($results as $row)
+<<<<<<< HEAD
 		  array_push($out, self::load($row[0], $start[1], $end[2]));
+=======
+		  array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+>>>>>>> dec5e0764106518615cc158588bfa9a3a92f2822
         return $out;
 	}
 	public function getInfo() {
@@ -193,7 +197,7 @@ SELECT
 		$out['approved']  = ($this->approved !== null) ? $this->approved : 'Null';
 		return $out;
 	}
-	
+
 	public function getStartTime() {
 		return $this->startTime;
 	}
@@ -305,7 +309,7 @@ SELECT
 // 		$limit = count($res);
 // 		for($i = 0; $i < $limit; $i++)
 // 			$out[$i] = self::load($res[$i][0],$res[$i][1],$res[$i][2]);
-		
+
 		foreach($res as $row)
 			array_push($out, (self::load($row[0], $row[1], $row[2])->getInfo() ));
 		$conn->close();

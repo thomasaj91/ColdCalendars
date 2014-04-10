@@ -1,31 +1,27 @@
 function getQueue() {
 
-    var queueObject = new Object
+    var queueObject = new Object();
     
-    queueObject.requestType = "View_Queue";
-    
-    var retVal = $.ajax({
-        url: "rest.php",
-        data: "json=" + JSON.stringify(queueObject),
-        dataType: "json",
-        async: false
-    });
-    
-     var list = jQuery.parseJSON(retVal.responseText);
+    queueObject.requestType = "ViewQueue";
+    queueObject.startTime = dateObjectToDateString(new Date());
+    queueObject.endTime = dateObjectToDateString(new Date("01/01/2099"));
+     var list = ajaxGetJSON(queueObject);
      
      for(var e in list) {
+    	 alert(list[e].login);
+    	 /*
           switch(e.type){
           case 'Swap':
-                  var li = $('li').appendTo('#masterQueue');
-                  $('div').appendTo(li).text(e.login + " wants to swap with " + e.pickeruper)
+                  var li = $('li').appendTo('#Display_Queue');
+                  $('div').appendTo(li).text(list[e].login + " wants to swap with " + list[e].pickeruper)
                   .attr('data-login',thing.login)
                   .attr('data-type',thing.type)
                   .attr;
                   $('button').class('acceptQueueItem').appendTo(li);
                   $('button').class('rejectQueueItem').appendTo(li);
-          }
-  }
-  
+          }*/
+     }
+  /*
   $('.acceptQueueItem').click(function(){
           $(this).parent().objecthatwearelookingfor   
           var login = $(thing).attr('data-login');
@@ -36,7 +32,9 @@ function getQueue() {
           }
      $(this).parent.remove(0);
   }
-
+*/
 }
 
-
+$(document).ready(function(){
+	getQueue();
+});

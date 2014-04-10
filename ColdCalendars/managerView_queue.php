@@ -5,8 +5,10 @@
 <head>
   <meta charset="utf-8" />
   <title>Manager view</title>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-  <script src="js/queue.js"></script> 
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+  <script src='../js/main.js'></script>
+  <script src="../js/queue.js"></script> 
   <style type="text/css">
   <!-- 
  
@@ -63,17 +65,13 @@
   </header>
 
   </div>
-  <hr size="3" color ="black">  
-  <center>
+  <hr size="3" color ="black">
    <h1>Queue</h1>
-  <div id="Display_Queue">
-    <p>Queues are displayed here</p>
-  </div>
+  <ul id="Display_Queue"></ul>
   <br>
   <br>
-  </center>
   <footer id="footer" >
-  <center>Copyright © 2014 Cold Calendars</center>
+  <p>Copyright Â© 2014 Cold Calendars</p>
   </footer>
 </body>
 </html>
