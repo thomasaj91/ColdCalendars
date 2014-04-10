@@ -12,6 +12,10 @@
   <style type="text/css">
   <!-- 
  
+  .center { margin : 0 auto; text-align: center; }
+ 
+   .queueItem { list-style-type: none; }
+ 
   #navbar ul { 
           margin: 0; 
           padding: 5px; 
@@ -50,7 +54,7 @@
   </head> 
   <body>
 
-  <div id="wrapper">
+  <div id="wrapper" class="center">
     <header>
       <h1 style="font-family:Comic Sans Ms";font-size:20pt; color:#00FF00;><center> Manager's View</center></h1>
   <div id="navbar"> 
@@ -65,12 +69,15 @@
   </header>
 
   </div>
-  <hr size="3" color ="black">
-   <h1>Queue</h1>
-  <ul id="Display_Queue"></ul>
+  <div class="center">
+    <hr size="3" color ="black">
+     <h1>Queue</h1>
+    <ul id="Display_Queue">
+    </ul>
+  </div>
   <br>
   <br>
-  <footer id="footer" >
+  <footer id="footer" class="center">
   <p>Copyright Â© 2014 Cold Calendars</p>
   </footer>
 </body>

@@ -408,7 +408,7 @@ function processREST() {
   	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
 		return null;
 	
-	Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
 	if($dataBlob->approved)
       $shift->approve();
     else

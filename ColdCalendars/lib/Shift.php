@@ -180,11 +180,7 @@ SELECT
 		$results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryUndecidedSwaps));
 		$out = array();
 		foreach($results as $row)
-<<<<<<< HEAD
-		  array_push($out, self::load($row[0], $start[1], $end[2]));
-=======
 		  array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
->>>>>>> dec5e0764106518615cc158588bfa9a3a92f2822
         return $out;
 	}
 	public function getInfo() {
@@ -269,7 +265,7 @@ SELECT
 	private function update() {
 		$params = array($this->pickuper
 				,$this->released
-				,($this->approved===NULL) ? 'NULL' : $this->approved
+				,($this->approved===NULL) ? 'NULL' : (int) $this->approved
 				,$this->startTime
 				,$this->endTime
 				,$this->owner
