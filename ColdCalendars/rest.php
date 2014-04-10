@@ -379,7 +379,7 @@ function processREST() {
   	return $validation;
   }
   
-  function removeShift($datablob) {
+  function removeShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
 	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
@@ -424,15 +424,15 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   
-  	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
+  	if(!Shift::exists($_COOKIE['login'], $dataBlob->startTime, $dataBlob->endTime))
   		return null;
   	
-  	Shift::load($_COOKIE['login'],$dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+  	$shift = Shift::load($_COOKIE['login'], $dataBlob->startTime, $dataBlob->endTime);
   	$shift->release();
   	return $validation;
   }
   
-  function pickUpShift($requestData) {
+  function pickUpShift($dataBlob) {
   	$validation = array();
   	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
 	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
@@ -444,8 +444,9 @@ function processREST() {
   	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
   		return null;
   	 
-  	Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+  	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
   	$shift->pickup($_COOKIE['login']);
+  	return $validation;
   }
 
   function viewSchedule($dataBlob){ //TODO
@@ -461,21 +462,21 @@ function processREST() {
   		$list = Shift::getAllShifts($dataBlob->startTime,$dataBlob->endTime); //pass a start time and end time to define the range of shifts that should be passed back
   	}
   	catch (Exception $e) {
-  		//echo $e->getMessage();
   		return null;
   	}
   	return $list;
   }
   
   function viewQueue($dataBlob){ //TODO
-  	$validation = array();
-	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
-	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
-  	  	 
-  	if(in_array(false,$validation))
-  	  return $validation;
-
-  	return Shift::getAllUndecidedSwaps($start,$end);
+  	$list;
+  
+  	try {
+  		$list = Queue::getQueue(); // not sure what to do with this
+  	}
+  	catch (Exception $e) {
+  		return null;
+  	}
+  	return $list;
   }
 
   function userAvailability($dataBlob) { //TODO

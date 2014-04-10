@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href='../fullcalendar/fullcalendar.css' rel='stylesheet' />
-<link href='../fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link href='../css/fullcalendar.css' rel='stylesheet' />
+<link href='../css/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" href="../css/jquery.timepicker.css" />
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<script src='../fullcalendar/fullcalendar.min.js'></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src='../js/fullcalendar.min.js'></script>
 <script src='../js/jquery.timepicker.js'></script>
 <script src='../js/jquery.timepicker.min.js'></script>
 <script src='../js/schedule.js'></script>
@@ -32,13 +32,13 @@
 	<div id='Shift_Options' title='Shift Options' style='display:none'>
 		<table>
 			<tr>
-				<td><button>Release Shift</button></td>
+				<td><button id='Release_Shift_Button'>Release Shift</button></td>
 			</tr>
 			<tr>
-				<td><button>Pickup Shift</button></td>
+				<td><button id='Pickup_Shift_Button'>Pickup Shift</button></td>
 			</tr>
 			<tr>
-				<td><button>Delete Shift</button></td>
+				<td><button id='Delete_Shift_Button'>Delete Shift</button></td>
 			</tr>
 		</table>
 	</div>

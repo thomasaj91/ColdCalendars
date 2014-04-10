@@ -21,7 +21,7 @@ $(document).ready(function() {
 		    	   				var employeeName 	= $('#Employee_Name').val();
 		    	   				var shiftStart 		= parseTime($('#Shift_Start').val());
 		    	   				var shiftEnd   		= parseTime($('#Shift_End').val());	   
-		    	   				
+
 		    	   				//Formatted Shift Times
 		    	   				var startTime = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftStart.getHours(), shiftStart.getMinutes());
 		    	   				var endTime   = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes());
@@ -31,7 +31,7 @@ $(document).ready(function() {
 		    	   				shiftObject.userID	  = employeeName.split(',')[1];
 		    	   				shiftObject.startTime = dateObjectToDateString(startTime);
 		    	   				shiftObject.endTime	  = dateObjectToDateString(endTime);
-		    	   				
+
 		    	   				var retVal = $.ajax({
 										url: "rest.php",
 										data: "json="+JSON.stringify(shiftObject),
@@ -39,7 +39,7 @@ $(document).ready(function() {
 										async: false
 										});
 								var obj = jQuery.parseJSON(retVal.responseText);
-		    	   				
+
 			    	   			$('#calendar').fullCalendar('renderEvent',
 								{
 									title: employeeName,
@@ -47,18 +47,36 @@ $(document).ready(function() {
 									end:   endTime,
 									allDay: false
 								},true);
-								
+
 					    	   	$('#calendar').fullCalendar('unselect');
 					    	   	$(this).dialog("close");
-					    
+
 					}, 
 	    		   	"Cancel": function() { $(this).dialog("close"); } }
             });
             loadNames();
         },
-        eventClick: function(){
-            $('#Shift_Options').dialog(
-		            {
+        eventClick: function(event){
+        	window.targetEvent = event;
+        	if(event.color == '#ff0000' || parseCookie().login != event.title) {
+        		$('#Release_Shift_Button').hide();
+        	}
+        	else {
+        		$('#Release_Shift_Button').show();
+        	}
+        	if(event.color != '#ff0000') {
+        		$('#Pickup_Shift_Button').hide();
+        	}
+        	else {
+        		$('#Pickup_Shift_Button').show();
+        	}
+        	if(window.userType != 'Manager'){
+        		$('#Delete_Shift_Button').hide();
+        	}
+        	else {
+        		$('#Delete_Shift_Button').show();
+        	}
+            $('#Shift_Options').dialog({
 		    	   		height: 175,
 		    	   		width: 175,
 		    	   		modal: true,
@@ -70,13 +88,71 @@ $(document).ready(function() {
 	});
 
 	loadSchedulePage();
+
+	
+	$('#Release_Shift_Button').click(function(){
+		if(window.targetEvent.color != '#ff0000') {
+			var shiftObject = new Object();
+			shiftObject.requestType = 'ReleaseShift';
+			shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
+			shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
+			
+			var obj = ajaxGetJSON(shiftObject);
+			
+			window.targetEvent.color = '#ff0000';
+		}
+		
+		$('#Shift_Options').dialog("close");
+	});
+	
+	$('#Pickup_Shift_Button').click(function(){
+		if(window.targetEvent.color == '#ff0000') {
+			var shiftObject = new Object();
+			shiftObject.requestType = 'PickUpShift';
+			shiftObject.userID	  = window.targetEvent.title;
+			shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
+			shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
+			
+			var obj = ajaxGetJSON(shiftObject);
+		}
+		
+		$('#Shift_Options').dialog("close");
+	});
+	
+	$('#Delete_Shift_Button').click(function(){
+		var shiftObject = new Object();
+		shiftObject.requestType = 'RemoveFromSchedule';
+		shiftObject.userID	  = window.targetEvent.title;
+		shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
+		shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
+		
+		var obj = ajaxGetJSON(shiftObject);
+		
+		$('#calendar').fullCalendar('removeEvents',window.targetEvent._id);
+		$('#Shift_Options').dialog("close");
+	});
+	
+	$('.fc-event').focus(function() {
+		$('.last-clicked-event').each(function(){
+			$(this).removeClass('last-clicked-event');
+		});
+		$(this).addClass('last-clicked-event');
+	});
 	
 	$('#Shift_Start').timepicker({ 'scrollDefaultNow': true });
 
 	$('#Shift_End').timepicker({ 'scrollDefaultNow': true });
-	
-	refreshShifts();
-	
+
+    $("#Only_Me_Filter").change(function () {
+    	var fliter  = $(this).is(':checked');
+    	$('.fc-event').each(function() {
+          if(fliter && $(this).find('.fc-event-title').html() !== parseCookie().login)
+    	    $(this).hide();
+    	  else
+   		    $(this).show();
+    	});
+    });
+
 });
 
 function loadSchedulePage()
@@ -90,14 +166,14 @@ function loadAllShifts()
 	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
 	var startTime = new Date(y, m, 1);
 	var endTime = new Date(y, m+1, 1);
-	
+
 	var shiftListObject = new Object();
 	shiftListObject.requestType = "ViewSchedule";
 	shiftListObject.startTime = dateObjectToDateString(startTime);
 	shiftListObject.endTime	  = dateObjectToDateString(endTime);
-	
+
 	var obj = ajaxGetJSON(shiftListObject);
-	
+
 	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
 		for(var e in obj){
 			if(obj[e]===0)
@@ -115,7 +191,7 @@ function loadAllShifts()
 				color = '#00ff00';
 			if(obj[e]["released"] === true)
 				color = '#ff0000';
-			
+
 			$('#calendar').fullCalendar('renderEvent',
 					{
 						title: title,
@@ -126,38 +202,8 @@ function loadAllShifts()
 					},true);
 			$('#calendar').fullCalendar('unselect');
 		}
-		
-	}
-}
 
-function refreshShifts() {
-	var date      = new Date(), y = date.getFullYear(), m = date.getMonth();
-	var startTime = new Date(y, m, 1);
-	var endTime   = new Date(y, m+1, 1);
-	
-	var shiftListObject = new Object();
-	shiftListObject.requestType = "ViewSchedule";
-	shiftListObject.startTime   = dateObjectToDateString(startTime);
-	shiftListObject.endTime	    = dateObjectToDateString(endTime);
-	
-	var obj = ajaxGetJSON(shiftListObject);
-	
-	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
-		for(var e in obj){
-			if(obj[e]===0)
-				alert('invalid field: '+e);
-		}	
 	}
-	
-    $("#Only_Me_Filter").change(function () {
-    	var fliter  = $(this).is(':checked');
-    	$('.fc-event').each(function() {
-          if(fliter && $(this).find('.fc-event-title').html() !== parseCookie().login)
-    	    $(this).hide();
-    	  else
-   		    $(this).show();
-    	});
-    });
 }
 
 function parseTime(timeString) {
@@ -180,11 +226,11 @@ function loadNames() {
 				async: false
 				});
 		var list = jQuery.parseJSON(retVal.responseText);
-		
+
 		for(var e in list){
 			list[e] = list[e].join();
 		}
-		
+
 		  $( "#Employee_Name" ).autocomplete({
 		      source: list
 		    });
