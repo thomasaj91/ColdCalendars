@@ -5,25 +5,6 @@ ini_set('display_errors', 3);
 require_once(__DIR__ . '/../DB.php');
 class Shift {
 
-  
-  private static $qryShiftExists = "
-      SELECT EXISTS(SELECT 1	FROM Shift
-	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
-	  FROM Swap
-	  GROUP BY Shift_FK
-	) AS swp
-	ON   swp.Shift_FK  = Shift.PK
-	JOIN Swap
-	ON   swp.Shift_FK  = Swap.Shift_FK
-	AND  swp.Timestamp = Swap.Timestamp
-	LEFT JOIN User
-	ON   Swap.Next = User.PK
-	WHERE Shift.Start_time = '@PARAM'
-	AND   Shift.End_time   = '@PARAM'
-	AND   Swap.Prev =
-	(SELECT PK FROM User WHERE Login = '@PARAM') LIMIT 1)
-";
-  
 	private static $qryCreateShift = "set @pk := (SELECT AUTO_INCREMENT
 FROM information_schema.tables
 WHERE table_name = 'Shift'
@@ -122,7 +103,7 @@ INSERT INTO Swap VALUES
 
 	public function Shift($login,$start,$end,$create) {
 		if($create) {
-		  $conn = DB::getNewConnection();
+			$conn = DB::getNewConnection();
 			DB::execute($conn,DB::injectParamaters(array($start,$end,$login), self::$qryCreateShift));
 		    $conn->close();
 			$this->owner     = $login;
@@ -134,6 +115,8 @@ INSERT INTO Swap VALUES
 			return;
 		}
 		else { //load shift
+			if(!self::exists($login, $start, $end))
+				throw new Exception("Shift Does Not Exist");
 			$conn    = DB::getNewConnection();
 			$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
 			$conn->close();
@@ -148,15 +131,11 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function create($login,$start,$end) {
-	  if(self::exists($login, $start, $end))
-		throw new Exception("Shift Already Exists");
 	  return new Shift($login, $start, $end, true);
 	}
 
 	public static function load($login,$start,$end) {
-	  if(!self::exists($login, $start, $end))
-		throw new Exception("Shift Does NOT Exists");
-	  return new Shift($login, $start, $end, false);
+      return new Shift($login, $start, $end, false);
 	}
 
 	public static function delete($login,$start,$end) {
@@ -167,19 +146,11 @@ INSERT INTO Swap VALUES
 	}
 
 	public static function exists($login,$start,$end) {
-// 		$conn    = DB::getNewConnection();
-// 		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
-// 		return count($results) !== 0;
-	  $conn = DB::getNewConnection();
-	  $results = DB::query($conn, DB::injectParamaters(array($start,$end,$login), self::$qryShiftExists));
-	  $conn->close();
-	  return ($results [0] [0] === '1') ? true : false;	   
+		$conn    = DB::getNewConnection();
+		$results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryLoadShift));
+		return count($results) !== 0;
 	}
 
-	public static function getAllUndecidedSwaps($start, $end) {
-	  
-	}
-	
 	public function getInfo() {
 		$out = array();
 		$out['owner']     =  $this->owner;
@@ -187,7 +158,7 @@ INSERT INTO Swap VALUES
 		$out['startTime'] =  $this->startTime;
 		$out['endTime']   =  $this->endTime;
 		$out['released']  =  $this->released;
-		$out['approved']  = ($this->approved !== null) ? (int) $this->approved : 'Null';
+		$out['approved']  = ($this->approved !== null) ? $this->approved : 'Null';
 		return $out;
 	}
 	
@@ -225,7 +196,7 @@ INSERT INTO Swap VALUES
 	}
 
 	/* Set DB.Released = True  */
-	public function relsease() {
+	public function release() {
 		if($this->isReleased())
 			return;
 		$this->released = true;
