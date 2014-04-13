@@ -13,8 +13,62 @@ assertValidUserPageAccess();
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <script src="js/main.js"></script> 
   <script src="js/contacts.js"></script> 
+  <style>
+		.center { margin : 0 auto; text-align: center; }
+		 
+		.queueItem { list-style-type: none; }
+		 
+		#navbar ul { 
+		          margin: 0; 
+		          padding: 5px; 
+		          list-style-type: none; 
+		          text-align: center; 
+		          background-color: #000; 
+		          } 
+		 
+		#navbar ul li {  
+		          display: inline; 
+		          } 
+		  
+		#navbar ul li a { 
+		          text-decoration: none; 
+		          padding: .2em 1em; 
+		          color: #fff; 
+		          background-color: #000; 
+		          } 
+		 
+		#navbar ul li a:hover { 
+		          color: #000; 
+		          background-color: #fff; 
+		          } 
+		#footer  { 
+		          font-size: 10px; 
+		          }
+		#container {
+		          width: 500px;
+		          height: 500px;
+		          background-color: #FDA;
+		          margin: 0 auto;
+		          overflow: hidden;
+		}
+  </style>
 </head>
 <body>
+	<div id="wrapper" class="center">
+	    <header>
+		  <div id="navbar"> 
+		    <ul> 
+		        <li><a href="contacts.php">Contacts</a></li> 
+		        <li><a href="#">Requests</a></li> 
+		        <li><a href="schedule.php">Schedule</a></li> 
+		        <li><a href="#">Reports</a></li> 
+		        <li><a href="#">Log Out</a></li> 
+		    </ul> 
+		  </div> 
+		  <br>
+	   </header>
+	
+	</div>
 <button id='Logout'>Logout</button>
 <div id='Schedule'></div>
 <div id="Current_User_Info">
