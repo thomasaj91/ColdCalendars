@@ -32,20 +32,15 @@ $(document).ready(function() {
 		    	   				shiftObject.startTime = dateObjectToDateString(startTime);
 		    	   				shiftObject.endTime	  = dateObjectToDateString(endTime);
 
-		    	   				var retVal = $.ajax({
-										url: "rest.php",
-										data: "json="+JSON.stringify(shiftObject),
-										dataType: "json",
-										async: false
-										});
-								var obj = jQuery.parseJSON(retVal.responseText);
+								var obj = ajaxGetJSON(shiftObject);
 
 			    	   			$('#calendar').fullCalendar('renderEvent',
 								{
 									title: employeeName,
 									start: startTime,
 									end:   endTime,
-									allDay: false
+									allDay: false,
+									color: window.standardShift,
 								},true);
 
 					    	   	$('#calendar').fullCalendar('unselect');
@@ -58,24 +53,31 @@ $(document).ready(function() {
         },
         eventClick: function(event){
         	window.targetEvent = event;
-        	if(event.color == '#ff0000' || parseCookie().login != event.title) {
+        	
+        	//Hide the release shift button for shifts that are released/other users' shifts
+        	if(event.color == window.releasedShift || parseCookie().login != event.title) {
         		$('#Release_Shift_Button').hide();
         	}
         	else {
         		$('#Release_Shift_Button').show();
         	}
-        	if(event.color != '#ff0000') {
+        	
+        	//Show the pickup button for released shifts only
+        	if(event.color != window.releasedShift) {
         		$('#Pickup_Shift_Button').hide();
         	}
         	else {
         		$('#Pickup_Shift_Button').show();
         	}
+        	
+        	//Hide the delete button for everyone but managers
         	if(window.userType != 'Manager'){
         		$('#Delete_Shift_Button').hide();
         	}
         	else {
         		$('#Delete_Shift_Button').show();
         	}
+        	
             $('#Shift_Options').dialog({
 		    	   		height: 175,
 		    	   		width: 175,
@@ -91,7 +93,7 @@ $(document).ready(function() {
 
 	
 	$('#Release_Shift_Button').click(function(){
-		if(window.targetEvent.color != '#ff0000') {
+		if(window.targetEvent.color != window.releasedShift) {
 			var shiftObject = new Object();
 			shiftObject.requestType = 'ReleaseShift';
 			shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
@@ -99,14 +101,14 @@ $(document).ready(function() {
 			
 			var obj = ajaxGetJSON(shiftObject);
 			
-			window.targetEvent.color = '#ff0000';
+			window.targetEvent.color = window.releasedShift;
 		}
 		
 		$('#Shift_Options').dialog("close");
 	});
 	
 	$('#Pickup_Shift_Button').click(function(){
-		if(window.targetEvent.color == '#ff0000') {
+		if(window.targetEvent.color == window.releasedShift) {
 			var shiftObject = new Object();
 			shiftObject.requestType = 'PickUpShift';
 			shiftObject.userID	  = window.targetEvent.title;
@@ -157,6 +159,7 @@ $(document).ready(function() {
 
 function loadSchedulePage()
 {
+	setShiftColors();
 	setUserType();
 	loadAllShifts();
 }
@@ -185,12 +188,12 @@ function loadAllShifts()
 			var startTime = stringToDateObject(obj[e]["startTime"]);
 			var endTime   = stringToDateObject(obj[e]["endTime"  ]);
 			var title = obj[e]["owner"];
-			var color = '#0000ff';
+			var color = window.standardShift;
 
 			if(parseCookie().login === title)
-				color = '#00ff00';
+				color = window.myShift;
 			if(obj[e]["released"] === true)
-				color = '#ff0000';
+				color = window.releasedShift;
 
 			$('#calendar').fullCalendar('renderEvent',
 					{
@@ -234,4 +237,10 @@ function loadNames() {
 		  $( "#Employee_Name" ).autocomplete({
 		      source: list
 		    });
+}
+
+function setShiftColors() {
+	window.standardShift = '#0000ff';
+	window.releasedShift = '#ff0000';
+	window.myShift = '#228b22';
 }
