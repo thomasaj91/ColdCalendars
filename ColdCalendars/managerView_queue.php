@@ -59,9 +59,9 @@
       <h1 style="font-family:Comic Sans Ms";font-size:20pt; color:#00FF00;><center> Manager's View</center></h1>
   <div id="navbar"> 
     <ul> 
-        <li><a href="#">Home</a></li> 
+        <li><a href="contacts.php">Contacts</a></li> 
         <li><a href="#">Requests</a></li> 
-        <li><a href="#">Schedules</a></li> 
+        <li><a href="schedule.php">Schedule</a></li> 
         <li><a href="#">Reports</a></li> 
         <li><a href="#">Log Out</a></li> 
     </ul> 
