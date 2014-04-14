@@ -5,6 +5,7 @@ require_once(__DIR__.'/lib/User.php');
 require_once(__DIR__.'/lib/Shift.php');
 require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
+require_once(__DIR__.'/lib/Availability.php');
 
 echo json_encode(processREST());
 
@@ -487,7 +488,7 @@ function processREST() {
   	$list;
   	
   	try {
-  		$list = User::getAvailability($dataBlob->login);
+  		$list = Availability::getUserAvailability($dataBlob->login);
   	}
   	catch (Exception $e) {
   		return null;
