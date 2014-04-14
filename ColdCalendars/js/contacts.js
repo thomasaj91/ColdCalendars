@@ -4,28 +4,24 @@ function loadContactsPage() {
 	  createEmailAddressRemovalList();
 	  setUserType();
 	  hideAdminButtons();
-	  
+
 	  $('input:text').val('');
-	  
+
 	  $("#Contact_List").accordion();
 	  $("#Current_User_Info").accordion();
 	  $("#Create_User").click(function() {
  	  		$( "#Create_User_Dialog" ).dialog("open");
       });
-	  
-	  $("#Logout").click(function () {
-		  logUserOut();
-	  });
-	  
+
 	  $("#Delete_User").click(function() {
 	  		$( "#Delete_User_Dialog" ).dialog("open");
       });
-	  
+
 	  //Add/delete phone numbers
 	  $('#Add_Phone_Button').click(function() {
 		  $('#Add_Phone_Dialog').dialog('open');
       });
-	  
+
 	  $('#Add_Phone_Dialog').dialog({
 		  autoOpen: false,
 		  height: 175,
@@ -35,12 +31,12 @@ function loadContactsPage() {
 		  draggable: true,
 		  buttons: { "Submit": function() {
 						  var phoneObject = new Object();
-						  
+
 						  phoneObject.requestType = "AddPhone";
 						  phoneObject.phone		  = $('#New_Number').val();
-						  
+
 						  var obj = ajaxGetJSON(phoneObject);
-						  
+
 						  if(obj === null) {
 							 alert('unexpected server error');
 						  }
@@ -54,11 +50,11 @@ function loadContactsPage() {
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
 	  });
-	  
+
 	  $('#Remove_Phone_Button').click(function() {
 		  $('#Remove_Phone_Dialog').dialog('open');
       });
-	  
+
 	  $('#Remove_Phone_Dialog').dialog({
 		  autoOpen: false,
 		  height: 400,
@@ -67,19 +63,19 @@ function loadContactsPage() {
 		  resizable: false,
 		  draggable: true,
 		  buttons: { "Submit": function() {
-					  
+
 			  		  var phoneObject = new Object();
 			  		  phoneObject.requestType = 'RemovePhone';
-			  		  
+
 					  var checkBoxes = document.forms['Phone_Number_Remove_List'].elements['numbers'];
-					  
+
 					  //Loop thru list, find checked checkboxes/send phone # to server
 					  for(var i=0;i<checkBoxes.length;i++){
 					    if(checkBoxes[i].checked){
 					      phoneObject.phone = checkBoxes[i].value;
-					      
+
 					      var obj = ajaxGetJSON(phoneObject);
-					      
+
 						  if(obj === null) {
 								 alert('unexpected server error');
 						  }
@@ -94,12 +90,12 @@ function loadContactsPage() {
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
 	  });
-	  
+
 	  //Add/delete email addresses
 	  $("#Add_Email_Button").click(function() {
 		  $('#Add_Email_Dialog').dialog('open');
       });
-	  
+
 	  $('#Add_Email_Dialog').dialog({
 		  autoOpen: false,
 		  height: 175,
@@ -109,12 +105,12 @@ function loadContactsPage() {
 		  draggable: true,
 		  buttons: { "Submit": function() {
 						  var emailObject = new Object();
-						  
+
 						  emailObject.requestType = "AddEmail";
 						  emailObject.email		  = $('#New_Email').val();
-						  
+
 						  var obj = ajaxGetJSON(emailObject);
-						  
+
 						  if(obj === null) {
 							 alert('unexpected server error');
 						  }
@@ -128,11 +124,11 @@ function loadContactsPage() {
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
 	  });
-	  
+
 	  $('#Remove_Email_Button').click(function() {
 		  $('#Remove_Email_Dialog').dialog('open');
       });
-	  
+
 	  $('#Remove_Email_Dialog').dialog({
 		  autoOpen: false,
 		  height: 400,
@@ -144,14 +140,14 @@ function loadContactsPage() {
 					  //var values = [];
 					  var emailObject = new Object();
 			  		  emailObject.requestType = 'RemoveEmail';
-			  		  
+
 					  var checkBoxes = document.forms['Email_Address_Remove_List'].elements['emails'];
 					  for(var i=0;i<checkBoxes.length;i++){
 					    if(checkBoxes[i].checked){
 					      emailObject.email = checkBoxes[i].value;
-					      
+
 					      var obj = ajaxGetJSON(emailObject);
-					      
+
 						  if(obj === null) {
 								 alert('unexpected server error');
 						  }
@@ -162,12 +158,12 @@ function loadContactsPage() {
 					    } 
 					  }
 					  location.reload();
-			  					
+
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
 	  });
-	  
+
 	  $("#Create_User_Dialog").dialog({
 
 	  		autoOpen: false,
@@ -188,7 +184,7 @@ function loadContactsPage() {
 		      									 userObject.workStatus	      = $("input:radio[name=WorkStatus]:checked").val();
 		      									 userObject.phone			  = $("#Phone").val();
 		      									 userObject.email			  = $("#Email").val();
-		
+
 			  									// var retVal           		  = $.ajax("rest.php?json=" + JSON.stringify(userObject),{async:false});
 		      									var retVal = $.ajax({
 		      										url: "rest.php",
@@ -217,7 +213,7 @@ function loadContactsPage() {
 		      												  		}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
-	  
+
 	  $("#Delete_User_Dialog").dialog({
 
 	  		autoOpen: false,
@@ -230,7 +226,7 @@ function loadContactsPage() {
 
 	   											 userObject.requestType 	  = "DeleteUser";
 		   										 userObject.userID        	  = $("#DeleteLogin").val();
-		
+
 			  									// var retVal           		  = $.ajax("rest.php?json=" + JSON.stringify(userObject),{async:false});
 		      									var retVal = $.ajax({
 		      										url: "rest.php",
@@ -259,8 +255,8 @@ function loadContactsPage() {
 		      												  		}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
-	  	
-	
+
+
 }
 
 function loadUser()
@@ -286,13 +282,13 @@ function loadUser()
 				appendUserDataTo(elem,info,phones,emails,list[e]);
 			}
 		}
-		
+
 		$('#'+parseCookie().login+'_h3').remove().appendTo($('#Current_User_Info'));
 		$('#'+parseCookie().login+'_div').remove().appendTo($('#Current_User_Info'));
-		
+
 		appendAddRemovePhoneButton();
 		appendAddRemoveEmailButton();
-		
+
 		$("#Contact_List").accordion();
   }
 
@@ -300,7 +296,7 @@ function loadUser()
 	  //'+' button
 	  var addButtonData = $('<td>').appendTo('#Phone_Header');	  
 	  var addPhoneButton = $('<button>').text('+').attr('id','Add_Phone_Button').appendTo(addButtonData);
-	  
+
 	  //'-' button
 	  var removeButtonData = $('<td>').appendTo('#Phone_Header');
 	  var removePhoneButton = $('<button>').text('-').attr('id','Remove_Phone_Button').appendTo(removeButtonData);
@@ -310,7 +306,7 @@ function loadUser()
 	  //'+' button
 	  var addButtonData = $('<td>').appendTo('#Email_Header');	  
 	  var addEmailButton = $('<button>').text('+').attr('id','Add_Email_Button').appendTo(addButtonData);
-	  
+
 	  //'-' button
 	  var removeButtonData = $('<td>').appendTo('#Email_Header');
 	  var removeEmailButton = $('<button>').text('-').attr('id','Remove_Email_Button').appendTo(removeButtonData);
@@ -319,15 +315,15 @@ function loadUser()
   function appendUserDataTo(elem,info,phones,emails,login) {
 	  $('<h3>').appendTo(elem).text(info.lastName + ', ' + info.firstName).attr('id',login+'_h3');
 	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
-	  
+
 	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
 	  var userRow = $('<tr>').appendTo(table);
-	  
+
 	  //Format user title/work status
 	  var employeeData = $('<td>').appendTo(userRow).attr('valign','top');
 	  $('<p>').appendTo(employeeData).text('Title: ' + info.title)
 	  $('<p>').appendTo(employeeData).text('Work Status: '+ (info.workStatus ? 'FT' : 'PT'));
-	  
+
 	  //Format user phone list
 	  var phoneData = $('<td>').appendTo(userRow).attr('valign','top');
 	  var phoneTable = $('<table>').appendTo(phoneData).attr('id','Phone_List').attr('border','1');
@@ -347,7 +343,7 @@ function loadUser()
 	  var li1 = $('<ul>').insertAfter(phoneHeaderTable).attr('class','phoneList');
 	  for(var e in phones)
 		  $('<li>').appendTo(li1).text(phones[e]);*/
-	  
+
 	  //Format user email list
 	  var emailData = $('<td>').appendTo(userRow).attr('valign','top');
 	  var emailTable = $('<table>').appendTo(emailData).attr('id','Email_List').attr('border','1');
@@ -391,7 +387,7 @@ function loadUser()
 	  getEmails.requestType = 'UserEmail';
 	  getEmails.userID = login;
 	  return ajaxGetJSON(getEmails);
-	  
+
   }
   
   function callback(param) {
@@ -404,7 +400,7 @@ function loadUser()
 	  var input;
 	  var label;
 	  var number;
-	  
+
 	  for(var i=1; i<table.rows.length;i++)
 	  {
 		  input = $('<input>');
@@ -422,7 +418,7 @@ function loadUser()
 	  var input;
 	  var label;
 	  var email;
-	  
+
 	  for(var i=1; i<table.rows.length;i++)
 	  {
 		  input = $('<input>');
@@ -432,13 +428,6 @@ function loadUser()
 		  label.insertAfter(input).text(email);
 		  $('<br>').insertAfter(label);
 	  }
-  }
-  
-  function logUserOut() {
-        var obj = new Object();
- 	    obj.requestType = "LogoutUser";
-  	    $retJson = ajaxGetJSON(obj);
-  	    window.location.href = "home.php";
   }
   
   function hideAdminButtons()
@@ -454,4 +443,5 @@ function loadUser()
   
   $(document).ready(function() {
 	  setTimeout(loadContactsPage,1);
+	  logout();
   });
