@@ -25,11 +25,11 @@
 		width: 900px;
 		margin: 0 auto;
 		}
-		
+
 	.center { margin : 0 auto; text-align: center; }
-	 
+
 	.queueItem { list-style-type: none; }
-	 
+
 	#navbar ul { 
 	          margin: 0; 
 	          padding: 5px; 
@@ -37,18 +37,18 @@
 	          text-align: center; 
 	          background-color: #000; 
 	          } 
-	 
+
 	#navbar ul li {  
 	          display: inline; 
 	          } 
-	  
+
 	#navbar ul li a { 
 	          text-decoration: none; 
 	          padding: .2em 1em; 
 	          color: #fff; 
 	          background-color: #000; 
 	          } 
-	 
+
 	#navbar ul li a:hover { 
 	          color: #000; 
 	          background-color: #fff; 
@@ -71,17 +71,17 @@
 		  <div id="navbar"> 
 		    <ul> 
 		        <li><a href="contacts.php">Contacts</a></li> 
-		        <li><a href="#">Requests</a></li> 
+		        <li><a href="managerView_queue.php">Requests</a></li> 
 		        <li><a href="schedule.php">Schedule</a></li> 
 		        <li><a href="#">Reports</a></li> 
-		        <li><a href="#">Log Out</a></li> 
+		        <li><a id='Logout' href="#" onclick="logUserOut();return false;">Log Out</a></li> 
 		    </ul> 
 		  </div> 
 		  <br>
 	   </header>
-	
+
 	</div>
-	
+
 	<div id='Shift_Options' title='Shift Options' style='display:none'>
 		<table>
 			<tr>
