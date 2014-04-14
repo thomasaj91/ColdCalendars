@@ -85,8 +85,19 @@ function setUserType() {
 	var requestObject = new Object();
 	requestObject.requestType = "UserInfo";
 	requestObject.userID = parseCookie().login;
-	
+
 	var retval = ajaxGetJSON(requestObject);
-	
+
 	window.userType = retval['title'];
+}
+/*
+$("#Logout").click(function () {
+	  logUserOut();
+});
+*/
+function logUserOut() {
+    var obj = new Object();
+	    obj.requestType = "LogoutUser";
+	    $retJson = ajaxGetJSON(obj);
+	    window.location.href = "home.php";
 }
