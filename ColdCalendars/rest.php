@@ -14,7 +14,7 @@ function processREST() {
   $IMPROPER            = 'Improperly Formatted Request';
   $INVALID             = 'Invalid Formatted Request';
   $UNAUTHORIZED        = 'Invalid Request Specification';
-	
+
   $adminOnlyRequests   = array('CreateUser','DeleteUser','PasswordReset','ChangeTitle','ChangeWorkStatus','ChangeVacationDays');
   $managerOnlyRequests = array('AddToSchedule','RemoveFromSchedule');
   
@@ -402,13 +402,13 @@ function processREST() {
 	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
 	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
 	$validation['approved']  = (int)isValidBool($dataBlob->approved);
-	
+
 	if(in_array(false,$validation))
 		return $validation;
 
   	if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
 		return null;
-	
+
 	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
 	if($dataBlob->approved)
       $shift->approve();
@@ -488,7 +488,7 @@ function processREST() {
   	$list;
   	
   	try {
-  		$list = Availability::getUserAvailability($dataBlob->login);
+  		$list = Availability::getUsersAvailability($dataBlob->login);
   	}
   	catch (Exception $e) {
   		return null;
