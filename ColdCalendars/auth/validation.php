@@ -88,8 +88,8 @@ function isValidDate($str) {
 
 function isValidDay($str) {
 	global $MAX_STR_LEN;
-	return strlen($str) <= MAX_STR_LEN
-	&& preg_match('/^[a-zA-Z]+$/')
+	return strlen($str) <= $MAX_STR_LEN
+	&& preg_match('/^[a-zA-Z]+$/',$str)
 	&& (strcasecmp($str,'Sun') 
 	|| strcasecmp($str,'Mon')
 	|| strcasecmp($str,'Tue')
