@@ -267,8 +267,18 @@ function processREST() {
   
   function phonePriority($dataBlob) {
   	$validation = array();
+  	foreach($dataBlob as $e) {
+  		$validation['phone'] = (int)isValidPhone($dataBlob->phone[i]);
+  	}
+  	
+  	for($i = 0; $i < count($dataBlob); $i++){
+  		$validation['phone'] &= (int)isValidPhone($dataBlob->phone[$i]);
+  		$validation['priority'] &= (int)isValidPriority($dataBlob->priority[$i]);
+  	}
+  	/*
   	$validation['phone']    = (int)isValidPhone($dataBlob->phone);
   	$validation['priority'] = (int)isValidPriority($dataBlob->priority);
+  	*/
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -277,7 +287,9 @@ function processREST() {
     if($user === null)
       return null;
 
-    $user->setPhoneNumberPriority($dataBlob->phone,$dataBlob->priority);
+    for($i = 0; $i < count($dataBlob[0]); $i++){
+    	$user->setPhoneNumberPriority($dataBlob->phone[$i],$dataBlob->priority[$i]);
+    }
     $user->commitPhoneData();
   	return $validation;
   }
