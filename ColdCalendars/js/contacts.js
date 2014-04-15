@@ -1,14 +1,25 @@
 function loadContactsPage() {
 	  loadUser();
+	  
+	  //Create Removal Dialogs
 	  createPhoneNumberRemovalList();
 	  createEmailAddressRemovalList();
+	  
+	  //Create Priority Dialogs
+	  createPhoneNumberPriorityList();
+	  createEmailPriorityList();
+	  
 	  setUserType();
+	  
+	  //Hide create/delete buttons if not admin
 	  hideAdminButtons();
 	  
 	  $('input:text').val('');
 	  
+	  //Create accordion style lists
 	  $("#Contact_List").accordion();
 	  $("#Current_User_Info").accordion();
+	  
 	  $("#Create_User").click(function() {
  	  		$( "#Create_User_Dialog" ).dialog("open");
       });
@@ -292,37 +303,49 @@ function loadContactsPage() {
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
 	  
+	  //TODO AUSTIN: Phone priority dialog stuff
+	  //See also: createPhoneNumberPriority list
+	  $("#Phone_Priority_Button").click(function() {
+		  $('#Phone_Priority_Dialog').dialog('open');
+      });
 	  
-	  //Timepickers for availability dialog
-	  $('#Sunday_Start').timepicker();
+	  $('#Phone_Priority_Dialog').dialog({
+		  autoOpen: false,
+		  height: 400,
+		  width: 407,
+		  modal: true,
+		  resizable: false,
+		  draggable: true,
+		  buttons: { "Submit": function() { alert('Good luck');
+			  					
+				 }, 
+				 "Cancel": function() { $(this).dialog("close"); }
+		  }		
+	  });
 	  
-	  $('#Sunday_End').timepicker();
+	  $('#Phone_Priority_List').sortable();
 	  
-	  $('#Monday_Start').timepicker();
+	  //TODO AUSTIN: Email priority dialog stuff
+	  //See also: createEmailPriority list
+	  $("#Email_Priority_Button").click(function() {
+		  $('#Email_Priority_Dialog').dialog('open');
+      });
 	  
-	  $('#Monday_End').timepicker();
+	  $('#Email_Priority_Dialog').dialog({
+		  autoOpen: false,
+		  height: 400,
+		  width: 407,
+		  modal: true,
+		  resizable: false,
+		  draggable: true,
+		  buttons: { "Submit": function() { alert('Good luck');
+			  					
+				 }, 
+				 "Cancel": function() { $(this).dialog("close"); }
+		  }		
+	  });
 	  
-	  $('#Tuesday_Start').timepicker();
-	  
-	  $('#Tuesday_End').timepicker();
-	  
-	  $('#Wednesday_Start').timepicker();
-	  
-	  $('#Wednesday_End').timepicker();
-	  
-	  $('#Thursday_Start').timepicker();
-	  
-	  $('#Thursday_End').timepicker();
-	  
-	  $('#Friday_Start').timepicker();
-	  
-	  $('#Friday_End').timepicker();
-	  
-	  $('#Saturday_Start').timepicker();
-	  
-	  $('#Saturday_End').timepicker();
-	  	
-	
+	  $('#Email_Priority_List').sortable();
 }
 
 function loadUser()
@@ -352,14 +375,14 @@ function loadUser()
 		$('#'+parseCookie().login+'_h3').remove().appendTo($('#Current_User_Info'));
 		$('#'+parseCookie().login+'_div').remove().appendTo($('#Current_User_Info'));
 		
-		appendAddRemovePhoneButton();
-		appendAddRemoveEmailButton();
+		appendAddRemoveEditPhoneButton();
+		appendAddRemoveEditEmailButton();
 		appendEditButton();
 		
 		$("#Contact_List").accordion();
   }
 
-  function appendAddRemovePhoneButton() {	  
+  function appendAddRemoveEditPhoneButton() {	  
 	  //'+' button
 	  var addButtonData = $('<td>').appendTo('#Phone_Header');	  
 	  var addPhoneButton = $('<button>').text('+').attr('id','Add_Phone_Button').appendTo(addButtonData);
@@ -367,9 +390,13 @@ function loadUser()
 	  //'-' button
 	  var removeButtonData = $('<td>').appendTo('#Phone_Header');
 	  var removePhoneButton = $('<button>').text('-').attr('id','Remove_Phone_Button').appendTo(removeButtonData);
+	  
+	  //'Edit Priority' button
+	  var editButtonData = $('<td>').appendTo('#Phone_Header');
+	  var editPhoneButton = $('<button>').text('Edit').attr('id','Phone_Priority_Button').appendTo(editButtonData);
   }
   
-  function appendAddRemoveEmailButton() {
+  function appendAddRemoveEditEmailButton() {
 	  //'+' button
 	  var addButtonData = $('<td>').appendTo('#Email_Header');	  
 	  var addEmailButton = $('<button>').text('+').attr('id','Add_Email_Button').appendTo(addButtonData);
@@ -377,6 +404,10 @@ function loadUser()
 	  //'-' button
 	  var removeButtonData = $('<td>').appendTo('#Email_Header');
 	  var removeEmailButton = $('<button>').text('-').attr('id','Remove_Email_Button').appendTo(removeButtonData);
+	  
+	  //'Edit Priority' button
+	  var editButtonData = $('<td>').appendTo('#Email_Header');
+	  var editEmailButton = $('<button>').text('Edit').attr('id','Email_Priority_Button').appendTo(editButtonData);
   }
   
   function appendEditButton(){
@@ -405,16 +436,8 @@ function loadUser()
 	  for(var e in phones)
 	  {
 		  phoneRow = $('<tr>').appendTo(phoneTable);
-		  $('<td>').appendTo(phoneRow).text(phones[e]).attr('colspan','3');
+		  $('<td>').appendTo(phoneRow).text(phones[e]).attr('colspan',4);
 	  }
-/*	  var phoneData = $('<td>').appendTo(userRow).attr('valign','top');
-	  var phoneHeaderTable = $('<table>').appendTo(phoneData);
-	  var phoneHeaderTableRow = $('<tr>').appendTo(phoneHeaderTable).attr('id','Phone_Header');
-	  var phoneHeaderTableData = $('<td>').appendTo(phoneHeaderTableRow);
-	  var phoneHeader = $('<p>').appendTo(phoneHeaderTableData).text('Phone');
-	  var li1 = $('<ul>').insertAfter(phoneHeaderTable).attr('class','phoneList');
-	  for(var e in phones)
-		  $('<li>').appendTo(li1).text(phones[e]);*/
 	  
 	  //Format user email list
 	  var emailData = $('<td>').appendTo(userRow).attr('valign','top');
@@ -425,20 +448,10 @@ function loadUser()
 	  for(var a in emails)
 	  {
 		  emailRow = $('<tr>').appendTo(emailTable);
-		  $('<td>').appendTo(emailRow).text(emails[a]).attr('colspan','3');
+		  $('<td>').appendTo(emailRow).text(emails[a]).attr('colspan',4);
 	  }
-/*	  var emailData = $('<td>').attr('valign','top');
-	  var emailHeaderTable = $('<table>').appendTo(emailData);
-	  var emailHeaderTableRow = $('<tr>').appendTo(emailHeaderTable).attr('id','Email_Header');
-	  var emailHeaderTableData = $('<td>').appendTo(emailHeaderTableRow);
-	  var emailHeader = $('<p>').appendTo(emailHeaderTableData).text('Email');
-	  var li2 = $('<ul>').insertAfter(emailHeaderTable).attr('class','emailList');
-	  for(var a in emails)
-		  $('<li>').appendTo(li2).text(emails[a]);
-	  userRow.append(emailData);
 	  
-	  table.append(userRow);  */
-	  
+	  //TODO Availability Information
 	  var testArray = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 	  
 	  var availabilityData = $('<td>').appendTo(userRow).attr('valign','top');
@@ -503,6 +516,17 @@ function loadUser()
 	  }
   }
   
+  function createPhoneNumberPriorityList()
+  {
+	  var table = document.getElementById('Phone_List');
+	  var list = $('<ul>').appendTo('#Phone_Priority_Dialog').attr('id','Phone_Priority_List');
+	  
+	  for(var i=1; i<table.rows.length;i++)
+	  {
+		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML);
+	  }
+  }
+  
   function createEmailAddressRemovalList()
   {
 	  var table = document.getElementById('Email_List');
@@ -518,6 +542,17 @@ function loadUser()
 		  input.appendTo('#Email_Address_Remove_List').attr('type','checkbox').attr('value',email).attr('name','emails');
 		  label.insertAfter(input).text(email);
 		  $('<br>').insertAfter(label);
+	  }
+  }
+  
+  function createEmailPriorityList()
+  {
+	  var table = document.getElementById('Email_List');
+	  var list = $('<ul>').appendTo('#Email_Priority_Dialog').attr('id','Email_Priority_List');
+	  
+	  for(var i=1; i<table.rows.length;i++)
+	  {
+		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML);
 	  }
   }
   
@@ -541,4 +576,33 @@ function loadUser()
   
   $(document).ready(function() {
 	  setTimeout(loadContactsPage,1);
+	  
+	  //Timepickers for availability dialog
+	  $('#Sunday_Start').timepicker();
+	  
+	  $('#Sunday_End').timepicker();
+	  
+	  $('#Monday_Start').timepicker();
+	  
+	  $('#Monday_End').timepicker();
+	  
+	  $('#Tuesday_Start').timepicker();
+	  
+	  $('#Tuesday_End').timepicker();
+	  
+	  $('#Wednesday_Start').timepicker();
+	  
+	  $('#Wednesday_End').timepicker();
+	  
+	  $('#Thursday_Start').timepicker();
+	  
+	  $('#Thursday_End').timepicker();
+	  
+	  $('#Friday_Start').timepicker();
+	  
+	  $('#Friday_End').timepicker();
+	  
+	  $('#Saturday_Start').timepicker();
+	  
+	  $('#Saturday_End').timepicker();
   });
