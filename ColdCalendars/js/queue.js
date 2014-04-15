@@ -10,7 +10,7 @@ function getQueue() {
      for(var e in list) {
        var li  = $('<li>').appendTo('#Display_Queue').addClass('queueItem');
        var div = $('<div>').appendTo(li)
-                 .text(list[e]['pickuper'] + " wants to swap with " + list[e]['owner'])
+                 .text(list[e]['pickuper'] + " wants to swap with " + list[e]['owner'] + " for " + list[e]['startTime'] + " to " + list[e]['endTime'])
                  .attr('data-owner',list[e]['owner'])
                  .attr('data-startTime',list[e]['startTime'])
                  .attr('data-endTime',list[e]['endTime']);
