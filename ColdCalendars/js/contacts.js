@@ -204,14 +204,8 @@ function loadContactsPage() {
 		      									 userObject.phone			  = $("#Phone").val();
 		      									 userObject.email			  = $("#Email").val();
 		
-			  									// var retVal           		  = $.ajax("rest.php?json=" + JSON.stringify(userObject),{async:false});
-		      									var retVal = $.ajax({
-		      										url: "rest.php",
-		      										data: "json="+JSON.stringify(userObject),
-		      										dataType: "json",
-		      										async: false
-		      										});
-		      									var obj = jQuery.parseJSON(retVal.responseText);
+		      									var obj = ajaxGetJSON(userObject);
+		      									
 		      									if(obj === null) {
 		      										alert('unexpected server error');
 		      									}
@@ -246,14 +240,8 @@ function loadContactsPage() {
 	   											 userObject.requestType 	  = "DeleteUser";
 		   										 userObject.userID        	  = $("#DeleteLogin").val();
 		
-			  									// var retVal           		  = $.ajax("rest.php?json=" + JSON.stringify(userObject),{async:false});
-		      									var retVal = $.ajax({
-		      										url: "rest.php",
-		      										data: "json="+JSON.stringify(userObject),
-		      										dataType: "json",
-		      										async: false
-		      										});
-		      									var obj = jQuery.parseJSON(retVal.responseText);
+		      									var obj = ajaxGetJSON(userObject);
+		      									
 		      									if(obj === null) {
 		      										alert('unexpected server error');
 		      									}
