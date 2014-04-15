@@ -33,6 +33,12 @@ $(document).ready(function() {
 		    	   				shiftObject.endTime	  = dateObjectToDateString(endTime);
 
 								var obj = ajaxGetJSON(shiftObject);
+								
+								//Render shift
+								var color = window.standardShift;
+		
+								if(parseCookie().login === shiftObject.userID)
+									color = window.myShift;
 
 			    	   			$('#calendar').fullCalendar('renderEvent',
 								{
@@ -40,12 +46,12 @@ $(document).ready(function() {
 									start: startTime,
 									end:   endTime,
 									allDay: false,
-									color: window.standardShift,
+									color: color,
 								},true);
 
 					    	   	$('#calendar').fullCalendar('unselect');
 					    	   	$(this).dialog("close");
-
+					    	   	$('#calendar').fullCalendar( 'rerenderEvents' );
 					}, 
 	    		   	"Cancel": function() { $(this).dialog("close"); } }
             });
@@ -105,6 +111,7 @@ $(document).ready(function() {
 		}
 		
 		$('#Shift_Options').dialog("close");
+		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
 	
 	$('#Pickup_Shift_Button').click(function(){
@@ -119,6 +126,7 @@ $(document).ready(function() {
 		}
 		
 		$('#Shift_Options').dialog("close");
+		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
 	
 	$('#Delete_Shift_Button').click(function(){
@@ -132,6 +140,7 @@ $(document).ready(function() {
 		
 		$('#calendar').fullCalendar('removeEvents',window.targetEvent._id);
 		$('#Shift_Options').dialog("close");
+		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
 	
 	$('.fc-event').focus(function() {
