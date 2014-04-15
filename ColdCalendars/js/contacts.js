@@ -439,7 +439,7 @@ function loadUser()
 	  
 	  table.append(userRow);  */
 	  
-	  var testArray = ['SUN','MON','TUE','WED','THUR','FRI','SAT'];
+	  var testArray = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 	  
 	  var availabilityData = $('<td>').appendTo(userRow).attr('valign','top');
 	  var availabilityTable = $('<table>').appendTo(availabilityData).attr('id','Availability_List').attr('border','1');
