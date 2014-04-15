@@ -24,10 +24,6 @@ function loadContactsPage() {
  	  		$( "#Create_User_Dialog" ).dialog("open");
       });
 	  
-	  $("#Logout").click(function () {
-		  logUserOut();
-	  });
-	  
 	  $("#Delete_User").click(function() {
 	  		$( "#Delete_User_Dialog" ).dialog("open");
       });
@@ -235,33 +231,45 @@ function loadContactsPage() {
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: true,
-	   		buttons: { "Delete User": function() { var userObject = new Object();
-
-	   											 userObject.requestType 	  = "DeleteUser";
-		   										 userObject.userID        	  = $("#DeleteLogin").val();
-		
-		      									var obj = ajaxGetJSON(userObject);
-		      									
-		      									if(obj === null) {
-		      										alert('unexpected server error');
-		      									}
-		      									else {
-		      										var zero_found = false;
-		      										for(var e in obj){
-			      									    //alert(e + ' : ' + obj[e]);
-		      											if(obj[e]===0) {
-		      												alert('invalid field: '+e);
-		      												zero_found = true;
-		      											}
-		      										}
-		      										if (!zero_found) {
-		      											$(this).dialog("close");
-		      											location.reload();
-		      										}
-		      									}
-		      												  		}, 
+	   		buttons: { "Delete User": function() { $('#Confirm_Delete_Dialog').dialog('open'); }, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
+	  
+	  $('#Confirm_Delete_Dialog').dialog({
+	  		autoOpen: false,
+	   		height: 250,
+	   		width: 400,
+	   		modal: true,
+	   		resizable: false,
+	   		draggable: true,
+	   		buttons: { 'Yes' : function() {
+	   						var userObject = new Object();
+
+						    userObject.requestType = "DeleteUser";
+						    userObject.userID      = $("#DeleteLogin").val();
+
+						    var obj = ajaxGetJSON(userObject);
+					
+							if(obj === null) {
+								alert('unexpected server error');
+							}
+							else {
+								var zero_found = false;
+								for(var e in obj){
+									if(obj[e]===0) {
+										alert('invalid field: '+e);
+										zero_found = true;
+									}
+								}
+								if (!zero_found) {
+									location.reload();
+								}
+							}
+	   					},
+	   				   'No'  : function() {$(this).dialog('close');}
+	   			
+	   		}
+	  });
 	  
 	  $("#Edit_Availability_Dialog").dialog({
 		  	
@@ -542,13 +550,6 @@ function loadUser()
 	  {
 		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML);
 	  }
-  }
-  
-  function logUserOut() {
-        var obj = new Object();
- 	    obj.requestType = "LogoutUser";
-  	    $retJson = ajaxGetJSON(obj);
-  	    window.location.href = "home.php";
   }
   
   function hideAdminButtons()
