@@ -9,10 +9,12 @@ assertValidUserPageAccess();
   <meta charset="utf-8" />
   <title>Employee View</title>
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="../css/jquery.timepicker.css" />
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <script src="js/main.js"></script> 
   <script src="js/contacts.js"></script> 
+  <script src='../js/jquery.timepicker.min.js'></script>
   <style>
 		.center { margin : 0 auto; text-align: center; }
 		 
@@ -169,6 +171,53 @@ assertValidUserPageAccess();
 <div  id="Remove_Email_Dialog" title="Remove Email" style='display:none'>
 		<form id='Email_Address_Remove_List'>
 		</form>
+</div>
+
+<div  id="Edit_Availability_Dialog" title="Edit Availability" style='display:none'>
+		<!-- Trick to take auto focus off first timepicker -->
+		<input type='text' size='1' style='position:relative;top:-500px;' />
+		<table>
+			<tr>
+				<td></td>
+				<td>Start Time</td>
+				<td>End Time</td>
+			</tr>
+			<tr>
+				<td id='SundayCell'>Sunday</td>
+				<td><input id='Sunday_Start' type='text' class='time' /></td>
+				<td><input id='Sunday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='MondayCell'>Monday</td>
+				<td><input id='Monday_Start' type='text' class='time' /></td>
+				<td><input id='Monday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='TuesdayCell'>Tuesday</td>
+				<td><input id='Tuesday_Start' type='text' class='time' /></td>
+				<td><input id='Tuesday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='WednesdayCell'>Wednesday</td>
+				<td><input id='Wednesday_Start' type='text' class='time' /></td>
+				<td><input id='Wednesday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='ThursdayCell'>Thursday</td>
+				<td><input id='Thursday_Start' type='text' class='time' /></td>
+				<td><input id='Thursday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='FridayCell'>Friday</td>
+				<td><input id='Friday_Start' type='text' class='time' /></td>
+				<td><input id='Friday_End' type='text' class='time' /></td>
+			</tr>
+			<tr>
+				<td id='SaturdayCell'>Saturday</td>
+				<td><input id='Saturday_Start' type='text' class='time' /></td>
+				<td><input id='Saturday_End' type='text' class='time' /></td>
+			</tr>
+		</table>
 </div>
 
 <div id="Contact_List">
