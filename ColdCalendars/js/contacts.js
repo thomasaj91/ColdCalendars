@@ -312,14 +312,52 @@ function loadContactsPage() {
 		  modal: true,
 		  resizable: false,
 		  draggable: true,
-		  buttons: { "Submit": function() { alert('Good luck');
-			  					
+		  buttons: { "Submit": function() {
+			  /**
+			   * Do rest api call here.
+			   */
+					 var priorityObject = new Object();
+					 priorityObject.requestType = 'PhonePriority';
+					 
+					 var contents = [];
+					 $('#Phone_Priority_List li').each(function(i,elem) {
+						 contents.push($(elem).text());
+					 	//alert(contents[i]);
+					 });
+					 
+					 var priorityQueue = [];
+					 var phoneQueue = [];
+					 for(var i = 0; i < contents.length; i++){
+						 phoneQueue[i] = contents[i];
+						 priorityQueue[i] = i;
+					 }
+					 //alert(phoneQueue);
+					 //alert(priorityQueue);
+					 
+					 priorityQueue.phone = phoneQueue;
+					 priorityQueue.priority = priorityQueue;
+					 
+					 
+					 var obj = ajaxGetJSON(priorityObject);
+					 
+					 if(obj === null) {
+						 alert('unexpected server error');
+					  }
+					  else {
+						 if(obj['priority']===0)
+							 alert('Error moving phone numbers around.');
+						 else
+							 location.reload();
+					  }
+					 
+					 //$(this).dialog("close");
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
-	  });
 	  
+	  });
 	  $('#Phone_Priority_List').sortable();
+	  $('#Phone_Priority_List').disableSelection();
 	  
 	  //TODO AUSTIN: Email priority dialog stuff
 	  //See also: createEmailPriority list
