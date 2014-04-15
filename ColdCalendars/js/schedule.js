@@ -8,6 +8,9 @@ $(document).ready(function() {
 		},
 		selectable: true,
 		selectHelper: true,
+		defaultView: 'agendaWeek',
+		disableDragging: true,
+		disableResizing: true,
         dayClick: function (start1) {
 	        		if(window.userType == 'Manager')
 	        		{
