@@ -157,6 +157,9 @@ assertValidUserPageAccess();
 		</form>
 </div>
 
+<div id='Phone_Priority_Dialog' title='Update Phone Priority' style='display:none'></div>
+<div id='Email_Priority_Dialog' title='Update Email Priority' style='display:none'></div>
+
 <div  id="Add_Email_Dialog" title="Add Email" style='display:none'>
 		<form>
 			<table>
