@@ -141,6 +141,10 @@ assertValidUserPageAccess();
 		</form>
 </div>
 
+<div id ='Confirm_Delete_Dialog' title='Delete User?' style='display:none'>
+	<p>Are you sure you want to delete this user? This action cannot be reversed.</p>
+</div>
+
 <div  id="Add_Phone_Dialog" title="Add Phone Number" style='display:none'>
 		<form>
 			<table>
