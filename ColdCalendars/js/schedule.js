@@ -209,26 +209,11 @@ function loadAllShifts()
 	}
 }
 
-function parseTime(timeString) {
-  if (timeString == '') return null;
-  var d = new Date();
-  var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/);
-  d.setHours( parseInt(time[1])===12 && time[4]!=='p'?0:(parseInt(time[1]) + ( ( parseInt(time[1]) < 12 && time[4] ) ? 12 : 0)) );
-  d.setMinutes( parseInt(time[3]) || 0 );
-  d.setSeconds(0, 0);
-  return d;
-} 
-
 function loadNames() {
 	 var requestObject = new Object();
 	    requestObject.requestType="UserListInfo";
-		var retVal = $.ajax({
-				url: "rest.php",
-				data: "json="+JSON.stringify(requestObject),
-				dataType: "json",
-				async: false
-				});
-		var list = jQuery.parseJSON(retVal.responseText);
+
+		var list = ajaxGetJSON(requestObject);
 
 		for(var e in list){
 			list[e] = list[e].join();
