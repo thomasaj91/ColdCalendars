@@ -111,3 +111,14 @@ VALUES (NULL,"Employee"),
 --INSERT INTO Email
 --VALUES (1,"winner@awesometown.com",1),
 --       (1,"you.will@join.us",2);
+
+--INSERT INTO User
+--VALUES (NULL,"AustinT","Austin","Thomas",1,false,7,false,"","","",NOW());
+--INSERT INTO Phone
+--VALUES (2,"2813308004",1),
+--       (2,"5555555555",2);
+
+--INSERT INTO Email
+--VALUES (2,"AustinT@cc.net",1),
+       (2,"BroGuyver@google.com",2);
+       
