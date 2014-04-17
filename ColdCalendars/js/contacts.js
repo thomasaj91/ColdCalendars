@@ -321,8 +321,6 @@ function loadContactsPage() {
 						 contents.push($(elem).text());
 					 });
 					 
-					 var priorityQueue = [];
-					 var phoneQueue = [];
 					 for(var i = 0; i < contents.length; i++){
 						 priorityObject.phone = contents[i];
 						 priorityObject.priority = i;
@@ -357,14 +355,35 @@ function loadContactsPage() {
 		  modal: true,
 		  resizable: false,
 		  draggable: true,
-		  buttons: { "Submit": function() { alert('Good luck');
-			  					
+		  buttons: { "Submit": function() {
+					 var priorityObject = new Object();
+					 priorityObject.requestType = 'EmailPriority';
+					 
+					 var contents = [];
+					 $('#Email_Priority_List li').each(function(i,elem) {
+						 contents.push($(elem).text());
+					 });
+					 
+					 for(var i = 0; i < contents.length; i++){
+						 priorityObject.email = contents[i];
+						 priorityObject.priority = i;
+						 var obj = ajaxGetJSON(priorityObject);
+						 if(obj === null) {
+							 alert('unexpected server error');
+						  }
+						  else {
+							 if(obj['priority']===0)
+								 alert('Error moving email addresses around.');
+						  }
+					 }
+					 location.reload();
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
-	  });
 	  
+	  });
 	  $('#Email_Priority_List').sortable();
+	  $('#Email_Priority_List').disableSelection();
 }
 
 function loadUser()
@@ -538,11 +557,11 @@ function loadUser()
   function createPhoneNumberPriorityList()
   {
 	  var table = document.getElementById('Phone_List');
-	  var list = $('<ul>').appendTo('#Phone_Priority_Dialog').attr('id','Phone_Priority_List');
+	  var list = $('<ul>').appendTo('#Phone_Priority_Dialog').attr('id','Phone_Priority_List').attr('class','connectedSortable');
 	  
 	  for(var i=1; i<table.rows.length;i++)
 	  {
-		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML);
+		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML).attr('class','ui-state-default').attr('id','p'+i);
 	  }
   }
   
