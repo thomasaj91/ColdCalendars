@@ -181,49 +181,26 @@ assertValidUserPageAccess();
 </div>
 
 <div  id="Edit_Availability_Dialog" title="Edit Availability" style='display:none'>
-		<!-- Trick to take auto focus off first timepicker -->
-		<input type='text' size='1' style='position:relative;top:-500px;' />
 		<table>
 			<tr>
-				<td></td>
-				<td>Start Time</td>
-				<td>End Time</td>
-			</tr>
-			<tr>
-				<td id='SundayCell'>Sunday</td>
-				<td><input id='Sunday_Start' type='text' class='time' /></td>
-				<td><input id='Sunday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='MondayCell'>Monday</td>
-				<td><input id='Monday_Start' type='text' class='time' /></td>
-				<td><input id='Monday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='TuesdayCell'>Tuesday</td>
-				<td><input id='Tuesday_Start' type='text' class='time' /></td>
-				<td><input id='Tuesday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='WednesdayCell'>Wednesday</td>
-				<td><input id='Wednesday_Start' type='text' class='time' /></td>
-				<td><input id='Wednesday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='ThursdayCell'>Thursday</td>
-				<td><input id='Thursday_Start' type='text' class='time' /></td>
-				<td><input id='Thursday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='FridayCell'>Friday</td>
-				<td><input id='Friday_Start' type='text' class='time' /></td>
-				<td><input id='Friday_End' type='text' class='time' /></td>
-			</tr>
-			<tr>
-				<td id='SaturdayCell'>Saturday</td>
-				<td><input id='Saturday_Start' type='text' class='time' /></td>
-				<td><input id='Saturday_End' type='text' class='time' /></td>
-			</tr>
+				<td>
+					<select id='Availability_Day'>
+					  <option value='Sun'>Sunday</option>
+    				  	  <option value='Mon'>Monday</option>
+  					  <option value='Tue'>Tuesday</option>
+ 					  <option value='Wed'>Wednesday</option>
+ 					  <option value='Thu'>Thursday</option>
+ 					  <option value='Fri'>Friday</option>
+ 					  <option value='Sat'>Saturday</option>
+ 					</select>
+ 				</td>
+ 				<td>
+ 					Start Time: <input id='Availability_Start' type='text' class='time' />
+ 				</td>
+ 				<td>
+ 					End Time: <input id='Availability_End' type='text' class='time' />
+ 				</td>
+ 			</tr>
 		</table>
 </div>
 
