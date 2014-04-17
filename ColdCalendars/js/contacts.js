@@ -313,44 +313,29 @@ function loadContactsPage() {
 		  resizable: false,
 		  draggable: true,
 		  buttons: { "Submit": function() {
-			  /**
-			   * Do rest api call here.
-			   */
 					 var priorityObject = new Object();
 					 priorityObject.requestType = 'PhonePriority';
 					 
 					 var contents = [];
 					 $('#Phone_Priority_List li').each(function(i,elem) {
 						 contents.push($(elem).text());
-					 	//alert(contents[i]);
 					 });
 					 
 					 var priorityQueue = [];
 					 var phoneQueue = [];
 					 for(var i = 0; i < contents.length; i++){
-						 phoneQueue[i] = contents[i];
-						 priorityQueue[i] = i;
+						 priorityObject.phone = contents[i];
+						 priorityObject.priority = i;
+						 var obj = ajaxGetJSON(priorityObject);
+						 if(obj === null) {
+							 alert('unexpected server error');
+						  }
+						  else {
+							 if(obj['priority']===0)
+								 alert('Error moving phone numbers around.');
+						  }
 					 }
-					 //alert(phoneQueue);
-					 //alert(priorityQueue);
-					 
-					 priorityQueue.phone = phoneQueue;
-					 priorityQueue.priority = priorityQueue;
-					 
-					 
-					 var obj = ajaxGetJSON(priorityObject);
-					 
-					 if(obj === null) {
-						 alert('unexpected server error');
-					  }
-					  else {
-						 if(obj['priority']===0)
-							 alert('Error moving phone numbers around.');
-						 else
-							 location.reload();
-					  }
-					 
-					 //$(this).dialog("close");
+					 location.reload();
 				 }, 
 				 "Cancel": function() { $(this).dialog("close"); }
 		  }		
