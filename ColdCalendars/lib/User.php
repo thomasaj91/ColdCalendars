@@ -224,7 +224,8 @@ class User {
   public function setEmailAddressPriority($address, $priority) {
     if($priority <= 0 || count($this->email) < $priority)
       return;
-    $this->removePhoneNumber($address);
+    $this->removeEmailAddress($address);
+    //array_splice($address, $priority - 1, 0, $this->email);
     array_splice($this->email, $priority, 0, $address);
     $this->email = array_values($this->email);
   }
