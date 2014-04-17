@@ -62,7 +62,7 @@ function isValidEmail($str) {
 function isValidPriority($str) {
 	global $MAX_STR_LEN;
 	return strlen($str) <= $MAX_STR_LEN
-	&& preg_match('/^[0-9]+$/')
+	&& preg_match('/^[0-9]+$/',$str)
 	&& $str !== '0';
 }
 
