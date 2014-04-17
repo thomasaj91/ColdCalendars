@@ -6,6 +6,7 @@ require_once(__DIR__.'/lib/Shift.php');
 require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
 require_once(__DIR__.'/lib/Availability.php');
+require_once(__DIR__.'/lib/report.php');
 
 echo json_encode(processREST());
 
@@ -462,7 +463,7 @@ function processREST() {
   	return $validation;
   }
 
-  function viewSchedule($dataBlob){ //TODO
+  function viewSchedule($dataBlob){
   	$validation = array();
   	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
   	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
@@ -480,7 +481,7 @@ function processREST() {
   	return $list;
   }
   
-  function viewQueue($dataBlob){ //TODO
+  function viewQueue($dataBlob){
     $validation = array();
     $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
     $validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
@@ -494,7 +495,7 @@ function processREST() {
   	return $list;
   }
 
-  function userAvailability($dataBlob) { //TODO
+  function userAvailability($dataBlob) {
   	//$validation = array();
   	//$validation['login'] = isValidUserLogin($dataBlob->login);
   	$list;
@@ -507,7 +508,7 @@ function processREST() {
   	}
   	return $list;
   }
-  function addAvailability($dataBlob){ //TODO
+  function addAvailability($dataBlob){
   	$validation = array();
   	$validation['day'] = (int)isValidDay($dataBlob->day);
   	$validation['start'] = (int)isValidTime($dataBlob->start);
@@ -524,7 +525,7 @@ function processREST() {
   	$user->commitAvailabilityData();
   	return $validation;
   }
-  function removeAvailability($dataBlob) { //TODO
+  function removeAvailability($dataBlob) {
   	$validation = array();
   	$validation['day'] = (int)isValidDay($dataBlob->day);
   	$validation['start'] = (int)isValidTime($dataBlob->start);
@@ -540,6 +541,22 @@ function processREST() {
   	$user->removeAvailability($dataBlob->day,$dataBlob->start,$dataBlob->end);
   	$user->commitAvailabilityData();
   	return $validation;
+  }
+  
+
+  function export($dataBlob) { // TODO
+  	 $validation = array();
+  	 $validation['start'] = (int)isValidDate($dataBlob->start);
+  	 $validation['end'] = (int)isValidDate($dataBlob->end);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 $report = new report();
+  	 
+  	 
+  	 //echo $str;
+  	 return $report->export_excel_csv();
   }
 
   function logoutUser() {
@@ -563,5 +580,6 @@ function processREST() {
   	catch(Exception $e) { return null; }
     return $shift;  	 
   }
+
 
 ?>
