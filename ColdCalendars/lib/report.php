@@ -1,8 +1,8 @@
 <?php
 
-require_once(__DIR__.'/DB.php');
+require_once(__DIR__.'/../DB.php');
 
-class reports {
+class report {
 	private static $qryReport = 'SELECT CONCAT(u.First," ",u.Last) AS Name, p.number AS "Phone Number", 
        								e.address AS Email, t.title, CASE u.PTFT WHEN 1 THEN "Full Time"
                                     ELSE "Part Time" END AS "Work Status",
@@ -20,14 +20,16 @@ class reports {
 		$conn = mysql_connect("preumbranet.domaincommysql.com","backend","wearewinners");
 		$db = mysql_select_db("cold_calendars_test",$conn);
 	
-		$sql = $qryReport;
+		$sql = self::$qryReport;
 		$rec = mysql_query($sql) or die (mysql_error());
 	
 		$num_fields = mysql_num_fields($rec);
 	
+		$header = '';
+		$data = '';
 		for($i = 0; $i < $num_fields; $i++ )
 		{
-			$header .= mysql_field_name($rec,$i)."\\t";
+			$header .= mysql_field_name($rec,$i).",";
 		}
 	
 		while($row = mysql_fetch_row($rec))
@@ -37,16 +39,16 @@ class reports {
 			{
 				if((!isset($value)) || ($value == ""))
 				{
-					$value = "\\t";
+					$value = ",";
 				}
 				else
 				{
 					$value = str_replace( '"' , '""' , $value );
-					$value = '"' . $value . '"' . "\\t";
+					$value = '"' . $value . '"' . ",";
 				}
 				$line .= $value;
 			}
-			$data .= trim( $line ) . "\\n";
+			$data .= trim( $line ) . "\n";
 		}
 	
 		$data = str_replace("\\r" , "" , $data);
@@ -55,13 +57,8 @@ class reports {
 		{
 			$data = "\\n No Record Found!\n";
 		}
-	
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=reports.xls");
-		header("Pragma: no-cache");
-		header("Expires: 0");
-		print "$header\\n$data";
-		echo "$header\\n$data";
+
+		return "$header\n$data";
 	}
 }
 ?>
