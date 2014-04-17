@@ -387,13 +387,8 @@ function loadUser()
   {
 	    var requestObject = new Object();
 	    requestObject.requestType="UserList";
-		var retVal = $.ajax({
-				url: "rest.php",
-				data: "json="+JSON.stringify(requestObject),
-				dataType: "json",
-				async: false
-				});
-		var list = jQuery.parseJSON(retVal.responseText); 
+
+	 	var list = ajaxGetJSON(requestObject);
 
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
