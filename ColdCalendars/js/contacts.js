@@ -280,21 +280,18 @@ function loadContactsPage() {
 	   		resizable: false,
 	   		draggable: true,
 	   		buttons: { "Submit": function() { 
-	   						var retval;
-	   						var dayObject = new Object();
-	   						dayObject.requestType = 'AddAvailability';
+	   						var availObject = new Object();
+	   						availObject.requestType = 'AddAvailability';
 	   						
-	   						var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+	   						//alert($('#Availability_Day').val());
+	   						//alert(standardToMilitaryTime($('#Availability_Start').val()));
+	   						//alert(standardToMilitaryTime($('#Availability_End').val()));
 	   						
-	   						for(var i in days)
-	   						{	
-	   							dayObject.day = days[i].substring(0,3);
-	   							dayObject.start = standardToMilitaryTime($('#' + days[i] + '_Start').val());
-	   							dayObject.end = standardToMilitaryTime($('#' + days[i] + '_End').val());
-	   							//alert(days[i].substring(0,3) + standardToMilitaryTime($('#' + days[i] + '_Start').val()) + standardToMilitaryTime($('#' + days[i] + '_End').val()));
-	   							
-	   							retVal = ajaxGetJSON(dayObject);
-	   						}	
+	   						availObject.day   = $('#Availability_Day').val();
+	   						availObject.start = standardToMilitaryTime($('#Availability_Start').val());
+	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val());
+	   						
+	   						var obj = ajaxGetJSON(availObject);	
 		      			}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
@@ -609,31 +606,7 @@ function loadUser()
 	  setTimeout(loadContactsPage,1);
 	  
 	  //Timepickers for availability dialog
-	  $('#Sunday_Start').timepicker();
+	  $('#Availability_Start').timepicker();
 	  
-	  $('#Sunday_End').timepicker();
-	  
-	  $('#Monday_Start').timepicker();
-	  
-	  $('#Monday_End').timepicker();
-	  
-	  $('#Tuesday_Start').timepicker();
-	  
-	  $('#Tuesday_End').timepicker();
-	  
-	  $('#Wednesday_Start').timepicker();
-	  
-	  $('#Wednesday_End').timepicker();
-	  
-	  $('#Thursday_Start').timepicker();
-	  
-	  $('#Thursday_End').timepicker();
-	  
-	  $('#Friday_Start').timepicker();
-	  
-	  $('#Friday_End').timepicker();
-	  
-	  $('#Saturday_Start').timepicker();
-	  
-	  $('#Saturday_End').timepicker();
+	  $('#Availability_End').timepicker();
   });
