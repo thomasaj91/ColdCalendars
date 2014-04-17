@@ -274,8 +274,8 @@ function loadContactsPage() {
 	  $("#Edit_Availability_Dialog").dialog({
 		  	
 	  		autoOpen: false,
-	   		height: 450,
-	   		width: 600,
+	   		height: 190,
+	   		width: 850,
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: true,
