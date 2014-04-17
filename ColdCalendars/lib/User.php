@@ -206,7 +206,7 @@ class User {
     if($priority <= 0 || count($this->phone) < $priority)
       return;
     $this->removePhoneNumber($number);
-    array_splice($number, $priority - 1, 0, $this->phone);
+    array_splice($this->phone, $priority, 0, $number);
     $this->phone = array_values($this->phone);
   }
   public function getEmailAddresses() {
@@ -225,7 +225,7 @@ class User {
     if($priority <= 0 || count($this->email) < $priority)
       return;
     $this->removePhoneNumber($address);
-    array_splice($address, $priority - 1, 0, $this->email);
+    array_splice($this->email, $priority, 0, $address);
     $this->email = array_values($this->email);
   }
   public function getAuthToken() {
