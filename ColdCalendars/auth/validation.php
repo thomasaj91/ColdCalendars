@@ -79,11 +79,11 @@ function isValidTime($str) {
 function isValidDate($str) {
 	global $MAX_STR_LEN;
 	list($year,$month,$day) = explode('-',$str);
-	return strlen($str) <= MAX_STR_LEN
-	&& preg_match('/^[0-9]+[-][0-9]+[-][0-9]$/',$str)
-	&& (int)$year > 0
-	&& ((int)$month > 0 && (int)$month < 12)
-	&& ((int)$day > 0 && (int)$day < 31);
+	return strlen($str) <= $MAX_STR_LEN
+	&& preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$str)
+	&& (int)$year > 1970
+	&& ((int)$month > 0 && (int)$month <= 12)
+	&& ((int)$day > 0 && (int)$day <= 31);
 }
 
 function isValidDay($str) {
