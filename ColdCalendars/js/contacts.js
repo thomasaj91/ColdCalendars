@@ -1,6 +1,6 @@
 function loadContactsPage() {
-	  setUserType();
-	  loadUser();
+	 setUserType();  
+	 loadUser();
 	  
 	  //Create Removal Dialogs
 	  createPhoneNumberRemovalList();
@@ -9,6 +9,8 @@ function loadContactsPage() {
 	  //Create Priority Dialogs
 	  createPhoneNumberPriorityList();
 	  createEmailPriorityList();
+	  
+	  
 	  
 	  //Hide create/delete buttons if not admin
 	  hideAdminButtons();
@@ -273,24 +275,27 @@ function loadContactsPage() {
 	  $("#Edit_Availability_Dialog").dialog({
 		  	
 	  		autoOpen: false,
-	   		height: 190,
-	   		width: 850,
+	   		height: 450,
+	   		width: 600,
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: true,
 	   		buttons: { "Submit": function() { 
-	   						var availObject = new Object();
-	   						availObject.requestType = 'AddAvailability';
+	   						var retval;
+	   						var dayObject = new Object();
+	   						dayObject.requestType = 'AddAvailability';
 	   						
-	   						//alert($('#Availability_Day').val());
-	   						//alert(standardToMilitaryTime($('#Availability_Start').val()));
-	   						//alert(standardToMilitaryTime($('#Availability_End').val()));
+	   						var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 	   						
-	   						availObject.day   = $('#Availability_Day').val();
-	   						availObject.start = standardToMilitaryTime($('#Availability_Start').val());
-	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val());
-	   						
-	   						var obj = ajaxGetJSON(availObject);	
+	   						for(var i in days)
+	   						{	
+	   							dayObject.day = days[i].substring(0,3);
+	   							dayObject.start = standardToMilitaryTime($('#' + days[i] + '_Start').val());
+	   							dayObject.end = standardToMilitaryTime($('#' + days[i] + '_End').val());
+	   							//alert(days[i].substring(0,3) + standardToMilitaryTime($('#' + days[i] + '_Start').val()) + standardToMilitaryTime($('#' + days[i] + '_End').val()));
+	   							
+	   							retVal = ajaxGetJSON(dayObject);
+	   						}	
 		      			}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
@@ -386,8 +391,13 @@ function loadUser()
   {
 	    var requestObject = new Object();
 	    requestObject.requestType="UserList";
-
-	 	var list = ajaxGetJSON(requestObject);
+		var retVal = $.ajax({
+				url: "rest.php",
+				data: "json="+JSON.stringify(requestObject),
+				dataType: "json",
+				async: false
+				});
+		var list = jQuery.parseJSON(retVal.responseText); 
 
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
@@ -446,7 +456,6 @@ function loadUser()
 
   function appendUserDataTo(elem,info,phones,emails,login) {
 	  var header = $('<h3>').appendTo(elem).text(info.lastName + ', ' + info.firstName).attr('id',login+'_h3');
-	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
 	  
 	  //If the user is an admin, add edit button
 	  if(window.userType == 'Admin')
@@ -455,6 +464,8 @@ function loadUser()
 		  $('<button>').appendTo(header).text('Edit Status').attr('class','editStatus').attr('data-login',login);
 	  }
 	  
+	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
+
 	  
 	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
 	  var userRow = $('<tr>').appendTo(table);
@@ -608,7 +619,31 @@ function loadUser()
 	  setTimeout(loadContactsPage,1);
 	  
 	  //Timepickers for availability dialog
-	  $('#Availability_Start').timepicker();
+	  $('#Sunday_Start').timepicker();
 	  
-	  $('#Availability_End').timepicker();
+	  $('#Sunday_End').timepicker();
+	  
+	  $('#Monday_Start').timepicker();
+	  
+	  $('#Monday_End').timepicker();
+	  
+	  $('#Tuesday_Start').timepicker();
+	  
+	  $('#Tuesday_End').timepicker();
+	  
+	  $('#Wednesday_Start').timepicker();
+	  
+	  $('#Wednesday_End').timepicker();
+	  
+	  $('#Thursday_Start').timepicker();
+	  
+	  $('#Thursday_End').timepicker();
+	  
+	  $('#Friday_Start').timepicker();
+	  
+	  $('#Friday_End').timepicker();
+	  
+	  $('#Saturday_Start').timepicker();
+	  
+	  $('#Saturday_End').timepicker();
   });
