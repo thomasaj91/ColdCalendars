@@ -194,7 +194,8 @@ class User {
     return $this->phone;
   }
   public function addPhoneNumber($number) {
-    array_push($this->phone, $number);
+    if(!in_array($number, $this->phone))
+      array_push($this->phone, $number);
   }
   public function removePhoneNumber($number) {
     if(count($this->phone) < 2 || !in_array($number, $this->phone))
@@ -213,7 +214,8 @@ class User {
     return $this->email;
   }
   public function addEmailAddress($address) {
-    array_push($this->email, $address);
+    if(!in_array($number, $this->email))
+      array_push($this->email, $address);
   }
   public function removeEmailAddress($address) {
     if(count($this->email) < 2 || !in_array($address, $this->email))
