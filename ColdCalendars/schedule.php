@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="../css/coldcalendar.css" />
 <link href='../css/fullcalendar.css' rel='stylesheet' />
 <link href='../css/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
@@ -12,58 +13,6 @@
 <script src='../js/jquery.timepicker.min.js'></script>
 <script src='../js/schedule.js'></script>
 <script src='../js/main.js'></script>
-<style>
-
-	body {
-		margin-top: 40px;
-		text-align: center;
-		font-size: 14px;
-		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-		}
-
-	#calendar {
-		width: 900px;
-		margin: 0 auto;
-		}
-
-	.center { margin : 0 auto; text-align: center; }
-
-	.queueItem { list-style-type: none; }
-
-	#navbar ul { 
-	          margin: 0; 
-	          padding: 5px; 
-	          list-style-type: none; 
-	          text-align: center; 
-	          background-color: #000; 
-	          } 
-
-	#navbar ul li {  
-	          display: inline; 
-	          } 
-
-	#navbar ul li a { 
-	          text-decoration: none; 
-	          padding: .2em 1em; 
-	          color: #fff; 
-	          background-color: #000; 
-	          } 
-
-	#navbar ul li a:hover { 
-	          color: #000; 
-	          background-color: #fff; 
-	          } 
-	#footer  { 
-	          font-size: 10px; 
-	          }
-	#container {
-	          width: 500px;
-	          height: 500px;
-	          background-color: #FDA;
-	          margin: 0 auto;
-	          overflow: hidden;
-	}
-</style>
 </head>
 <body>
 	<div id="wrapper" class="center">
