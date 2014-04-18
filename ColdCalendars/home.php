@@ -32,13 +32,14 @@ require_once(__DIR__.'/lib/User.php');
   }
  /**/
 ?>
-<!DOCTYPE html>
+	<!DOCTYPE html>
     <html>
-    <head>
-    <title>
-    Login page
-    </title>
-    </head>
+    	<head>
+    		<title>
+    			Login page
+    		</title>
+    		<link rel="stylesheet" href="../css/coldcalendar.css" />
+    	</head>
     <body>
     <h1 style="font-family:Comic Sans Ms; text-align="center"; font-size:20pt; color:#00FF00;">
     Cold Calendars
@@ -47,17 +48,20 @@ require_once(__DIR__.'/lib/User.php');
       if(isset($error) && $error)
        echo '<div>Bad Username and/or password</div>';
     ?>
-    <form name="login" action="home.php" method="POST">
-    Username<input type="text" name="login"/> </br>
-    Password<input type="password" name="passwd"/> </br>
-<!--<input type="button" onclick="return check(this.form)" value="Login"/>
--->
-    <input type="submit" value="Login"/>
-    <input type="reset" value="Cancel"/>
+    <form name="login" action="home.php" method="POST" class='center'>
+    	<table class='center'>
+    		<tr>
+    			<td>Username: <input type="text" name="login"/></td>
+    		</tr>
+    		<tr>
+    			<td>Password: <input type="password" name="passwd"/></td>
+    		</tr>
+    	</table>
+    	<input type="submit" value="Login"/>
+    	<input type="reset" value="Cancel"/>
     </form>
     
     <p> It's like Hot Schedules, but <em>cooler!</em> </p>
     
     </body>
     </html>
-
