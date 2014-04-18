@@ -619,31 +619,7 @@ function loadUser()
 	  setTimeout(loadContactsPage,1);
 	  
 	  //Timepickers for availability dialog
-	  $('#Sunday_Start').timepicker();
+	  $('#Availability_Start').timepicker();
 	  
-	  $('#Sunday_End').timepicker();
-	  
-	  $('#Monday_Start').timepicker();
-	  
-	  $('#Monday_End').timepicker();
-	  
-	  $('#Tuesday_Start').timepicker();
-	  
-	  $('#Tuesday_End').timepicker();
-	  
-	  $('#Wednesday_Start').timepicker();
-	  
-	  $('#Wednesday_End').timepicker();
-	  
-	  $('#Thursday_Start').timepicker();
-	  
-	  $('#Thursday_End').timepicker();
-	  
-	  $('#Friday_Start').timepicker();
-	  
-	  $('#Friday_End').timepicker();
-	  
-	  $('#Saturday_Start').timepicker();
-	  
-	  $('#Saturday_End').timepicker();
+	  $('#Availability_End').timepicker();
   });
