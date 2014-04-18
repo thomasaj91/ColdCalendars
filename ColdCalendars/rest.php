@@ -534,8 +534,8 @@ function processREST() {
 
   function export($dataBlob) { // TODO
   	 $validation = array();
-  	 $validation['start'] = (int)isValidDate($dataBlob->start);
-  	 $validation['end'] = (int)isValidDate($dataBlob->end);
+  	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
+  	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
   	 
   	 if(in_array(false,$validation))
   	 	return $validation;
