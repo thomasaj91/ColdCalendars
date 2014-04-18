@@ -1,0 +1,50 @@
+.center { margin : 0 auto; text-align: center; }
+ 
+.queueItem { list-style-type: none; }
+
+body {
+	margin-top: 40px;
+	text-align: center;
+	font-size: 14px;
+	font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+	}
+
+#calendar {
+	width: 900px;
+	margin: 0 auto;
+	}
+ 
+/*Navigation Bar*/
+#navbar ul { 
+          margin: 0; 
+          padding: 5px; 
+          list-style-type: none; 
+          text-align: center; 
+          background-color: #000; 
+          } 
+ 
+#navbar ul li {  
+          display: inline; 
+          } 
+  
+#navbar ul li a { 
+          text-decoration: none; 
+          padding: .2em 1em; 
+          color: #fff; 
+          background-color: #000; 
+          } 
+ 
+#navbar ul li a:hover { 
+          color: #000; 
+          background-color: #fff; 
+          } 
+#footer  { 
+          font-size: 10px; 
+          }
+#container {
+          width: 500px;
+          height: 500px;
+          background-color: #FDA;
+          margin: 0 auto;
+          overflow: hidden;
+}
