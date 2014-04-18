@@ -4,8 +4,8 @@ $(document).ready(function(){
 	$('#Report_End_Date').datepicker();
 	
 	$('#Generate_Report_Button').click(function() {
-		var startTime = $.datepicker.formatDate("yy-mm-dd", new Date($('#Report_Start_Date').val()));
-		var endTime = $.datepicker.formatDate("yy-mm-dd", new Date($('#Report_End_Date').val()));
+		var startTime = dateObjectToDateString(new Date($('#Report_Start_Date').val()));
+		var endTime = dateObjectToDateString(new Date($('#Report_End_Date').val()));
 		
 		var reportObject = new Object();
 		reportObject.requestType = 'ReportExport';
