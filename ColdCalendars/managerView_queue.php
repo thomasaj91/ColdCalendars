@@ -5,52 +5,11 @@
 <head>
   <meta charset="utf-8" />
   <title>Manager view</title>
+  <link rel="stylesheet" href="../css/coldcalendar.css" />
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
   <script src='../js/main.js'></script>
   <script src="../js/queue.js"></script> 
-  <style type="text/css">
-  <!-- 
- 
-  .center { margin : 0 auto; text-align: center; }
- 
-   .queueItem { list-style-type: none; }
- 
-  #navbar ul { 
-          margin: 0; 
-          padding: 5px; 
-          list-style-type: none; 
-          text-align: center; 
-          background-color: #000; 
-          } 
- 
-  #navbar ul li {  
-          display: inline; 
-          } 
-  
-  #navbar ul li a { 
-          text-decoration: none; 
-          padding: .2em 1em; 
-          color: #fff; 
-          background-color: #000; 
-          } 
- 
-  #navbar ul li a:hover { 
-          color: #000; 
-          background-color: #fff; 
-          } 
-  #footer  { 
-          font-size: 10px; 
-          }
-  #container {
-          width: 500px;
-          height: 500px;
-          background-color: #FDA;
-          margin: 0 auto;
-          overflow: hidden;
-}     
-  --> 
-  </style> 
   </head> 
   <body>
 
