@@ -1,4 +1,5 @@
 function loadContactsPage() {
+	  setUserType();
 	  loadUser();
 	  
 	  //Create Removal Dialogs
@@ -8,8 +9,6 @@ function loadContactsPage() {
 	  //Create Priority Dialogs
 	  createPhoneNumberPriorityList();
 	  createEmailPriorityList();
-	  
-	  setUserType();
 	  
 	  //Hide create/delete buttons if not admin
 	  hideAdminButtons();
@@ -446,8 +445,16 @@ function loadUser()
   }
 
   function appendUserDataTo(elem,info,phones,emails,login) {
-	  $('<h3>').appendTo(elem).text(info.lastName + ', ' + info.firstName).attr('id',login+'_h3');
+	  var header = $('<h3>').appendTo(elem).text(info.lastName + ', ' + info.firstName).attr('id',login+'_h3');
 	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
+	  
+	  //If the user is an admin, add edit button
+	  if(window.userType == 'Admin')
+	  {
+		  $('<button>').appendTo(header).text('Edit Title').attr('class','editTitle').attr('data-login',login);
+		  $('<button>').appendTo(header).text('Edit Status').attr('class','editStatus').attr('data-login',login);
+	  }
+	  
 	  
 	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
 	  var userRow = $('<tr>').appendTo(table);
