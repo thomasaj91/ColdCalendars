@@ -8,9 +8,9 @@ assertValidUserPageAccess();
 <head>
   <meta charset="utf-8" />
   <title>Employee View</title>
-  <link rel="stylesheet" href="../css/coldcalendar.css" />
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
   <link rel="stylesheet" href="../css/jquery.timepicker.css" />
+  <link rel="stylesheet" href="../css/coldcalendar.css" />
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
   <script src="js/main.js"></script> 
@@ -142,13 +142,13 @@ assertValidUserPageAccess();
 		</form>
 </div>
 
-<div  id="Edit_Availability_Dialog" title="Edit Availability" style='display:none'>
+<div  id="Edit_Availability_Dialog" title="Add/Edit Availability" style='display:none'>
 		<table>
 			<tr>
 				<td>
 					<select id='Availability_Day'>
 					  <option value='Sun'>Sunday</option>
-    				  	  <option value='Mon'>Monday</option>
+    				  <option value='Mon'>Monday</option>
   					  <option value='Tue'>Tuesday</option>
  					  <option value='Wed'>Wednesday</option>
  					  <option value='Thu'>Thursday</option>
