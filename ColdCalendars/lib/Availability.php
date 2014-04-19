@@ -98,7 +98,7 @@ WHERE  Login      = '@PARAM'";
 
   public static function getUsersAvailability($login) {
     $conn   = DB::getNewConnection();
-    $sql    = DB::injectParamaters(array($login), self::$qryDeleteAvailability);
+    $sql    = DB::injectParamaters(array($login), self::$qryGetAllAvailability);
     $result = DB::query($conn, $sql);
     $conn->close();
     $out = array();
@@ -133,7 +133,7 @@ WHERE  Login      = '@PARAM'";
   }
   
   private static function numToDay($number) {
-    return self::$DAYS[$num];
+    return self::$DAYS[$number];
   }
 
   private static function dayToNum($day) {
