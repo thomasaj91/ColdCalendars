@@ -275,27 +275,24 @@ function loadContactsPage() {
 	  $("#Edit_Availability_Dialog").dialog({
 		  	
 	  		autoOpen: false,
-	   		height: 450,
-	   		width: 600,
+	   		height: 190,
+	   		width: 850,
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: true,
 	   		buttons: { "Submit": function() { 
-	   						var retval;
-	   						var dayObject = new Object();
-	   						dayObject.requestType = 'AddAvailability';
+	   						var availObject = new Object();
+	   						availObject.requestType = 'AddAvailability';
 	   						
-	   						var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+	   						//alert($('#Availability_Day').val());
+	   						//alert(standardToMilitaryTime($('#Availability_Start').val()));
+	   						//alert(standardToMilitaryTime($('#Availability_End').val()));
 	   						
-	   						for(var i in days)
-	   						{	
-	   							dayObject.day = days[i].substring(0,3);
-	   							dayObject.start = standardToMilitaryTime($('#' + days[i] + '_Start').val());
-	   							dayObject.end = standardToMilitaryTime($('#' + days[i] + '_End').val());
-	   							//alert(days[i].substring(0,3) + standardToMilitaryTime($('#' + days[i] + '_Start').val()) + standardToMilitaryTime($('#' + days[i] + '_End').val()));
-	   							
-	   							retVal = ajaxGetJSON(dayObject);
-	   						}	
+	   						availObject.day   = $('#Availability_Day').val();
+	   						availObject.start = standardToMilitaryTime($('#Availability_Start').val());
+	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val());
+	   						
+	   						var obj = ajaxGetJSON(availObject);	
 		      			}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); } }
 	   });
