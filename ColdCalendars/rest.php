@@ -7,6 +7,8 @@ require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
 require_once(__DIR__.'/lib/Availability.php');
 require_once(__DIR__.'/lib/report.php');
+require_once(__DIR__.'/lib/TimemOffRequest.php');
+require_once(__DIR__.'/lib/VacationRequest.php');
 
 echo json_encode(processREST());
 
@@ -50,8 +52,8 @@ function processREST() {
   	case 'RemoveFromSchedule': return removeShift($requestData);
   	case 'ViewQueue':          return viewQueue($requestData);
   	case 'DecideSwap':         return decideSwap($requestData);
-  	case 'DecideVacation':     return approveVacation($requestData);	//TODO sprint 3
-  	case 'DecideTimeOff':      return approveTimeOff($requestData);		//TODO sprint 3
+  	case 'DecideVacation':     return decideVacation($requestData);	//TODO sprint 3
+  	case 'DecideTimeOff':      return decideTimeOff($requestData);		//TODO sprint 3
   	case 'ReportExport';       return export($requestData);
   	case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
   	case 'ViewSchedule':       return viewSchedule($requestData);
@@ -142,8 +144,8 @@ function processREST() {
 
   function passwordReset($dataBlob) {
   	$validation = array();
-  	$validation['userID']   = isValidUserLogin($dataBlob->userID);
-  	$validation['password'] = isValidPassword( $dataBlob->password);
+  	$validation['userID']   = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['password'] = (int)isValidPassword( $dataBlob->password);
 
     if(in_array(false,$validation))
   		return $validation;
@@ -159,8 +161,8 @@ function processREST() {
   
   function changeTitle($dataBlob) {
   	$validation = array();
-  	$validation['userID'] = isValidUserLogin($dataBlob->userID);
-  	$validation['title']  = isValidTitle($dataBlob->title);
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['title']  = (int)isValidTitle($dataBlob->title);
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -177,8 +179,8 @@ function processREST() {
   
   function changeWorkStatus($dataBlob) {
   	$validation = array();
-  	$validation['userID']     = isValidUserLogin($dataBlob->userID);
-  	$validation['workStatus'] = isValidBool($dataBlob->workStatus);
+  	$validation['userID']     = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['workStatus'] = (int)isValidBool($dataBlob->workStatus);
 
   	if(in_array(false,$validation))
   		return $validation;
@@ -197,8 +199,8 @@ function processREST() {
   
   function changeVacationDays($dataBlob) {
   	$validation = array();
-  	$validation['userID']       = isValidUserLogin($dataBlob->userID);
-  	$validation['vacationDays'] = isValidBool($dataBlob->vacationDays);
+  	$validation['userID']       = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['vacationDays'] = (int)isValidBool($dataBlob->vacationDays);
 
    	if(in_array(false,$validation))
   		return $validation;
@@ -531,6 +533,47 @@ function processREST() {
   	return $validation;
   }
   
+  function decideVacation($dataBlob) {
+  	$validation = array();
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+  	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
+  	$validation['approved']  = (int)isValidBool($dataBlob->approved);
+  	
+  	if(in_array(false,$validation))
+  		return $validation;
+  	
+  	if(!VacationRequest::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
+  		return null;
+  	
+  	$vacation = VacationRequest::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+  	if($dataBlob->approved)
+  		$vacation->approve();
+  	else
+  		$vacation->reject();
+  	return $validation;
+  }
+  
+  function decideTimeOff($dataBlob) {
+  	$validation = array();
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+  	$validation['endTime']   = (int)isValidDateTime($dataBlob->endTime);
+  	$validation['approved']  = (int)isValidBool($dataBlob->approved);
+  	 
+  	if(in_array(false,$validation))
+  		return $validation;
+  	 
+  	if(!TimeOffRequest::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
+  		return null;
+  	 
+  	$timeOff = TimeOffRequest::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+  	if($dataBlob->approved)
+  		$timeOff->approve();
+  	else
+  		$timeOff->reject();
+  	return $validation;
+  }
 
   function export($dataBlob) {
   	 $validation = array();
@@ -543,28 +586,6 @@ function processREST() {
   	 $report = new report();
   	 
   	 return $report->export_excel_csv($dataBlob->start, $dataBlob->end);
-  }
-  
-  function approveVacation($dataBlob) {	//TODO
-  	 $validation = array();
-  	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
-  	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
-  	 
-  	 if(in_array(false,$validation))
-  	 	return $validation;
-  	 
-  	 // do stuff
-  }
-  
-  function approveTimeOff($dataBlob) { //TODO
-  	 $validation = array();
-  	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
-  	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
-  	 
-  	 if(in_array(false,$validation))
-  	 	return $validation;
-  	 
-  	 // do stuff
   }
   
   function getMainActivityLog($dataBlob) {  //TODO
@@ -635,7 +656,8 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   	
-  	// send request
+  	$timeOff = VacationRequest::create($_COOKIE['login'], $dataBlob->startDate, $dataBlob->endDate);
+  	return $validation;
   }
   
   function requestTimeOff($requestData) { //TODO
@@ -646,7 +668,8 @@ function processREST() {
   	if(in_array(false,$validation))
   		return $validation;
   	
-  	// send request
+  	$timeOff = TimeOffRequest::create($_COOKIE['login'], $dataBlob->startDate, $dataBlob->endDate);
+  	return $validation;
   }
 
   function logoutUser() {
