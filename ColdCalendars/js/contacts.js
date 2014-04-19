@@ -1,6 +1,6 @@
 function loadContactsPage() {
-	 setUserType();  
-	 loadUser();
+	  setUserType();
+	  loadUser();
 	  
 	  //Create Removal Dialogs
 	  createPhoneNumberRemovalList();
@@ -9,8 +9,6 @@ function loadContactsPage() {
 	  //Create Priority Dialogs
 	  createPhoneNumberPriorityList();
 	  createEmailPriorityList();
-	  
-	  
 	  
 	  //Hide create/delete buttons if not admin
 	  hideAdminButtons();
@@ -382,19 +380,19 @@ function loadContactsPage() {
 	  });
 	  $('#Email_Priority_List').sortable();
 	  $('#Email_Priority_List').disableSelection();
+	  
+	  $('.editTitle').click(function() {
+		  alert($(this).attr('data-login'));
+		  //$('#Email_Priority_Dialog').dialog('open');
+      });
 }
 
 function loadUser()
   {
 	    var requestObject = new Object();
 	    requestObject.requestType="UserList";
-		var retVal = $.ajax({
-				url: "rest.php",
-				data: "json="+JSON.stringify(requestObject),
-				dataType: "json",
-				async: false
-				});
-		var list = jQuery.parseJSON(retVal.responseText); 
+
+		var list = ajaxGetJSON(requestObject); 
 
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
@@ -462,7 +460,6 @@ function loadUser()
 	  }
 	  
 	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
-
 	  
 	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
 	  var userRow = $('<tr>').appendTo(table);
