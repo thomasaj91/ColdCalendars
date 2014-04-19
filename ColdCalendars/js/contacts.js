@@ -466,6 +466,8 @@ function loadUser()
 			var info   = getInfoByLogin(list[e]);
 			var phones = getPhoneNumbersByLogin(list[e]);
 			var emails = getEmailAddressesByLogin(list[e]);
+			var availability = getAvailabilityByLogin(list[e]);
+			alert(availability);
 			if(info   !== null
 		    && phones !== null
 		    && emails !== null) {
@@ -606,6 +608,14 @@ function loadUser()
 	  getEmails.requestType = 'UserEmail';
 	  getEmails.userID = login;
 	  return ajaxGetJSON(getEmails);
+	  
+  }
+  
+  function getAvailabilityByLogin(login) {
+	  var getAvailability = new Object();
+	  getAvailability.requestType = 'GetUserAvailability';
+	  getAvailability.login = login;
+	  return ajaxGetJSON(getAvailability);
 	  
   }
   
