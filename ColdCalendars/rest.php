@@ -52,7 +52,7 @@ function processREST() {
   	case 'DecideSwap':         return decideSwap($requestData);
   	case 'DecideVacation':     return approveVacation($requestData);	//TODO sprint 3
   	case 'DecideTimeOff':      return approveTimeOff($requestData);		//TODO sprint 3
-  	case 'ReportExport';       return export($requestData);				//TODO sprint 3
+  	case 'ReportExport';       return export($requestData);
   	case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
   	case 'ViewSchedule':       return viewSchedule($requestData);
   	case 'ViewTemplate':       return viewTemplate($requestData);		//TODO sprint 3
@@ -63,11 +63,11 @@ function processREST() {
   	case 'UserInfo':           return getUserInfo($requestData);
   	case 'UserPhone':          return getPhoneNumbers($requestData);
   	case 'AddPhone':           return addPhoneNumber($requestData);
-  	case 'PhonePriority':      return phonePriority($requestData); 		//TODO
+  	case 'PhonePriority':      return phonePriority($requestData);
   	case 'RemovePhone':        return removePhoneNumber($requestData);
   	case 'UserEmail':          return getEmails($requestData);
   	case 'AddEmail':           return addEmail($requestData);
-  	case 'EmailPriority':      return emailPriority($requestData); 		//TODO
+  	case 'EmailPriority':      return emailPriority($requestData);
   	case 'RemoveEmail':        return removeEmail($requestData);
   	case 'UserList':           return userList($requestData);
   	case 'UserListInfo':       return userListInfo($requestData);
@@ -532,7 +532,7 @@ function processREST() {
   }
   
 
-  function export($dataBlob) { // TODO
+  function export($dataBlob) {
   	 $validation = array();
   	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
   	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
@@ -542,9 +542,111 @@ function processREST() {
   	 
   	 $report = new report();
   	 
+  	 return $report->export_excel_csv($dataBlob->start, $dataBlob->end);
+  }
+  
+  function approveVacation($dataBlob) {	//TODO
+  	 $validation = array();
+  	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
+  	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
   	 
-  	 //echo $str;
-  	 return $report->export_excel_csv();
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 // do stuff
+  }
+  
+  function approveTimeOff($dataBlob) { //TODO
+  	 $validation = array();
+  	 $validation['start'] = (int)isValidDateTime($dataBlob->start);
+  	 $validation['end'] = (int)isValidDateTime($dataBlob->end);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 // do stuff
+  }
+  
+  function getMainActivityLog($dataBlob) {  //TODO
+  	 $validation = array();
+  	 $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	 $validation['endDate'] = (int)isValidDateTime($dataBlob->endDate);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 //get the main log
+  }
+  
+  function viewTemplate($dataBlob) { //TODO
+  	 return Template::loadAllTemplates();
+  }
+  
+  function createTemplate($dataBlob) { //TODO
+  	 $validation = array();
+  	 $validation['title'] = (int)isValidTitle($dataBlob->title);
+  	 $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	 $validation['endDate'] = (int)isValidDateTime($dataBlob->endDate);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 Template::create($dataBlob->startDate,$dataBlob->endDate);
+  	 return $validation;
+  }
+  
+  function loadTemplate($dataBlob) { //TODO
+  	 $validation = array();
+  	 $validation['title'] = (int)isValidTitle($dataBlob->title);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 return Template::load($dataBlob->title);
+  }
+  
+  function removeTemplate($dataBlob) { //TODO
+  	 $validation = array();
+  	 $validation['title'] = (int)isValidTitle($dataBlob->title);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 Template::remove($dataBlob->name);
+  	 return validation;
+  }
+  
+  function getUserActivityLog($dataBlob) { //TODO
+  	 $validation = array();
+  	 $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	 $validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	 
+  	 if(in_array(false,$validation))
+  	 	return $validation;
+  	 
+  	 // return user log
+  }
+  
+  function requestVacation($dataBlob) { //TODO
+  	$validation = array();
+  	$validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	$validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	
+  	if(in_array(false,$validation))
+  		return $validation;
+  	
+  	// send request
+  }
+  
+  function requestTimeOff($requestData) { //TODO
+  	$validation = array();
+  	$validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	$validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
+  	
+  	if(in_array(false,$validation))
+  		return $validation;
+  	
+  	// send request
   }
 
   function logoutUser() {
@@ -568,6 +670,4 @@ function processREST() {
   	catch(Exception $e) { return null; }
     return $shift;  	 
   }
-
-
 ?>
