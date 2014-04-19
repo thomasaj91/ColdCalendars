@@ -166,6 +166,32 @@ assertValidUserPageAccess();
 		</table>
 </div>
 
+<div  id="Edit_Title_Dialog" title="Edit Title" style='display:none'>
+		<table>
+			<tr>
+				<td>
+					<select id='User_Title'>
+    				  <option value='Employee'>Employee</option>
+    				  <option value='Manager'>Manager</option>
+ 					</select>
+ 				</td>
+ 			</tr>
+		</table>
+</div>
+
+<div  id="Edit_Status_Dialog" title="Edit Status" style='display:none'>
+		<table>
+			<tr>
+				<td>
+					<select id='User_Status'>
+    				  <option value=0>Part Time</option>
+    				  <option value=1>Full Time</option>
+ 					</select>
+ 				</td>
+ 			</tr>
+		</table>
+</div>
+
 <div id="Contact_List">
 </div>
  
