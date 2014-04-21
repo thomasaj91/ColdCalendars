@@ -5,14 +5,14 @@ require_once(__DIR__.'/../DB.php');
 
 class Template {
 	private static $qryCreateTemplate = "INSERT INTO Templates
-										 VALUES(NULL, '@PARAM', '@PARAM', '@PARAM')";
+			                             VALUES(NULL, '@PARAM', '@PARAM', '@PARAM')";
 	
 	private static $qryTemplateExists = "SELECT EXISTS(SELECT 1
-													   FROM Templates
-													   WHERE title = '@PARAM'";
+			                             FROM Templates
+			                             WHERE title = '@PARAM'";
 	
 	private static $qryDeleteTemplate = "DELETE FROM Templates
-										 WHERE title = '@PARAM'";
+			                             WHERE title = '@PARAM'";
 	
 	private static $qryLoadTemplate = "SELECT title, start_time, end_time
 			                           FROM Templates
@@ -25,56 +25,53 @@ class Template {
 	private $startTime;
 	private $endTime;
 	
-	public function Template($title, $start, $end, $create) {
-		if($create) {
-			$params = array($title, DB::timeToDateTime($start), DB::timeToDateTime($end));
-			$conn = DB::getNewConnection();
-			$sql = DB::injectParameters($params, self::$qryCreateTemplate);
-			$result = DB::execute($conn, $sql);
-			$conn->close(); 
-		}
-		else {
-			$this->title = $title;
-			$this->startTime = $start;
-			$this->endTime = $end;
-		}
+	public function Template($title) {
+		$this->title = $title;
+	}
+	
+	public function Template($title, $start, $end) {
+		$params = array($title, DB::timeToDateTime($start), DB::timeToDateTime($end));
+		$conn = DB::getNewConnection();
+		$sql = DB::injectParameters($params, self::$qryCreateTemplate);
+		$result = DB::execute($conn, $sql);
+		$conn->close(); 
 	}
 	
 	public static function create($title, $start, $end) {
 		self::assertNonExistance($title, $start, $end);
-		return new Template($title, $start, $end, true);
+		return new Template($title, $start, $end);
 	}
 	
-	public static function load($title, $start, $end) {
-		self::assertExistance($title, $start, $end);
-		return new Template($title, $start, $end, false);
+	public static function load($title) {
+		self::assertExistance($title);
+		return new Template($title);
 	}
 	
-	public static function delete($title, $start, $end) {
-		self::assertExistance($title, $start, $end);
-		$params = array($title, DB::timeToDateTime($start),DB::timeToDateTime($end));
+	public static function delete($title) {
+		self::assertExistance($title);
+		$params = array($title);
 	    $conn   = DB::getNewConnection();
 	    $sql    = DB::injectParamaters($params, self::$qryDeleteTemplate);
 	    $result = DB::execute($conn, $sql);
 	    $conn->close();
 	}
 	
-	public static function exists($title, $start, $end) {
+	public static function exists($title) {
 		$conn    = DB::getNewConnection();
-		$sql     = DB::injectParamaters(array($title,DB::timeToDateTime($start),DB::timeToDateTime($end)), self::$qryTemplateExists);
+		$sql     = DB::injectParamaters(array($title), self::$qryTemplateExists);
 		$results = DB::query($conn, $sql);
 		$conn->close();
 		return ($results [0] [0] === '1') ? true : false;
 	}
 	
-	public static function getAllTemplates($start, $end) {
+	public static function getAllTemplates() {
 		$conn	 = DB::getNewConnection();
-		$sql     = DB::injectParameters(array(DB::timeToDateTime($start), DB::timeToDateTime($end)), self::$qryDeleteTemplate);
+		$sql     = DB::injectParameters(array(), self::$qryGetAllTemplates);
 		$result  = DB::query($conn, $sql);
 		$conn->close();
 		$out = array();
 		foreach($result as $row)
-			array_push($out, self::load($title, DB::timeToDateTime($row[0]), DB::timeToDateTime($row[2]))->getInfo() );
+			array_push($out, self::load($row[0], DB::timeToDateTime($row[1]), DB::timeToDateTime($row[2]))->getInfo() );
 		return $out;
 	}
 	
@@ -98,14 +95,14 @@ class Template {
 		return $this->endTime;
 	}
 	
-	private static function assertExistance($title, $start, $end) {
-		if(!self::exists($title, $start, $end))
-			throw new Exception("Template ($title, $start, $end) does not exist!");
+	private static function assertExistance($title) {
+		if(!self::exists($title))
+			throw new Exception("Template ($title) does not exist!");
 	}
 	
-	private static function assertNonExistance($title, $start, $end) {
-		if(self::exists($title, $start, $end))
-			throw new Exception("Template ($title, $start, $end) already exists!");
+	private static function assertNonExistance($title) {
+		if(self::exists($title))
+			throw new Exception("Template ($title) already exists!");
 	}
 }
 ?>
