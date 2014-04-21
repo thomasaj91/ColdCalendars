@@ -24,27 +24,28 @@ class Template {
 	private $title;
 	private $startTime;
 	private $endTime;
-	
-	public function Template($title) {
-		$this->title = $title;
-	}
-	
-	public function Template($title, $start, $end) {
-		$params = array($title, DB::timeToDateTime($start), DB::timeToDateTime($end));
-		$conn = DB::getNewConnection();
-		$sql = DB::injectParameters($params, self::$qryCreateTemplate);
-		$result = DB::execute($conn, $sql);
-		$conn->close(); 
+
+	public function Template($title, $start, $end, $create) {
+		if($create) {
+			$params = array($title, DB::timeToDateTime($start), DB::timeToDateTime($end));
+			$conn = DB::getNewConnection();
+			$sql = DB::injectParameters($params, self::$qryCreateTemplate);
+			$result = DB::execute($conn, $sql);
+			$conn->close();
+		}
+		else {
+			$this->title = $title;
+		}
 	}
 	
 	public static function create($title, $start, $end) {
 		self::assertNonExistance($title, $start, $end);
-		return new Template($title, $start, $end);
+		return new Template($title, $start, $end, true);
 	}
 	
 	public static function load($title) {
 		self::assertExistance($title);
-		return new Template($title);
+		return new Template($title, null, null, false);
 	}
 	
 	public static function delete($title) {
