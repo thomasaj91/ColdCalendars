@@ -4,11 +4,22 @@ ini_set('display errors',3);
 require_once(__DIR__.'/../DB.php');
 
 class Template {
-	private static $qryCreateTemplate = "sql";
-	private static $qryTemplateExists = "sql";
-	private static $qryDeleteTemplate = "sql";
-	private static $qryLoadTemplate = "sql";
-	private static $qryGetAllTemplates = "sql";
+	private static $qryCreateTemplate = "INSERT INTO Templates
+										 VALUES(NULL, '@PARAM', '@PARAM', '@PARAM')";
+	
+	private static $qryTemplateExists = "SELECT EXISTS(SELECT 1
+													   FROM Templates
+													   WHERE title = '@PARAM'";
+	
+	private static $qryDeleteTemplate = "DELETE FROM Templates
+										 WHERE title = '@PARAM'";
+	
+	private static $qryLoadTemplate = "SELECT title, start_time, end_time
+			                           FROM Templates
+			                           WHERE title = '@PARAM'";
+	
+	private static $qryGetAllTemplates = "SELECT title, start_time, end_time
+			                              FROM Templates";
 	
 	private $title;
 	private $startTime;
