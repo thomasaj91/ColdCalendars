@@ -214,7 +214,7 @@ class User {
     return $this->email;
   }
   public function addEmailAddress($address) {
-    if(!in_array($number, $this->email))
+    if(!in_array($address, $this->email))
       array_push($this->email, $address);
   }
   public function removeEmailAddress($address) {

@@ -93,7 +93,8 @@ CREATE TABLE Templates
     Title 	Varchar(255) NOT NULL,
     Start_time	DATETIME NOT NULL,
     End_time	DATETIME NOT NULL,
-	PRIMARY KEY (PK)
+    PRIMARY KEY (PK),
+    UNIQUE (Title)
 );
 
 INSERT INTO UserType

@@ -381,10 +381,77 @@ function loadContactsPage() {
 	  $('#Email_Priority_List').sortable();
 	  $('#Email_Priority_List').disableSelection();
 	  
+	  //Admin Edit Dialogs
 	  $('.editTitle').click(function() {
-		  alert($(this).attr('data-login'));
-		  //$('#Email_Priority_Dialog').dialog('open');
+		  window.editLogin = $(this).attr('data-login');
+		  $('#Edit_Title_Dialog').dialog('open');
       });
+	  
+	  $('#Edit_Title_Dialog').dialog({
+		  autoOpen: false,
+		  height: 175,
+		  width: 225,
+		  modal: true,
+		  resizable: false,
+		  draggable: true,
+		  buttons: { "Submit": function() {
+			  			var titleObject = new Object();
+			  			
+			  			titleObject.requestType = 'ChangeTitle';
+			  			titleObject.userID 		= window.editLogin;
+			  			titleObject.title		= $('#User_Title').val();
+			  			
+			  			var obj = ajaxGetJSON(titleObject);
+			  			
+						for(var e in obj){
+							if(obj[e]===0) {
+								alert('invalid field: '+e);
+							}
+						}
+						
+						location.reload();
+					 
+				 }, 
+				 "Cancel": function() { $(this).dialog("close"); }
+		  }		
+	  
+	  });
+	  
+	  $('.editStatus').click(function() {
+		  window.editLogin = $(this).attr('data-login');
+		  $('#Edit_Status_Dialog').dialog('open');
+      });
+	  
+	  $('#Edit_Status_Dialog').dialog({
+		  autoOpen: false,
+		  height: 175,
+		  width: 225,
+		  modal: true,
+		  resizable: false,
+		  draggable: true,
+		  buttons: { "Submit": function() {
+			  			var statusObject = new Object();
+			  			
+			  			statusObject.requestType = 'ChangeWorkStatus';
+			  			statusObject.userID 	 = window.editLogin;
+			  			statusObject.workStatus	 = $('#User_Status').val();
+			  			
+			  			var obj = ajaxGetJSON(statusObject);
+		  			
+		  				for(var e in obj){
+						if(obj[e]===0) {
+							alert('invalid field: '+e);
+						}
+	  				}
+				
+		  			location.reload();
+					 
+				 }, 
+				 "Cancel": function() { $(this).dialog("close"); }
+		  }		
+	  
+	  });
+	  
 }
 
 function loadUser()
@@ -399,6 +466,8 @@ function loadUser()
 			var info   = getInfoByLogin(list[e]);
 			var phones = getPhoneNumbersByLogin(list[e]);
 			var emails = getEmailAddressesByLogin(list[e]);
+			var availability = getAvailabilityByLogin(list[e]);
+			alert(availability);
 			if(info   !== null
 		    && phones !== null
 		    && emails !== null) {
@@ -408,6 +477,12 @@ function loadUser()
 		
 		$('#'+parseCookie().login+'_h3').remove().appendTo($('#Current_User_Info'));
 		$('#'+parseCookie().login+'_div').remove().appendTo($('#Current_User_Info'));
+		
+		if(window.userType == 'Admin')
+		{
+			$('#Current_User_Info > h3 > .editTitle').hide();
+			$('#Current_User_Info > h3 > .editStatus').hide();
+		}
 		
 		appendAddRemoveEditPhoneButton();
 		appendAddRemoveEditEmailButton();
@@ -533,6 +608,14 @@ function loadUser()
 	  getEmails.requestType = 'UserEmail';
 	  getEmails.userID = login;
 	  return ajaxGetJSON(getEmails);
+	  
+  }
+  
+  function getAvailabilityByLogin(login) {
+	  var getAvailability = new Object();
+	  getAvailability.requestType = 'GetUserAvailability';
+	  getAvailability.login = login;
+	  return ajaxGetJSON(getAvailability);
 	  
   }
   
