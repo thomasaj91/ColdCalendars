@@ -53,8 +53,7 @@ DROP TABLE IF EXISTS Swap;
 CREATE TABLE Swap
 (
     Shift_FK  Int NOT NULL REFERENCES Shift(PK),
-    Prev      Int NOT NULL REFERENCES User(PK),
-    Next      Int REFERENCES User(PK),
+    Owner     Int NOT NULL REFERENCES User(PK),
     Released  BOOL NOT NULL, 
     Approved  BOOL,
     Timestamp DATETIME
