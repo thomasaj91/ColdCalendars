@@ -129,3 +129,12 @@ function standardToMilitaryTime(timeString)
     
     return militaryTimeString;
 }
+
+function hideManagerListOptions()
+{
+	if(window.userType != 'Manager')
+	{
+		$('#Navbar_Options li').eq(3).hide();
+		$('#Navbar_Options li').eq(4).hide();
+	}
+}
