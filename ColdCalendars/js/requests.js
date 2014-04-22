@@ -15,5 +15,24 @@ $(document).ready(function(){
 		requestObject.endDate = end;
 		
 		var obj = ajaxGetJSON(requestObject);
+		
+		//Error checking/handling
+		var zero_found = false;
+		
+		for(var e in obj){		
+			if(obj[e]===0) {
+				zero_found = true;
+			}
+		}
+		
+		if(zero_found)
+		{
+			alert('Invalid request. Please try again.');
+		}
+		else
+		{
+			alert('Request awaiting manager action. Follow activity log for approval/denial.');
+			location.reload();
+		}
 	});
 });
