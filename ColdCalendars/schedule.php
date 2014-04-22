@@ -19,6 +19,9 @@
 	<div id='Shift_Options' title='Shift Options' style='display:none'>
 		<table>
 			<tr>
+				<td><button id='Edit_Shift_Button'>Edit Shift</button></td>
+			</tr>
+			<tr>
 				<td><button id='Release_Shift_Button'>Release Shift</button></td>
 			</tr>
 			<tr>
@@ -42,6 +45,22 @@
 			<tr>
 				<td><label>Shift End Time</label></td>
 				<td><p><input id='Shift_End' type='text' class='time' /></p></td>
+			</tr>
+		</table>	 
+	</div>
+	<div id='Edit_Shift' title='Edit Shift' style='display:none'>
+		<table>
+			<tr>
+				<td><label>Employee Name</label></td>
+				<td><input id='New_Employee_Name' type='text'></td>
+			</tr>
+			<tr>
+				<td><label>Shift Start Time</label></td>
+				<td><p><input id='New_Shift_Start' type='text' class='time' /></p></td>
+			</tr>
+			<tr>
+				<td><label>Shift End Time</label></td>
+				<td><p><input id='New_Shift_End' type='text' class='time' /></p></td>
 			</tr>
 		</table>	 
 	</div>
