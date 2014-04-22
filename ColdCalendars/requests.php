@@ -17,7 +17,7 @@
 
 	<?php include 'navbar.php'; ?>
 	
-	<table>
+	<table class='center'>
 		<tr>
 			<td>Type: 
 				<select id='Request_Type'>
