@@ -20,6 +20,8 @@ function getQueue() {
 }
 
 $(document).ready(function(){
+	setUserType();
+	hideManagerListOptions();
 	getQueue();
 	
     $('.acceptQueueItem').click(function(){
