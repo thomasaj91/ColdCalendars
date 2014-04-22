@@ -24,6 +24,7 @@ function loadContactsPage() {
       });
 	  
 	  $("#Delete_User").click(function() {
+		  	createDeleteDropdown();
 	  		$( "#Delete_User_Dialog" ).dialog("open");
       });
 	  
@@ -225,8 +226,8 @@ function loadContactsPage() {
 	  $("#Delete_User_Dialog").dialog({
 
 	  		autoOpen: false,
-	   		height: 300,
-	   		width: 400,
+	   		height: 250,
+	   		width: 250,
 	   		modal: true,
 	   		resizable: false,
 	   		draggable: true,
@@ -461,13 +462,15 @@ function loadUser()
 
 		var list = ajaxGetJSON(requestObject); 
 
+		window.allUserList = list;
+		
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
 			var info   = getInfoByLogin(list[e]);
 			var phones = getPhoneNumbersByLogin(list[e]);
 			var emails = getEmailAddressesByLogin(list[e]);
 			var availability = getAvailabilityByLogin(list[e]);
-			alert(availability);
+			//alert(availability);
 			if(info   !== null
 		    && phones !== null
 		    && emails !== null) {
@@ -536,7 +539,7 @@ function loadUser()
 	  
 	  var div = $('<div>').appendTo(elem).attr('id',login+'_div');
 	  
-	  var table =$('<table>').appendTo(div).attr('id',login+'_table');
+	  var table =$('<table>').appendTo(div).attr('id',login+'_table').addClass('contactInfoTable');
 	  var userRow = $('<tr>').appendTo(table);
 	  
 	  //Format user title/work status
@@ -589,7 +592,14 @@ function loadUser()
 			  $('<td>').appendTo(availabilityRow).text(i);
 		  }
 	  }
-	  
+  }
+  
+  function createDeleteDropdown(){
+	  $('#DeleteLogin').empty();
+	  for(var e in window.allUserList)
+	  {
+		  $('<option>').appendTo('#DeleteLogin').attr('value',window.allUserList[e]).text(window.allUserList[e]);
+	  }
   }
   
   function getInfoByLogin(login) {
