@@ -80,12 +80,11 @@ assertValidUserPageAccess();
 </div>
 
 <div  id="Delete_User_Dialog" title="Delete existing user" style='display:none'>
-	<p class="validateTips">All form fields are required.</p>
 		<form>
 			<table>
 				<tr>
-					<td><label for="Deletelogin">Login</label></td>
-					<td><input id="DeleteLogin"></td>
+					<td><label for="Deletelogin">Login: </label></td>
+					<td><select id="DeleteLogin"></select></td>
 				</tr>
 			</table>
 		</form>
