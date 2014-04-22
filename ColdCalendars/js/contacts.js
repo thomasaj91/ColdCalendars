@@ -569,22 +569,25 @@ function loadUser()
 	  }
 	  
 	  //TODO Availability Information
-	  var testArray = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-	  
-	  var availabilityData = $('<td>').appendTo(userRow).attr('valign','top');
-	  var availabilityTable = $('<table>').appendTo(availabilityData).attr('id','Availability_List').attr('border','1');
-	  var availabilityTableHeader = $('<tr>').appendTo(availabilityTable).attr('id','Availability_Header');
-	  
-	  for(var b in testArray)
+	  if(info.title != 'Admin')
 	  {
-		  $('<td>').appendTo(availabilityTableHeader).text(testArray[b]).attr('colspan',2);
-	  }
-	  
-	  var availabilityRow = $('<tr>').appendTo(availabilityTable);
-	  
-	  for(var i=0; i<14; i++)
-	  {
-		  $('<td>').appendTo(availabilityRow).text(i);
+		  var testArray = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+		  
+		  var availabilityData = $('<td>').appendTo(userRow).attr('valign','top');
+		  var availabilityTable = $('<table>').appendTo(availabilityData).attr('id','Availability_List').attr('border','1');
+		  var availabilityTableHeader = $('<tr>').appendTo(availabilityTable).attr('id','Availability_Header');
+		  
+		  for(var b in testArray)
+		  {
+			  $('<td>').appendTo(availabilityTableHeader).text(testArray[b]).attr('colspan',2);
+		  }
+		  
+		  var availabilityRow = $('<tr>').appendTo(availabilityTable);
+		  
+		  for(var i=0; i<14; i++)
+		  {
+			  $('<td>').appendTo(availabilityRow).text(i);
+		  }
 	  }
 	  
   }
