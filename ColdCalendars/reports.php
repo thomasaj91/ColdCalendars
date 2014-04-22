@@ -16,7 +16,7 @@
 
 	<?php include 'navbar.php'; ?>
 
-	<table>
+	<table class='center'>
 		<tr>
 			<td><p>Report Start Date: <input type='text' id='Report_Start_Date'></p></td>
 			<td><p>Report End Date: <input type='text' id='Report_End_Date'></p></td>
