@@ -6,12 +6,16 @@
 <head>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" href="../css/coldcalendar.css" />
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script src="js/main.js"></script> 
 	<script src="js/report.js"></script>
 </head>
 <body>
+
+	<?php include 'navbar.php'; ?>
+
 	<table>
 		<tr>
 			<td><p>Report Start Date: <input type='text' id='Report_Start_Date'></p></td>
