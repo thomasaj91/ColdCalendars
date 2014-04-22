@@ -1,5 +1,6 @@
 function loadContactsPage() {
 	  setUserType();
+	  hideManagerListOptions();
 	  loadUser();
 	  
 	  //Create Removal Dialogs
