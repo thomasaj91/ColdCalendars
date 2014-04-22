@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	setUserType();
+	hideManagerListOptions();
+	
 	$('#Request_Start_Time').timepicker();
 	$('#Request_End_Time').timepicker();
 	$('#Request_Start_Date').datepicker();
