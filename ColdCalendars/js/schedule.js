@@ -149,6 +149,65 @@ $(document).ready(function() {
 		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
 	
+	$('#Edit_Shift_Button').click(function(){
+		$('#Edit_Shift').dialog('open');
+		loadNames();
+	});
+	
+    $('#Edit_Shift').dialog(
+    {
+    	autoOpen: false,
+   		height: 300,
+   		width: 350,
+   		modal: true,
+   		resizable: false,
+   		draggable: true,
+   		buttons: { 'Submit': function() {
+   					//Get old shift start/end time
+   					var startTime = new Date(window.targetEvent.start);
+   					var endTime = new Date(window.targetEvent.end);
+		   			
+   					var shiftObject = new Object();
+   					
+   					//Info. from dialog form
+	   				var employeeName 	= $('#New_Employee_Name').val();
+	   				var shiftStart 		= parseTime($('#New_Shift_Start').val());
+	   				var shiftEnd   		= parseTime($('#New_Shift_End').val());	  
+	   				
+	   				//Add new shift to schedule
+	   				shiftObject.requestType = 'AddToSchedule';
+	   				shiftObject.userID	  = employeeName.split(',')[1];
+	   				shiftObject.startTime = dateObjectToDateString(new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), shiftStart.getHours(), shiftStart.getMinutes()));
+	   				shiftObject.endTime	  = dateObjectToDateString(new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes()));
+	   				
+					obj = ajaxGetJSON(shiftObject);
+					
+					var zero_found = false;
+					for(var e in obj){
+						if(obj[e]===0) {
+							zero_found = true;
+						}
+					}
+					
+					if(!zero_found)
+   					{
+			   			shiftObject.requestType = 'RemoveFromSchedule';
+			   			shiftObject.userID	  = window.targetEvent.title;
+			   			shiftObject.startTime = dateObjectToDateString(startTime);
+			   			shiftObject.endTime	  = dateObjectToDateString(endTime);
+			   			
+			   			var obj = ajaxGetJSON(shiftObject);
+						
+						location.reload();
+   					}
+					else
+					{
+						alert('Invalid edit. Please try again.');
+					}
+		}, 
+	   	"Cancel": function() { $(this).dialog("close"); } }
+    });
+	
 	$('.fc-event').focus(function() {
 		$('.last-clicked-event').each(function(){
 			$(this).removeClass('last-clicked-event');
@@ -156,9 +215,15 @@ $(document).ready(function() {
 		$(this).addClass('last-clicked-event');
 	});
 	
-	$('#Shift_Start').timepicker({ 'scrollDefaultNow': true });
+	//Add shift timepickers
+	$('#Shift_Start').timepicker();
 
-	$('#Shift_End').timepicker({ 'scrollDefaultNow': true });
+	$('#Shift_End').timepicker();
+	
+	//Edit shift timepickers
+	$('#New_Shift_Start').timepicker();
+
+	$('#New_Shift_End').timepicker();
 
     $("#Only_Me_Filter").change(function () {
     	var fliter  = $(this).is(':checked');
@@ -239,6 +304,10 @@ function loadNames() {
 		}
 
 		  $( "#Employee_Name" ).autocomplete({
+		      source: list
+		    });
+		  
+		  $( "#New_Employee_Name" ).autocomplete({
 		      source: list
 		    });
 }
