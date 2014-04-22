@@ -1,4 +1,6 @@
 $(document).ready(function() {
+	setUserType();
+	hideManagerListOptions();
 
 	$('#calendar').fullCalendar({
 		header: {
