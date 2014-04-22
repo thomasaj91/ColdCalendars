@@ -16,42 +16,86 @@ VALUES (@pk,'@PARAM','@PARAM');
 INSERT INTO Swap
 VALUES (@pk,
         (SELECT PK FROM User WHERE Login = '@PARAM')
-        ,NULL,False,NULL,NOW());
+        ,False,True,NOW());
 ";
 
 		private static $qryLoadShift = "SELECT 
     Start_time,
     End_time,
     Released, 
-    Approved,
-    User.Login
+    Approved
 	FROM Shift
 	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
-	  FROM Swap
-	  GROUP BY Shift_FK
+	  FROM  Swap
+      WHERE Approved = True
+	  GROUP BY Shift_FK, Approved
 	) AS swp
 	ON   swp.Shift_FK  = Shift.PK
 	JOIN Swap
 	ON   swp.Shift_FK  = Swap.Shift_FK
 	AND  swp.Timestamp = Swap.Timestamp
-	LEFT JOIN User
-	ON   Swap.Next = User.PK
 	WHERE Shift.Start_time = '@PARAM'
 	AND   Shift.End_time   = '@PARAM'
-	AND   Swap.Prev =
+	AND   Swap.Owner =
 	(SELECT PK FROM User WHERE Login = '@PARAM') LIMIT 1";
 
-	private static $qryUpdateShift = 
+		private static $qryLoadSwaps = "SELECT User.Login
+	FROM Shift
+	JOIN (
+      SELECT Swap.Shift_FK, iswp.Timestamp
+  	  FROM Shift 
+  	  JOIN (
+  	    SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved = True
+        GROUP BY Shift_FK, Approved
+	    LIMIT 1
+	  ) AS iswp
+	  ON iswp.Shift_FK  = Shift.PK
+	  JOIN Swap
+	  ON   iswp.Shift_FK  = Swap.Shift_FK
+	  AND  iswp.Timestamp = Swap.Timestamp
+	  AND  Swap.Owner = (SELECT PK FROM User WHERE Login = '@PARAM')
+	) AS oswp
+	ON   oswp.Shift_FK  = Shift.PK
+	JOIN Swap
+	ON   oswp.Shift_FK   = Swap.Shift_FK
+	AND  oswp.Timestamp <= Swap.Timestamp
+    JOIN User
+    ON   User.PK = Swap.Owner
+	WHERE Shift.Start_time = '@PARAM'
+	AND   Shift.End_time   = '@PARAM'
+    AND   Approved IS NULL";
+		
+	private static $qryDecideSwapper = 
 	"UPDATE Swap
-SET Next=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = @PARAM, Approved = @PARAM, Timestamp = NOW()
+SET Owner=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = @PARAM, Approved = @PARAM, Timestamp = NOW()
+WHERE Shift_FK IN
+(SELECT PK
+   FROM Shift
+   JOIN (
+        SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved = True
+        GROUP BY Shift_FK, Approved
+	    LIMIT 1
+   ) AS swp
+   WHERE Start_time = '@PARAM'
+   AND   End_time   = '@PARAM'
+   AND Owner = (SELECT PK FROM User WHERE Login = '@PARAM'))";
+   
+	private static $qryUpdateShift =
+	"UPDATE Swap
+SET Owner=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = @PARAM, Approved = True, Timestamp = NOW()
 WHERE Shift_FK IN
 (SELECT PK
  FROM Shift
  WHERE Start_time = '@PARAM'
  AND   End_time   = '@PARAM')
-AND Prev = 
+AND Owner =
 (SELECT PK FROM User WHERE Login = '@PARAM')";
-
+	
+	
 	private static $qryInsertNewOwner = "
 set @pk :=
  (SELECT PK FROM Shift
@@ -66,12 +110,35 @@ INSERT INTO Swap VALUES
  (SELECT PK FROM User WHERE Login = '@PARAM')
  ,NULL,False,NULL,NOW());";
 
+	private static $qryInsertSwapper = "
+	set @pk :=
+	(SELECT PK
+	FROM Shift
+	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	  FROM  Swap
+      WHERE Approved = True
+	  GROUP BY Shift_FK, Approved
+	) AS swp
+	ON   swp.Shift_FK  = Shift.PK
+	JOIN Swap
+	ON   swp.Shift_FK  = Swap.Shift_FK
+	AND  swp.Timestamp = Swap.Timestamp
+	WHERE Swap.Owner = (SELECT PK FROM User WHERE Login = '@PARAM')
+	AND   Shift.Start_time = '@PARAM'
+	AND   Shift.End_time   = '@PARAM'
+	LIMIT 1);
+	INSERT INTO Swap VALUES
+	(@pk,
+	(SELECT PK FROM User WHERE Login = '@PARAM')
+	,False,NULL,NOW());";
+	
+	
 	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
          JOIN Swap
          ON   Swap.Shift_FK = Shift.PK
          WHERE Shift.Start_time = '@PARAM'
          AND   Shift.End_time   = '@PARAM'
-         AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+         AND   Swap.Owner = (SELECT PK FROM User WHERE Login = '@PARAM')
          LIMIT 1);
     DELETE FROM Swap WHERE Shift_FK = @pk;
     DELETE FROM Shift WHERE PK = @pk;";
@@ -83,6 +150,7 @@ INSERT INTO Swap VALUES
     FROM Shift
 	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
 	  FROM Swap
+      WHERE Approved = True
 	  GROUP BY Shift_FK
 	) AS swp
 	ON   swp.Shift_FK  = Shift.PK
@@ -90,7 +158,7 @@ INSERT INTO Swap VALUES
 	ON   swp.Shift_FK  = Swap.Shift_FK
 	AND  swp.Timestamp = Swap.Timestamp
     JOIN User
-    ON   Swap.Prev = User.PK
+    ON   Swap.Owner = User.PK
     WHERE Shift.Start_time >= '@PARAM'
     AND   Shift.End_time   <= '@PARAM'";
 
@@ -104,6 +172,7 @@ SELECT
 	FROM Shift
 	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
 	  FROM Swap
+      WHERE Approved = True
 	  GROUP BY Shift_FK
 	) AS  swp
 	ON    swp.Shift_FK  = Shift.PK
@@ -114,14 +183,12 @@ SELECT
 	ON    Swap.Prev = User.PK
 	WHERE Shift.Start_time >= '@PARAM'
 	AND   Shift.End_time   <= '@PARAM'
-    AND   Next IS NOT NULL
     AND   Approved IS NULL
     ";
 
 	private $owner;
-	private $pickuper;
+	private $swappers;
 	private $released;
-	private $approved;
 	private $startTime;
 	private $endTime;
 
@@ -131,9 +198,8 @@ SELECT
 			DB::execute($conn,DB::injectParamaters(array($start,$end,$login), self::$qryCreateShift));
 		    $conn->close();
 			$this->owner     = $login;
-			$this->pickuper  = null;
+			$this->swappers  = array();
 			$this->released  = false;
-			$this->approved  = null;
 			$this->startTime = $start;
 			$this->endTime   = $end;
 			return;
@@ -146,11 +212,10 @@ SELECT
 			$conn->close();
 			$shiftData       = $results[0];
 			$this->owner     = $login;		
-			$this->pickuper  = $shiftData[4];
 			$this->released  = (bool)$shiftData[2];
-			$this->approved  = ($shiftData[3]===NULL) ? NULL : (bool) $shiftData[3];
 			$this->startTime = $start;
 			$this->endTime   = $end;
+			$this->swappers  = $this->getAllSwaps();
 		}
 	}
 
@@ -186,7 +251,7 @@ SELECT
 	public function getInfo() {
 		$out = array();
 		$out['owner']     =  $this->owner;
-		$out['pickuper']  = ($this->pickuper !== null) ? $this->pickuper : 'Null';
+		$out['swappers']  =  $this->swappers;
 		$out['startTime'] =  $this->startTime;
 		$out['endTime']   =  $this->endTime;
 		$out['released']  =  $this->released;
@@ -214,17 +279,7 @@ SELECT
 
 	/* True iff DB.Next !== NULL && starttime > NOW() */
 	public function isPickedUp() {
-		return $this->pickuper !== NULL;
-	}
-
-	/* True iff DB.Approved !== NULL */
-	public function isDecided() {
-	    return $this->approved !== NULL;
-	}
-
-	/* True iff DB.Approved === True */
-	public function isApproved() {
-		return ($this->approved === NULL) ? false : $this->approved; 
+		return !empty($this->swappers);
 	}
 
 	/* Set DB.Released = True  */
@@ -239,33 +294,34 @@ SELECT
 	public function pickup($login) {
 	  if(!$this->isReleased())
 	  	return;
-	  $this->pickuper = $login;
-	  $this->update();
+	  
+	  array_push($this->swappers, $login);
+	  $this->insertSwapper($login);
 	}
 
 	/* Set DB.approved = False */	
-	public function reject() {
-		if(!$this->isPickedUp())
+	public function reject($login) {
+		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
-		$this->approved = false;
-		$this->update();
+		$this->decideSwapper($login,false);
 	}
 
 	/* Set DB.approved = True,
 	 * Create new Swap Record for new owner
 	 */	
-	public function approve() {
-		if(!$this->isPickedUp())
+	public function approve($login) {
+		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
-	  $this->approved = true;
-	  $this->update();
-	  $this->transferResponsiblity();
+	    $this->decideSwapper($login,false);
+	    $this->owner    = $login;
+	    $this->swappers = array();
+	    $this->released = false;
 	}
 
 	private function update() {
-		$params = array($this->pickuper
-				,$this->released
-				,($this->approved===NULL) ? 'NULL' : (int) $this->approved
+		$params = array($this->owner
+		        ,$this->released
+//				,'NULL'
 				,$this->startTime
 				,$this->endTime
 				,$this->owner
@@ -289,7 +345,6 @@ SELECT
 		$this->owner    = $this->pickuper;
 		$this->pickuper = null;
 		$this->released = false;
-		$this->approved = null;
 	}
 
 	public static function toDateString($date, $time) {
@@ -310,6 +365,40 @@ SELECT
 			array_push($out, (self::load($row[0], $row[1], $row[2])->getInfo() ));
 		$conn->close();
 		return $out;
+	}
+
+	public function insertSwapper($login) {
+	  $conn = DB::getNewConnection();
+	  $sql  = DB::injectParamaters(array($this->owner,$this->startTime,$this->endTime,$login), self::$qryInsertSwapper);
+	  $res  = DB::execute($conn, $sql);
+	  $conn->close();
+	}
+	
+	private function getAllSwaps() {
+	  $conn = DB::getNewConnection();
+	  $sql  = DB::injectParamaters(array($this->owner,$this->startTime,$this->endTime), self::$qryLoadSwaps);
+	  $res  = DB::query($conn, $sql);
+	  $out  = array();
+	  foreach($res as $row)
+	    array_push($out, $row[0]);
+	  $conn->close();
+	  return $out;
+	}
+	
+	public function decideSwapper($login, $approval) {
+	  $params = array( $login
+            	     , 'False'
+            	     , $approval ? 'True' : 'False'
+              	     , $this->startTime
+          	         , $this->endTime
+	                 //, $this->owner
+	                 , $login
+	                 );
+	  $conn = DB::getNewConnection();
+	  $sql  = DB::injectParamaters($params, self::$qryDecideSwapper);
+	  $res  = DB::execute($conn, $sql);
+	  $conn->close();
+//	  $this = new self($login, $this->start, $this->end, false);	   
 	}
 }
 ?>

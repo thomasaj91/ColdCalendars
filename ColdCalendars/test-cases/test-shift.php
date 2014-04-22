@@ -5,7 +5,7 @@ require_once (__DIR__ . '/../lib/Shift.php');
 require_once (__DIR__ . '/../DB.php');
 
   DB::buildDatabase();
-  $login = 'winner';
+  $login = 'winnar';
   $savior = 'supar';
   $start = $end = DB::getSystemTime();
   $user  = User::create ( $login,  'supersecret', $login  . '_Fname', $login  . '_Lname', 'Employee', true, 10, '8675309', $login . '@uwm.edu' );
@@ -14,7 +14,7 @@ require_once (__DIR__ . '/../DB.php');
   $shift = Shift::load( $login, $start, $end);
   var_dump($shift);
 
-  $shift->relsease();
+  $shift->release();
   $shift = Shift::load( $login, $start, $end);
   var_dump($shift);
 
@@ -22,7 +22,7 @@ require_once (__DIR__ . '/../DB.php');
   $shift = Shift::load( $login, $start, $end);
   var_dump($shift);
   
-  $shift->approve();
+  $shift->approve($savior);
   $shift = Shift::load( $savior, $start, $end);
   var_dump($shift);
 
@@ -30,11 +30,9 @@ require_once (__DIR__ . '/../DB.php');
   try { $shift = Shift::load( $savior, $start, $end); }
   catch(Exception $e) { echo "good,got error...\n".$e->getMessage(); }
   var_dump($shift);
-  
-  
+    
   /**/
   sleep(2);
-  $conn  = DB::getNewConnection();
   var_dump(DB::query($conn, 'SELECT * FROM Shift'));
   var_dump(DB::query($conn, 'SELECT * FROM Swap' ));
   /**/
