@@ -101,3 +101,31 @@ function logUserOut() {
 	    $retJson = ajaxGetJSON(obj);
 	    window.location.href = "home.php";
 }
+
+function parseTime(timeString) {
+	  if (timeString == '') return null;
+	  var d = new Date();
+	  var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/);
+	  d.setHours( parseInt(time[1])===12 && time[4]!=='p'?0:(parseInt(time[1]) + ( ( parseInt(time[1]) < 12 && time[4] ) ? 12 : 0)) );
+	  d.setMinutes( parseInt(time[3]) || 0 );
+	  d.setSeconds(0, 0);
+	  return d;
+} 
+
+function standardToMilitaryTime(timeString)
+{
+	if (timeString == '') return null;
+	
+    var time = timeString.match(/(\d+)(:(\d\d))?\s*(p?)/);
+    var militaryTimeString;
+    var hours = parseInt(time[1])===12 && time[4]!=='p'?0:(parseInt(time[1]) + ( ( parseInt(time[1]) < 12 && time[4] ) ? 12 : 0));
+    var minutes = parseInt(time[3]) || 0 ;
+    
+    if(hours<10) { hours = '0' + hours;}
+    if(minutes===0){ minutes = '0' + minutes;}
+
+    militaryTimeString = hours + ':' + minutes;
+
+    
+    return militaryTimeString;
+}
