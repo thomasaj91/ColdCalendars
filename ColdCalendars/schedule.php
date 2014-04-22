@@ -6,6 +6,7 @@
 <link href='../css/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <link rel="stylesheet" href="../css/jquery.timepicker.css" />
+<link rel="stylesheet" href="../css/coldcalendar.css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script src='../js/fullcalendar.min.js'></script>
@@ -15,21 +16,7 @@
 <script src='../js/main.js'></script>
 </head>
 <body>
-	<div id="wrapper" class="center">
-	    <header>
-		  <div id="navbar"> 
-		    <ul> 
-		        <li><a href="contacts.php">Contacts</a></li> 
-		        <li><a href="managerView_queue.php">Requests</a></li> 
-		        <li><a href="schedule.php">Schedule</a></li> 
-		        <li><a href="#">Reports</a></li> 
-		        <li><a id='Logout' href="#" onclick="logUserOut();return false;">Log Out</a></li> 
-		    </ul> 
-		  </div> 
-		  <br>
-	   </header>
-
-	</div>
+	<?php include 'navbar.php'; ?>
 
 	<div id='Shift_Options' title='Shift Options' style='display:none'>
 		<table>
