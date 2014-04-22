@@ -192,35 +192,38 @@ function loadAllShifts()
 
 	var obj = ajaxGetJSON(shiftListObject);
 
-	if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
-		for(var e in obj){
-			if(obj[e]===0)
-				alert('invalid field: '+e);
-		}	
-	}
-	else {
-		for(var e in obj) {
-			var startTime = stringToDateObject(obj[e]["startTime"]);
-			var endTime   = stringToDateObject(obj[e]["endTime"  ]);
-			var title = obj[e]["owner"];
-			var color = window.standardShift;
-
-			if(parseCookie().login === title)
-				color = window.myShift;
-			if(obj[e]["released"] === true)
-				color = window.releasedShift;
-
-			$('#calendar').fullCalendar('renderEvent',
-					{
-						title: title,
-						start: startTime,
-						end:   endTime,
-						allDay: false,
-						color: color
-					},true);
-			$('#calendar').fullCalendar('unselect');
+	if(obj != null)
+	{
+		if(obj.hasOwnProperty("startTime") && obj.hasOwnProperty("endTime")) {
+			for(var e in obj){
+				if(obj[e]===0)
+					alert('invalid field: '+e);
+			}	
 		}
-
+		else {
+			for(var e in obj) {
+				var startTime = stringToDateObject(obj[e]["startTime"]);
+				var endTime   = stringToDateObject(obj[e]["endTime"  ]);
+				var title = obj[e]["owner"];
+				var color = window.standardShift;
+		
+				if(parseCookie().login === title)
+					color = window.myShift;
+				if(obj[e]["released"] === true)
+					color = window.releasedShift;
+		
+				$('#calendar').fullCalendar('renderEvent',
+						{
+							title: title,
+							start: startTime,
+							end:   endTime,
+							allDay: false,
+							color: color
+						},true);
+				$('#calendar').fullCalendar('unselect');
+			}
+		
+		}
 	}
 }
 
