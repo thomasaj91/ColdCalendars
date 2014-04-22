@@ -3,7 +3,7 @@
 <div id="wrapper" class="center">
 	<header>
 	 	<div id="navbar"> 
-	 		<ul> 
+	 		<ul id='Navbar_Options'> 
 			<li><a href="contacts.php">Contacts</a></li>
 			<li><a href="schedule.php">Schedule</a></li>
 			<li><a href="requests.php">Requests</a></li>
