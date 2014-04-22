@@ -1,6 +1,4 @@
 $(document).ready(function() {
-	setUserType();
-	hideManagerListOptions();
 
 	$('#calendar').fullCalendar({
 		header: {
@@ -178,6 +176,7 @@ function loadSchedulePage()
 {
 	setShiftColors();
 	setUserType();
+	hideManagerListOptions();
 	loadAllShifts();
 }
 
