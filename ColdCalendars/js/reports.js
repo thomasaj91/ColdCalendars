@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	setUserType();
+	hideManagerListOptions();
+	
 	//Set up datepickers
 	$('#Report_Start_Date').datepicker();
 	$('#Report_End_Date').datepicker();
