@@ -666,7 +666,7 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    return $validation;
   }
   
-  function requestTimeOff($requestData) { //TODO
+  function requestTimeOff($dataBlob) { //TODO
    $validation = array();
    $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
    $validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
