@@ -46,7 +46,7 @@ AND   End_time   = '@PARAM'";
       $params = array($login, $start,$end);
       $conn   = DB::getNewConnection();
       $sql    = DB::injectParamaters($params, self::$qryCreateVacationRequest);
-      $result = DB::query($conn, $sql);
+      $result = DB::execute($conn, $sql);
       $conn->close();
     }
     else {
