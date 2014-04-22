@@ -13,21 +13,8 @@
   </head> 
   <body>
 
-  <div id="wrapper" class="center">
-    <header>
-      <h1 style="font-family:Comic Sans Ms";font-size:20pt; color:#00FF00;><center> Manager's View</center></h1>
-  <div id="navbar"> 
-    <ul>
-        <li><a href="contacts.php">Contacts</a></li> 
-        <li><a href="managerView_queue.php">Requests</a></li> 
-        <li><a href="schedule.php">Schedule</a></li> 
-        <li><a href="#">Reports</a></li> 
-        <li><a id='Logout' href="#" onclick="logUserOut();return false;">Log Out</a></li>
-    </ul> 
-  </div> 
-  </header>
+  <?php include 'navbar.php'; ?>
 
-  </div>
   <div class="center">
     <hr size="3" color ="black">
      <h1>Queue</h1>
