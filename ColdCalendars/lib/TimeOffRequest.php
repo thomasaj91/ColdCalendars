@@ -21,7 +21,7 @@ VALUES ((SELECT PK FROM User WHERE Login = '@PARAM' LIMIT 1),
       '@PARAM',
       '@PARAM')";
   private static $qryLoadTimeOffRequest = "
-SELECT Approved, Start_time, End_time
+SELECT Approved, Start_time, End_time, First, Last
 FROM  TimeOff
 JOIN  User
 ON    User_FK    = PK
@@ -37,7 +37,7 @@ AND   Start_time = '@PARAM'
 AND   End_time   = '@PARAM'";
   
   private static $qryUndecidedTimeOffRequests = "
-  		SELECT u.login, t.Approved, t.Start_Time, t.End_Time
+  		SELECT u.login, t.Start_Time, t.End_Time
   		FROM TimeOff t
   		JOIN User u
   		ON (t.User_FK = u.PK)
@@ -48,6 +48,8 @@ AND   End_time   = '@PARAM'";
   private $approved;
   private $startTime;
   private $endTime;
+  private $first;
+  private $last;
   
   public function TimeOffRequest($login, $start, $end, $create) {
     if($create) {
@@ -68,6 +70,8 @@ AND   End_time   = '@PARAM'";
       $this->approved  = ($requestData[0]===null) ? null : (bool) $requestData[0];
       $this->startTime =  $requestData[1];
       $this->endTime   =  $requestData[2];
+      $this->first     =  $requestData[3];
+      $this->last      =  $requestData[4];
     }
   }
   
@@ -97,7 +101,7 @@ AND   End_time   = '@PARAM'";
   	$result = DB::query($conn, $sql);
   	$out = array();
   	foreach($result as $row)
-  		array_push($out, self::load($row[0], $row[2], $row[3])->getInfo());
+  		array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
   	$conn->close();
   	return $out;
   }
@@ -108,6 +112,8 @@ AND   End_time   = '@PARAM'";
     	'approved'  => $this->approved,
       	'startTime' => $this->startTime,
       	'endTime'   => $this->endTime,
+    	'first'     => $this->first,
+    	'last'      => $this->last
     );
   }
   
