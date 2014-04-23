@@ -88,7 +88,7 @@ AND   End_time   = '@PARAM'";
     $sql    = DB::injectParamaters(array($login, $start, $end), self::$qryTimeOffRequestExists);
     $result = DB::query($conn, $sql);
     $conn->close();
-    return $result != 0;
+    return $result[0][0] != 0;
   }
   
   public static function getUndecidedTimeOffRequests() {
