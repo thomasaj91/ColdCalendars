@@ -16,7 +16,7 @@ AND   Start_time = '@PARAM'
 AND   End_time   = '@PARAM')";
   private static $qryCreateVacationRequest = "
       INSERT INTO Vacation
-VALUES ((SELECT PK FROM User WHERE Login = '@PARAM' LIMIT 1),
+VALUES ((SELECT PK FROM User WHERE Login LIKE '@PARAM' LIMIT 1),
       Null,
       '@PARAM',
       '@PARAM')";
@@ -36,6 +36,14 @@ WHERE User_FK    = (SELECT PK FROM User WHERE Login = '@PARAM')
 AND   Start_time = '@PARAM'
 AND   End_time   = '@PARAM'";
   
+  private static $qryUndecidedVacationRequests = "
+  		SELECT u.login, v.Approved, v.Start_Time, v.End_Time
+  		FROM Vacation v
+  		JOIN User u
+  		ON (v.User_FK = u.PK)
+  		WHERE v.Start_Time >= NOW()
+  		AND v.Approved IS NULL";
+  
   private $login;
   private $approved;
   private $startTime;
@@ -43,7 +51,7 @@ AND   End_time   = '@PARAM'";
   
   public function VacationRequest($login, $start, $end, $create) {
     if($create) {
-      $params = array($login, $start,$end);
+      $params = array($login, $start, $end);
       $conn   = DB::getNewConnection();
       $sql    = DB::injectParamaters($params, self::$qryCreateVacationRequest);
       $result = DB::execute($conn, $sql);
@@ -80,6 +88,19 @@ AND   End_time   = '@PARAM'";
     $sql    = DB::injectParamaters(array($login, $start, $end), self::$qryVacationRequestExists);
     $result = DB::query($conn, $sql);
     $conn->close();
+    return count($result) !== 0;
+  }
+  
+  public static function getUndecidedVacationRequests() {
+  	$conn   = DB::getNewConnection();
+  	$sql    = DB::injectParamaters(array(), self::$qryUndecidedVacationRequests);
+  	$result = DB::query($conn, $sql);
+  	//var_dump($result);
+  	$out = array();
+  	foreach($result as $row)
+  		array_push($out, self::load($row[0], $row[2], $row[3])->getInfo());
+  	$conn->close();
+  	return $out;
   }
   
   public function getInfo() {
