@@ -164,12 +164,12 @@ INSERT INTO Swap VALUES
 
 	private static $qryUndecidedSwaps = "
 SELECT
-    User.Login AS Swapper,
-    User.First AS 'Swapper FName',
-    User.Last  AS 'Swapper FLast',
-    oswp.Login AS Owner,
+    oswp.Login AS 'Owner Login',
     oswp.First AS 'Owner FName',
     oswp.Last  AS 'Owner LName',
+	User.Login AS 'Swapper Login',
+    User.First AS 'Swapper FName',
+    User.Last  AS 'Swapper FLast',
 	Start_time,
     End_time
 	FROM Shift
@@ -261,7 +261,7 @@ SELECT
 		$results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryUndecidedSwaps));
 		$out = array();
 		foreach($results as $row)
-		  array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+		  array_push($out, undecidedSwapInfo($row));
         return $out;
 	}
 	public function getInfo() {
@@ -415,6 +415,20 @@ SELECT
 	  $res  = DB::execute($conn, $sql);
 	  $conn->close();
 //	  $this = new self($login, $this->start, $this->end, false);	   
+	}
+	private function undecidedSwapInfo($arr) {
+	  return array(
+	     'owner'     => array('login'   => $arr[0] 
+	                         ,'first'   => $arr[1]
+	                         ,'last'    => $arr[2]
+	                         )
+	    ,'swapper'   => array('login' => $arr[3]
+	                         ,'first' => $arr[4]
+	                         ,'last'  => $arr[5]
+	                         )
+	    ,'startTime' => $arr[6]
+	    ,'endTime'   => $arr[7]
+	    );
 	}
 }
 ?>

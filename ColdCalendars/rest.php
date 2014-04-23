@@ -483,15 +483,19 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
     $slist = array();
     $vList = array();
     $tList = array();
-	try { 
-		//$slist = Shift::getAllUndecidedSwaps($dataBlob->startTime, $dataBlob->endTime);
+	try {
+		$slist = Shift::getAllUndecidedSwaps($dataBlob->startTime, $dataBlob->endTime);
 		$vList = VacationRequest::getUndecidedVacationRequests();
 		$tList = TimeOffRequest::getUndecidedTimeOffRequests(); 
 	}
     catch (Exception $e) { 
     	echo($e->getMessage()); 
     }
-   return array_merge($vList, $tList);
+    foreach($slist as $elm) $elm['type'] = 'Swap';
+    foreach($vlist as $elm) $elm['type'] = 'Vacation';
+    foreach($tlist as $elm) $elm['type'] = 'TimeOff';
+    
+    return array_merge($vList, $tList);
   }
 
   function userAvailability($dataBlob) {
