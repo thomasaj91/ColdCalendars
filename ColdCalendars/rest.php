@@ -54,6 +54,7 @@ function processREST() {
    case 'DecideSwap': return decideSwap($requestData);
    case 'DecideVacation': return decideVacation($requestData);	//TODO sprint 3
    case 'DecideTimeOff': return decideTimeOff($requestData);	//TODO sprint 3
+   case 'GetUnapprovedRequests': return getUnapprovedRequests($requestData);
    case 'ReportExport'; return export($requestData);
    case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
    case 'ViewSchedule': return viewSchedule($requestData);
@@ -439,8 +440,8 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   function pickUpShift($dataBlob) {
    $validation = array();
    $validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
-$validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
+   $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+   $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   
    if(in_array(false,$validation))
    return $validation;
@@ -479,10 +480,18 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
     if(in_array(false,$validation))
       return $validation;
      
-    $list;
-   try { $list = Shift::getAllUndecidedSwaps($dataBlob->startTime, $dataBlob->endTime); } // not sure what to do with this
-   catch (Exception $e) { return null; }
-   return $list;
+    $slist = array();
+    $vList = array();
+    $tList = array();
+	try { 
+		//$slist = Shift::getAllUndecidedSwaps($dataBlob->startTime, $dataBlob->endTime);
+		$vList = VacationRequest::getUndecidedVacationRequests();
+		$tList = TimeOffRequest::getUndecidedTimeOffRequests(); 
+	}
+    catch (Exception $e) { 
+    	echo($e->getMessage()); 
+    }
+   return array_merge($vList, $tList);
   }
 
   function userAvailability($dataBlob) {
@@ -579,6 +588,20 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    else
    $timeOff->reject();
    return $validation;
+  }
+  
+  function getUnapprovedRequests($dataBlob) {
+  	$vList;
+  	$tList;
+  	
+  	try {
+  		$vlist = VacationRequest::getUndecidedVacationRequests();
+  		$tList = TimeOffRequest::getUndecidedTimeOffRequests();
+  	}
+  	catch (Exception $e) {
+  		return null;
+  	}
+  	return array_merge($vList, $tList);
   }
 
   function export($dataBlob) {
