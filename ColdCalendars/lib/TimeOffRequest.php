@@ -36,6 +36,14 @@ WHERE User_FK    = (SELECT PK FROM User WHERE Login = '@PARAM')
 AND   Start_time = '@PARAM'
 AND   End_time   = '@PARAM'";
   
+  private static $qryUndecidedTimeOffRequests = "
+  		SELECT u.login, t.Approved, t.Start_Time, t.End_Time
+  		FROM TimeOff t
+  		JOIN User u
+  		ON (t.User_FK = u.PK)
+  		WHERE t.Start_Time >= NOW()
+  		AND t.Approved IS NULL";
+  
   private $login;
   private $approved;
   private $startTime;
@@ -80,6 +88,18 @@ AND   End_time   = '@PARAM'";
     $sql    = DB::injectParamaters(array($login, $start, $end), self::$qryTimeOffRequestExists);
     $result = DB::query($conn, $sql);
     $conn->close();
+    return count($result) !== 0;
+  }
+  
+  public static function getUndecidedTimeOffRequests() {
+  	$conn   = DB::getNewConnection();
+  	$sql    = DB::injectParamaters(array(), self::$qryUndecidedTimeOffRequests);
+  	$result = DB::query($conn, $sql);
+  	$out = array();
+  	foreach($result as $row)
+  		array_push($out, self::load($row[0], $row[2], $row[3])->getInfo());
+  	$conn->close();
+  	return $out;
   }
   
   public function getInfo() {
