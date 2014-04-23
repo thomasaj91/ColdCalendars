@@ -491,9 +491,9 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
     catch (Exception $e) { 
     	echo($e->getMessage()); 
     }
-    foreach($sList as $elm) $elm['type'] = 'Swap';
-    foreach($vList as $elm) $elm['type'] = 'Vacation';
-    foreach($tList as $elm) $elm['type'] = 'TimeOff';
+    foreach($sList as &$elm) $elm['type'] = 'Swap';
+    foreach($vList as &$elm) $elm['type'] = 'Vacation';
+    foreach($tList as &$elm) $elm['type'] = 'TimeOff';
     
     return array_merge($sList,$vList, $tList);
   }
