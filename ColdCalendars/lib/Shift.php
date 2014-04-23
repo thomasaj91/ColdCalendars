@@ -191,6 +191,7 @@ SELECT
 	private $released;
 	private $startTime;
 	private $endTime;
+	private $approved;
 
 	public function Shift($login,$start,$end,$create) {
 		if($create) {
