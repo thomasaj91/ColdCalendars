@@ -163,27 +163,42 @@ INSERT INTO Swap VALUES
     AND   Shift.End_time   <= '@PARAM'";
 
 	private static $qryUndecidedSwaps = "
-SELECT 
-    User.Login,
+SELECT
+    User.Login AS Swapper,
+    User.First AS 'Swapper FName',
+    User.Last  AS 'Swapper FLast',
+    oswp.Login AS Owner,
+    oswp.First AS 'Owner FName',
+    oswp.Last  AS 'Owner LName',
 	Start_time,
-    End_time,
-    Released, 
-    Approved
+    End_time
 	FROM Shift
-	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
-	  FROM Swap
-      WHERE Approved = True
-	  GROUP BY Shift_FK
-	) AS  swp
-	ON    swp.Shift_FK  = Shift.PK
-	JOIN  Swap
-	ON    swp.Shift_FK  = Swap.Shift_FK
-	AND   swp.Timestamp = Swap.Timestamp
-	LEFT JOIN User
-	ON    Swap.Owner = User.PK
-	WHERE Shift.Start_time >= '@PARAM'
-	AND   Shift.End_time   <= '@PARAM'
-    AND   Approved IS NULL
+	JOIN (
+      SELECT Swap.Shift_FK, iswp.Timestamp, User.Login, User.First, User.Last
+ 	  FROM Shift 
+  	  JOIN (
+  	    SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved = True
+        GROUP BY Shift_FK, Approved
+	    LIMIT 1
+	  ) AS iswp
+	  ON iswp.Shift_FK  = Shift.PK
+	  JOIN Swap
+	  ON   iswp.Shift_FK  = Swap.Shift_FK
+	  AND  iswp.Timestamp = Swap.Timestamp
+      JOIN User
+      ON   User.PK = Swap.Owner
+    ) AS oswp
+	ON   oswp.Shift_FK  = Shift.PK
+    AND  Shift.Start_time >= '@PARAM'
+    AND  Shift.Start_time <= '@PARAM'
+	JOIN Swap
+	ON   Swap.Shift_FK   = Shift.PK
+    AND  Swap.Timestamp >= oswp.Timestamp
+    JOIN User
+    ON   Swap.Owner = User.PK
+    WHERE Swap.Approved IS NULL
     ";
 
 	private $owner;
