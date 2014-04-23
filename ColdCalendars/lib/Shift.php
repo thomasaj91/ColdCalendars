@@ -103,7 +103,7 @@ set @pk :=
   ON   Swap.Shift_FK = Shift.PK
   WHERE Shift.Start_time = '@PARAM'
   AND   Shift.End_time   = '@PARAM'
-  AND   Swap.Prev = (SELECT PK FROM User WHERE Login = '@PARAM')
+  AND   Swap.Owner = (SELECT PK FROM User WHERE Login = '@PARAM')
   LIMIT 1);
 INSERT INTO Swap VALUES
 (@pk,
@@ -180,7 +180,7 @@ SELECT
 	ON    swp.Shift_FK  = Swap.Shift_FK
 	AND   swp.Timestamp = Swap.Timestamp
 	LEFT JOIN User
-	ON    Swap.Prev = User.PK
+	ON    Swap.Owner = User.PK
 	WHERE Shift.Start_time >= '@PARAM'
 	AND   Shift.End_time   <= '@PARAM'
     AND   Approved IS NULL
@@ -268,7 +268,7 @@ SELECT
 		return $this->startEnd;
 	}
 
-	/* Return DB.Prev */
+	/* Return DB.owner */
 	public function getOwner() {
 		return $this->owner;
 	}
