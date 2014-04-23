@@ -23,7 +23,7 @@ function getQueue() {
          var li  = $('<li>').appendTo('#Display_Queue').addClass('queueItem');
          
          var div = $('<div>').appendTo(li)
-                   .text(list[e]['login'] + " is requesting off from " + list[e]['startTime'] + " to " + list[e]['endTime'])
+                   .text(list[e]['first'] + " " + list[e]['last'] + " is requesting off from " + list[e]['startTime'] + " to " + list[e]['endTime'])
                    .attr('data-login',list[e]['login'])
                    .attr('data-startTime',list[e]['startTime'])
                    .attr('data-endTime',list[e]['endTime']);
