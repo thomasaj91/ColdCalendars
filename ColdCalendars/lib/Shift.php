@@ -192,7 +192,7 @@ SELECT
     ) AS oswp
 	ON   oswp.Shift_FK  = Shift.PK
     AND  Shift.Start_time >= '@PARAM'
-    AND  Shift.Start_time <= '@PARAM'
+    AND  Shift.End_time <= '@PARAM'
 	JOIN Swap
 	ON   Swap.Shift_FK   = Shift.PK
     AND  Swap.Timestamp >= oswp.Timestamp
