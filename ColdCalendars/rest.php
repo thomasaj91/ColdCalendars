@@ -415,19 +415,11 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
 		return null;
 
 	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
-	var_dump($dataBlob->approved);
 	if($dataBlob->approved)
       $shift->approve($dataBlob->swapper);
     else
-    $shift->reject($dataBlob->swapper);
-
-    var_dump($shift->getInfo());
-    
-    $conn =  DB::getNewConnection();
-    var_dump(DB::query($conn, 'SELECT * FROM User'));
-    var_dump(DB::query($conn, 'SELECT * FROM Shift'));
-    var_dump(DB::query($conn, 'SELECT * FROM Swap'));
-	return $validation;
+      $shift->reject($dataBlob->swapper);
+    return $validation;
   }
 
   function releaseShift($dataBlob) {
@@ -503,12 +495,6 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
     foreach($sList as &$elm) $elm['type'] = 'Swap';
     foreach($vList as &$elm) $elm['type'] = 'Vacation';
     foreach($tList as &$elm) $elm['type'] = 'TimeOff';
-    /*
-    $conn =  DB::getNewConnection();
-    var_dump(DB::query($conn, 'SELECT * FROM User'));
-    var_dump(DB::query($conn, 'SELECT * FROM Shift'));
-    var_dump(DB::query($conn, 'SELECT * FROM Swap'));
-    */
     return array_merge($sList, $vList, $tList);
   }
 
