@@ -401,24 +401,33 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   }
   
   function decideSwap($dataBlob) {
-$validation = array();
+	$validation = array();
    $validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
-$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
-$validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
-$validation['approved'] = (int)isValidBool($dataBlob->approved);
+	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+	$validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
+	$validation['approved'] = (int)isValidBool($dataBlob->approved);
+	$validation['swapper'] = (int)isValidUserLogin($dataBlob->swapper);
 
-if(in_array(false,$validation))
-return $validation;
+	if(in_array(false,$validation))
+		return $validation;
 
    if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
-return null;
+		return null;
 
-$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
-if($dataBlob->approved)
-      $shift->approve();
+	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+	var_dump($dataBlob->approved);
+	if($dataBlob->approved)
+      $shift->approve($dataBlob->swapper);
     else
-    $shift->reject();
-return $validation;
+    $shift->reject($dataBlob->swapper);
+
+    var_dump($shift->getInfo());
+    
+    $conn =  DB::getNewConnection();
+    var_dump(DB::query($conn, 'SELECT * FROM User'));
+    var_dump(DB::query($conn, 'SELECT * FROM Shift'));
+    var_dump(DB::query($conn, 'SELECT * FROM Swap'));
+	return $validation;
   }
 
   function releaseShift($dataBlob) {
@@ -494,8 +503,13 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
     foreach($sList as &$elm) $elm['type'] = 'Swap';
     foreach($vList as &$elm) $elm['type'] = 'Vacation';
     foreach($tList as &$elm) $elm['type'] = 'TimeOff';
-    
-    return array_merge($sList,$vList, $tList);
+    /*
+    $conn =  DB::getNewConnection();
+    var_dump(DB::query($conn, 'SELECT * FROM User'));
+    var_dump(DB::query($conn, 'SELECT * FROM Shift'));
+    var_dump(DB::query($conn, 'SELECT * FROM Swap'));
+    */
+    return array_merge($sList, $vList, $tList);
   }
 
   function userAvailability($dataBlob) {
