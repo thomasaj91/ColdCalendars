@@ -66,7 +66,7 @@ VALUES (@pk,
 	WHERE Shift.Start_time = '@PARAM'
 	AND   Shift.End_time   = '@PARAM'
     AND   Approved IS NULL";
-		
+
 	private static $qryDecideSwapper = 
 	"UPDATE Swap
 SET Owner=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = False, Approved = @PARAM, Timestamp = NOW()
@@ -113,8 +113,8 @@ WHERE Shift_FK IN
  AND   End_time   = '@PARAM')
 AND Owner =
 (SELECT PK FROM User WHERE Login = '@PARAM')";
-	
-	
+
+
 	private static $qryInsertNewOwner = "
 set @pk :=
  (SELECT PK FROM Shift
@@ -150,8 +150,8 @@ INSERT INTO Swap VALUES
 	(@pk,
 	(SELECT PK FROM User WHERE Login = '@PARAM')
 	,False,NULL,NOW());";
-	
-	
+
+
 	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
          JOIN Swap
          ON   Swap.Shift_FK = Shift.PK
@@ -326,9 +326,9 @@ SELECT
 
 	/* Set DB.Next = PK of $login */	
 	public function pickup($login) {
-	  if(!$this->isReleased())
+	  if(!$this->isReleased() || in_array($login,$this->swappers))
 	  	return;
-	  
+
 	  array_push($this->swappers, $login);
 	  $this->insertSwapper($login);
 	}
@@ -346,7 +346,7 @@ SELECT
 	public function approve($login) {
 		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
-	    $this->decideSwapper($login,false);
+	    $this->decideSwapper($login,true);
 	    $this->owner    = $login;
 	    $this->swappers = array();
 	    $this->released = false;
@@ -407,7 +407,7 @@ SELECT
 	  $res  = DB::execute($conn, $sql);
 	  $conn->close();
 	}
-	
+
 	private function getAllSwaps() {
 	  $conn = DB::getNewConnection();
 	  $sql  = DB::injectParamaters(array($this->owner,$this->startTime,$this->endTime), self::$qryLoadSwaps);
@@ -418,7 +418,7 @@ SELECT
 	  $conn->close();
 	  return $out;
 	}
-	
+
 	public function decideSwapper($login, $approval) {
 	  $params = array( $login
             	     , $approval ? 'True' : 'False'
