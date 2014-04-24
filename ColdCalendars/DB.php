@@ -6,6 +6,39 @@ class DB {
 	private static $name = 'cold_calendars_test';
 	private static $user = 'backend';
 	private static $pass = 'wearewinners';
+	private static $qryReport = "SELECT CONCAT(u.First,' ',u.Last) AS Name,
+       								 CASE u.PTFT WHEN 1 THEN 'Full Time'
+                                     ELSE 'Part Time' END AS 'Work Status', SUM(swappy.Hours) as 'Total Hours'
+								FROM User u
+								JOIN(SELECT
+									Swap.Owner,
+									(time_to_sec(timediff(End_time, Start_time )) / 3600) as Hours
+									FROM Shift
+									JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+									  FROM  Swap
+								      WHERE Approved = True
+									  GROUP BY Shift_FK, Approved
+									) AS swp
+									ON   swp.Shift_FK  = Shift.PK
+									JOIN Swap
+									ON   swp.Shift_FK  = Swap.Shift_FK
+									AND  swp.Timestamp = Swap.Timestamp
+									WHERE Shift.Start_time >= '@PARAM'
+									AND   Shift.End_time   <= '@PARAM'
+								) as swappy
+								ON swappy.Owner = u.PK
+								GROUP BY u.Login";
+	
+	public static function getCSVExport($start,$end) {
+	  $conn    = DB::getNewConnection();
+	  $result  = DB::query($conn, DB::injectParamaters(array($start,$end), self::$qryReport));
+	  array_unshift($result, array('Employee','Work Status','Hours'));
+	  $rows    = array();
+	  foreach($result as $row)
+	    array_push($rows,implode(',',$row));
+	  return implode("\n",$rows);
+	}
+	
 	public static function getNewConnection() {
 		return new Mysqli ( self::$host, self::$user, self::$pass, self::$name );
 	}

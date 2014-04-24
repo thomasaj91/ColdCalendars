@@ -6,7 +6,6 @@ require_once(__DIR__.'/lib/Shift.php');
 require_once(__DIR__.'/auth/authentication.php');
 require_once(__DIR__.'/auth/validation.php');
 require_once(__DIR__.'/lib/Availability.php');
-require_once(__DIR__.'/lib/report.php');
 require_once(__DIR__.'/lib/TimeOffRequest.php');
 require_once(__DIR__.'/lib/VacationRequest.php');
 
@@ -16,7 +15,7 @@ function processREST() {
 
   $IMPROPER = 'Improperly Formatted Request';
   $INVALID = 'Invalid Formatted Request';
-  $UNAUTHORIZED = 'Invalid Request Specification';
+  $UNAUTHORIZED = 'Unauthorized Request Specification';
 
   $adminOnlyRequests = array('CreateUser','DeleteUser','PasswordReset','ChangeTitle','ChangeWorkStatus','ChangeVacationDays');
   $managerOnlyRequests = array('AddToSchedule','RemoveFromSchedule');
@@ -614,11 +613,8 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    $validation['end'] = (int)isValidDateTime($dataBlob->end);
   
    if(in_array(false,$validation))
-   return $validation;
-  
-   $report = new report();
-  
-   return $report->export_excel_csv($dataBlob->start, $dataBlob->end);
+     return $validation;
+   return DB::getCSVExport($dataBlob->start, $dataBlob->end);
   }
   
   function getMainActivityLog($dataBlob) { //TODO
