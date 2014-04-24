@@ -137,4 +137,11 @@ function hideManagerListOptions()
 		$('#Navbar_Options li').eq(3).hide();
 		$('#Navbar_Options li').eq(4).hide();
 	}
+	
+	if(window.userType == 'Admin')
+	{
+		$('#Navbar_Options li').eq(1).hide();
+		$('#Navbar_Options li').eq(2).hide();
+		$('#Navbar_Options li').eq(5).hide();
+	}
 }
