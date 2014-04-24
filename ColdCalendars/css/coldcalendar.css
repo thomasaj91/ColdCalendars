@@ -1,6 +1,9 @@
+/*Alignment*/
 .center { margin : 0 auto; text-align: center; }
- 
-.queueItem { list-style-type: none; }
+
+.left { float: left; }
+
+.right { float: right; }
 
 body {
 	margin-top: 40px;
@@ -8,6 +11,9 @@ body {
 	font-size: 14px;
 	font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
 	}
+ 
+.queueItem { list-style-type: none; }
+
 
 #calendar {
 	width: 900px;
@@ -47,4 +53,22 @@ body {
           background-color: #FDA;
           margin: 0 auto;
           overflow: hidden;
+}
+
+/*Contact Info. Page*/
+.contactInfoTable {
+	margin: 0 auto;
+	border-spacing: 75px 5px;
+}
+
+.editTitle{
+	float: right;
+}
+
+.editStatus{
+	float: right;
+}
+
+#Contact_List {
+	text-align: left;
 }
