@@ -260,7 +260,7 @@ SELECT
 		$results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryUndecidedSwaps));
 		$out = array();
 		foreach($results as $row)
-		  array_push($out, undecidedSwapInfo($row));
+		  array_push($out, self::undecidedSwapInfo($row));
         return $out;
 	}
 	public function getInfo() {
@@ -415,7 +415,7 @@ SELECT
 	  $conn->close();
 //	  $this = new self($login, $this->start, $this->end, false);	   
 	}
-	private function undecidedSwapInfo($arr) {
+	private static function undecidedSwapInfo($arr) {
 	  return array(
 	     'owner'     => array('login'   => $arr[0] 
 	                         ,'first'   => $arr[1]
