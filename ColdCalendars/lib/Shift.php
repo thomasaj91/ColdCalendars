@@ -69,20 +69,39 @@ VALUES (@pk,
 		
 	private static $qryDecideSwapper = 
 	"UPDATE Swap
-SET Owner=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = @PARAM, Approved = @PARAM, Timestamp = NOW()
+SET Owner=(SELECT PK FROM User WHERE Login = '@PARAM'), Released = False, Approved = @PARAM, Timestamp = NOW()
 WHERE Shift_FK IN
 (SELECT PK
    FROM Shift
    JOIN (
-        SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+        SELECT Shift_FK, Owner, MAX(Timestamp) AS Timestamp
 	    FROM  Swap
         WHERE Approved = True
         GROUP BY Shift_FK, Approved
-	    LIMIT 1
    ) AS swp
+   ON Shift.PK = swp.Shift_FK
    WHERE Start_time = '@PARAM'
    AND   End_time   = '@PARAM'
-   AND Owner = (SELECT PK FROM User WHERE Login = '@PARAM'))";
+   AND Owner =
+       (SELECT PK FROM User WHERE Login = '@PARAM'))
+AND Owner =
+    (SELECT PK FROM User WHERE Login = '@PARAM')
+AND Timestamp = (
+  SELECT Timestamp
+   FROM Shift
+   JOIN (
+        SELECT Shift_FK, Owner, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved IS NULL
+        GROUP BY Shift_FK, Approved,Owner
+   ) AS swp
+   ON Shift.PK = swp.Shift_FK
+   WHERE Start_time = '@PARAM'
+   AND   End_time   = '@PARAM'
+   AND Owner =
+       (SELECT PK FROM User WHERE Login = '@PARAM')
+   LIMIT 1
+  )";
    
 	private static $qryUpdateShift =
 	"UPDATE Swap
@@ -402,11 +421,13 @@ SELECT
 	
 	public function decideSwapper($login, $approval) {
 	  $params = array( $login
-            	     , 'False'
             	     , $approval ? 'True' : 'False'
               	     , $this->startTime
           	         , $this->endTime
-	                 //, $this->owner
+	                 , $this->owner
+	                 , $login
+              	     , $this->startTime
+          	         , $this->endTime
 	                 , $login
 	                 );
 	  $conn = DB::getNewConnection();
