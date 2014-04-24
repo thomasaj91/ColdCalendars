@@ -15,9 +15,17 @@ class report {
 								ON (p.User_FK = u.PK)
 								GROUP BY u.Login';
 	
-	function export_excel_csv()
-	{
-		$conn = mysql_connect("preumbranet.domaincommysql.com","backend","wearewinners");
+		function export_excel_csv()
+		{
+		$conn = DB::getNewConnection();
+		$result = DB::query($conn, self::$qryReport);
+		
+		$rows = array();
+		foreach($result as $row)
+			array_push($rows,implode(',',$row));
+		return implode("\n",$rows);
+		
+	/*	$conn = mysql_connect("preumbranet.domaincommysql.com","backend","wearewinners");
 		$db = mysql_select_db("cold_calendars_test",$conn);
 	
 		$sql = self::$qryReport;
@@ -58,7 +66,7 @@ class report {
 			$data = "\\n No Record Found!\n";
 		}
 
-		return "$header\n$data";
+		return "$header\n$data";*/
 	}
 }
 ?>
