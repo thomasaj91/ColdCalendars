@@ -545,8 +545,12 @@ function loadUser()
 	  
 	  //Format user title/work status
 	  var employeeData = $('<td>').appendTo(userRow).attr('valign','top');
-	  $('<p>').appendTo(employeeData).text('Title: ' + info.title)
-	  $('<p>').appendTo(employeeData).text('Work Status: '+ (info.workStatus ? 'FT' : 'PT'));
+	  
+	  var userInfoTable = $('<table>').appendTo(employeeData);
+	  var userInfoTableRow = $('<tr>').appendTo(userInfoTable);
+	  $('<td>').appendTo(userInfoTableRow).text('Title: ' + info.title);
+	  userInfoTableRow = $('<tr>').appendTo(userInfoTable);
+	  $('<td>').appendTo(userInfoTableRow).text('Work Status: '+ (info.workStatus ? 'FT' : 'PT'));
 	  
 	  //Format user phone list
 	  var phoneData = $('<td>').appendTo(userRow).attr('valign','top');
