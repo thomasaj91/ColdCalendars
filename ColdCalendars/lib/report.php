@@ -3,22 +3,34 @@
 require_once(__DIR__.'/../DB.php');
 
 class report {
-	private static $qryReport = 'SELECT CONCAT(u.First," ",u.Last) AS Name, p.number AS "Phone Number", 
-       								e.address AS Email, t.title, CASE u.PTFT WHEN 1 THEN "Full Time"
-                                    ELSE "Part Time" END AS "Work Status",
-                                    u.Vacation AS "Vacation Days"
-								FROM User u JOIN UserType t
-								ON (u.title = t.PK)
-								JOIN Email e
-								ON (e.User_FK = u.PK)
-								JOIN Phone p
-								ON (p.User_FK = u.PK)
-								GROUP BY u.Login';
+	//User, PT/FT, hours worked between start/end
+	private static $qryReport = "SELECT CONCAT(u.First,' ',u.Last) AS Name, 
+       								 CASE u.PTFT WHEN 1 THEN 'Full Time'
+                                     ELSE 'Part Time' END AS 'Work Status', SUM(swappy.Hours) as 'Total Hours'
+								FROM User u
+								JOIN(SELECT 
+									Swap.Owner,
+									(time_to_sec(timediff(End_time, Start_time )) / 3600) as Hours
+									FROM Shift
+									JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+									  FROM  Swap
+								      WHERE Approved = True
+									  GROUP BY Shift_FK, Approved
+									) AS swp
+									ON   swp.Shift_FK  = Shift.PK
+									JOIN Swap
+									ON   swp.Shift_FK  = Swap.Shift_FK
+									AND  swp.Timestamp = Swap.Timestamp
+									WHERE Shift.Start_time >= '@PARAM'
+									AND   Shift.End_time   <= '@PARAM'
+								) as swappy
+								ON swappy.Owner = u.PK
+								GROUP BY u.Login";
 	
-		function export_excel_csv()
-		{
+	function export_excel_csv($start,$end)
+	{
 		$conn = DB::getNewConnection();
-		$result = DB::query($conn, self::$qryReport);
+		$result = DB::query($conn, DB::injectParamaters(array($start,$end), self::$qryReport));
 		
 		$rows = array();
 		foreach($result as $row)
