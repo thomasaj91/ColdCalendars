@@ -181,7 +181,6 @@ SELECT
 	    FROM  Swap
         WHERE Approved = True
         GROUP BY Shift_FK, Approved
-	    LIMIT 1
 	  ) AS iswp
 	  ON iswp.Shift_FK  = Shift.PK
 	  JOIN Swap
