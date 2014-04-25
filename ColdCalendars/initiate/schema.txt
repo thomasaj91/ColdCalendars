@@ -56,7 +56,8 @@ CREATE TABLE Swap
     Owner     Int NOT NULL REFERENCES User(PK),
     Released  BOOL NOT NULL, 
     Approved  BOOL,
-    Timestamp DATETIME
+    Timestamp DATETIME,
+    Original  BOOL NOT NULL
 );
 
 DROP TABLE IF EXISTS Availability;
@@ -120,5 +121,4 @@ VALUES (NULL,"Employee"),
 
 --INSERT INTO Email
 --VALUES (2,"AustinT@cc.net",1),
-       (2,"BroGuyver@google.com",2);
-       
+--       (2,"BroGuyver@google.com",2);
