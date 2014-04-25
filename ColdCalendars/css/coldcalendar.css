@@ -1,3 +1,7 @@
+ul {
+	list-style-type: none;
+}
+
 /*Alignment*/
 .center { margin : 0 auto; text-align: center; }
 
