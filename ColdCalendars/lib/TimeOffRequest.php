@@ -43,6 +43,24 @@ AND   End_time   = '@PARAM'";
   		ON (t.User_FK = u.PK)
   		WHERE t.Start_Time >= NOW()
   		AND t.Approved IS NULL";
+
+  private static $qryDecidedTimeOffRequests = "
+  		SELECT u.login, t.Start_Time, t.End_Time
+  		FROM TimeOff t
+  		JOIN User u
+  		ON (t.User_FK = u.PK)
+  		WHERE t.Start_Time >= NOW()
+  		AND t.Approved IS NOT NULL";
+  
+  private static $qryUserDecidedTimeOffRequests = "
+  		SELECT u.login, v.Start_Time, v.End_Time
+  		FROM TimeOff v
+  		JOIN User u
+  		ON (v.User_FK = u.PK)
+  		WHERE v.Start_Time >= (NOW() - INTERVAL 7 day)
+        AND User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')
+  		AND v.Approved IS NOT NULL";
+  
   
   private $login;
   private $approved;
@@ -105,7 +123,29 @@ AND   End_time   = '@PARAM'";
   	$conn->close();
   	return $out;
   }
+
+  public static function getDecidedTimeOffRequests() {
+    $conn   = DB::getNewConnection();
+    $sql    = DB::injectParamaters(array(), self::$qryDecidedTimeOffRequests);
+    $result = DB::query($conn, $sql);
+    $out = array();
+    foreach($result as $row)
+    		array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+    $conn->close();
+    return $out;
+  }
   
+  
+  public static function getUserDecidedTimeOffRequests($login) {
+    $conn   = DB::getNewConnection();
+    $sql    = DB::injectParamaters(array($login), self::$qryUserDecidedTimeOffRequests);
+    $result = DB::query($conn, $sql);
+    $out = array();
+    foreach($result as $row)
+    		array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+    $conn->close();
+    return $out;
+  }
   public function getInfo() {
     return array(
     	'login'     => $this->login,

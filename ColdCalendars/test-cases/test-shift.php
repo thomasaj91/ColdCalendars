@@ -8,8 +8,8 @@ require_once (__DIR__ . '/../DB.php');
   $login = 'winnar';
   $savior = 'supar';
   $start = $end = DB::getSystemTime();
-  $user  = User::create ( $login,  'supersecret', $login  . '_Fname', $login  . '_Lname', 'Employee', true, 10, '8675309', $login . '@uwm.edu' );
-  $user  = User::create ( $savior, 'supersecret', $savior . '_Fname', $savior . '_Lname', 'Employee', true, 10, '8675309', $login . '@uwm.edu' );
+  $user  = User::create ( $login,  'supersecret', $login  . '_Fname', $login  . '_Lname', 'Manager', true, 10, '8675309', $login . '@uwm.edu' );
+  $user  = User::create ( $savior, 'supersecret', $savior . '_Fname', $savior . '_Lname', 'Manager', true, 10, '8675309', $login . '@uwm.edu' );
   $shift = Shift::create( $login, $start, $end);
   $shift = Shift::load( $login, $start, $end);
   var_dump($shift);
@@ -31,7 +31,7 @@ require_once (__DIR__ . '/../DB.php');
   catch(Exception $e) { echo "good,got error...\n".$e->getMessage(); }
   var_dump($shift);
     
-  /**/
+  /**
   sleep(2);
   var_dump(DB::query($conn, 'SELECT * FROM Shift'));
   var_dump(DB::query($conn, 'SELECT * FROM Swap' ));

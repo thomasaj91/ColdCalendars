@@ -55,7 +55,7 @@ function processREST() {
    case 'DecideTimeOff': return decideTimeOff($requestData);	//TODO sprint 3
    case 'GetUnapprovedRequests': return getUnapprovedRequests($requestData);
    case 'ReportExport'; return export($requestData);
-   case 'GetMainActivityLog': return getMainActivityLog($requestData); //TODO sprint 3
+   case 'GetFullActivityLog': return getFullActivityLog($requestData); //TODO sprint 3
    case 'ViewSchedule': return viewSchedule($requestData);
    case 'ViewTemplate': return viewTemplate($requestData);	//TODO sprint 3
    case 'CreateTemplate': return createTemplate($requestData);	//TODO sprint 3
@@ -401,7 +401,7 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   
   function decideSwap($dataBlob) {
 	$validation = array();
-   $validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+    $validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
 	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
 	$validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
 	$validation['approved'] = (int)isValidBool($dataBlob->approved);
@@ -410,7 +410,7 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
 	if(in_array(false,$validation))
 		return $validation;
 
-   if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
+    if(!Shift::exists($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime))
 		return null;
 
 	$shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
@@ -451,7 +451,7 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   
    $shift = Shift::load($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
    $shift->pickup($_COOKIE['login']);
-   return $validation;
+    return $validation;
   }
 
   function viewSchedule($dataBlob){
@@ -668,14 +668,49 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   
   function getUserActivityLog($dataBlob) { //TODO
    $validation = array();
-   $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
-   $validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
-  
+    $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+    $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
+      $validation['userID'] = (int)isValidDateTime($dataBlob->userID);
+    
    if(in_array(false,$validation))
-   return $validation;
+     return $validation;
   
-   // return user log
+    try {
+		$sList = Shift::getAllUserDecidedSwaps($dataBlob->userID,$dataBlob->startTime, $dataBlob->endTime);
+		$vList = VacationRequest::getUndecidedVacationRequests($dataBlob->userID);
+		$tList = TimeOffRequest::getUndecidedTimeOffRequests($dataBlob->userID); 
+	}
+    catch (Exception $e) { 
+    	echo($e->getMessage()); 
+    }
+    foreach($sList as &$elm) $elm['type'] = 'Swap';
+    foreach($vList as &$elm) $elm['type'] = 'Vacation';
+    foreach($tList as &$elm) $elm['type'] = 'TimeOff';
+    return array_merge($sList, $vList, $tList);
   }
+
+  function getFullActivityLog($dataBlob) { //TODO
+    $validation = array();
+    $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+    $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
+  
+    if(in_array(false,$validation))
+      return $validation;
+  
+    try {
+      $sList = Shift::getAllDecidedSwaps($dataBlob->startTime, $dataBlob->endTime);
+      $vList = VacationRequest::getDecidedVacationRequests();
+      $tList = TimeOffRequest::getDecidedTimeOffRequests();
+    }
+    catch (Exception $e) {
+      echo($e->getMessage());
+    }
+    foreach($sList as &$elm) $elm['type'] = 'Swap';
+    foreach($vList as &$elm) $elm['type'] = 'Vacation';
+    foreach($tList as &$elm) $elm['type'] = 'TimeOff';
+    return array_merge($sList, $vList, $tList);
+  }
+  
   
   function requestVacation($dataBlob) { //TODO
    $validation = array();

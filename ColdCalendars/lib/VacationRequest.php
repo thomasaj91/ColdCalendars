@@ -43,6 +43,23 @@ AND   End_time   = '@PARAM'";
   		ON (v.User_FK = u.PK)
   		WHERE v.Start_Time >= NOW()
   		AND v.Approved IS NULL";
+
+  private static $qryDecidedVacationRequests = "
+  		SELECT u.login, v.Start_Time, v.End_Time
+  		FROM Vacation v
+  		JOIN User u
+  		ON (v.User_FK = u.PK)
+  		WHERE v.Start_Time >= NOW()
+  		AND v.Approved IS NOT NULL";
+  
+  private static $qryUserDecidedVacationRequests = "
+  		SELECT u.login, v.Start_Time, v.End_Time
+  		FROM Vacation v
+  		JOIN User u
+  		ON (v.User_FK = u.PK)
+  		WHERE v.Start_Time >= (NOW() - INTERVAL 7 day)
+        AND User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')
+  		AND v.Approved IS NOT NULL";  
   
   private $login;
   private $approved;
@@ -106,6 +123,31 @@ AND   End_time   = '@PARAM'";
   	$conn->close();
   	return $out;
   }
+
+  public static function getDecidedVacationRequests() {
+    $conn   = DB::getNewConnection();
+    $sql    = DB::injectParamaters(array(), self::$qryDecidedVacationRequests);
+    $result = DB::query($conn, $sql);
+    $out = array();
+    foreach($result as $row)
+    		array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+    $conn->close();
+    return $out;
+  }
+  
+  
+  public static function getUserDecidedVacationRequests($login) {
+    $conn   = DB::getNewConnection();
+    $sql    = DB::injectParamaters(array($login), self::$qryUserDecidedVacationRequests);
+    $result = DB::query($conn, $sql);
+    //var_dump($result);
+    $out = array();
+    foreach($result as $row)
+      array_push($out, self::load($row[0], $row[1], $row[2])->getInfo());
+    $conn->close();
+    return $out;
+  }
+  
   
   public function getInfo() {
     return array(

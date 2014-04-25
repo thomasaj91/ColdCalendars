@@ -49,7 +49,6 @@ VALUES (@pk,
 	    FROM  Swap
         WHERE Approved = True
         GROUP BY Shift_FK, Approved
-	    LIMIT 1
 	  ) AS iswp
 	  ON iswp.Shift_FK  = Shift.PK
 	  JOIN Swap
@@ -190,7 +189,8 @@ SELECT
     User.First AS 'Swapper FName',
     User.Last  AS 'Swapper FLast',
 	Start_time,
-    End_time
+    End_time,
+	Approved    
 	FROM Shift
 	JOIN (
       SELECT Swap.Shift_FK, iswp.Timestamp, User.Login, User.First, User.Last
@@ -219,6 +219,86 @@ SELECT
     WHERE Swap.Approved IS NULL
     ";
 
+	private static $qryDecidedSwaps = "
+SELECT
+    oswp.Login AS 'Owner Login',
+    oswp.First AS 'Owner FName',
+    oswp.Last  AS 'Owner LName',
+	User.Login AS 'Swapper Login',
+    User.First AS 'Swapper FName',
+    User.Last  AS 'Swapper FLast',
+	Start_time,
+    End_time,
+	Approved
+	FROM Shift
+	JOIN (
+      SELECT Swap.Shift_FK, iswp.Timestamp, User.Login, User.First, User.Last
+ 	  FROM Shift
+  	  JOIN (
+  	    SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved = True
+        GROUP BY Shift_FK, Approved
+	  ) AS iswp
+	  ON iswp.Shift_FK  = Shift.PK
+	  JOIN Swap
+	  ON   iswp.Shift_FK  = Swap.Shift_FK
+	  AND  iswp.Timestamp = Swap.Timestamp
+      JOIN User
+      ON   User.PK = Swap.Owner
+    ) AS oswp
+	ON   oswp.Shift_FK  = Shift.PK
+    AND  Shift.Start_time >= '@PARAM'
+    AND  Shift.End_time <= '@PARAM'
+	JOIN Swap
+	ON   Swap.Shift_FK   = Shift.PK
+    AND  Swap.Timestamp >= oswp.Timestamp
+    JOIN User
+    ON   Swap.Owner = User.PK
+    WHERE Swap.Approved IS NOT NULL
+    ";
+	
+	
+	private static $qryUserDecidedSwaps = "
+    SELECT
+    oswp.Login AS 'Owner Login',
+    oswp.First AS 'Owner FName',
+    oswp.Last  AS 'Owner LName',
+	User.Login AS 'Swapper Login',
+    User.First AS 'Swapper FName',
+    User.Last  AS 'Swapper FLast',
+	Start_time,
+    End_time,
+	Approved
+	FROM Shift
+	JOIN (
+      SELECT Swap.Shift_FK, iswp.Timestamp, User.Login, User.First, User.Last
+ 	  FROM Shift
+  	  JOIN (
+  	    SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	    FROM  Swap
+        WHERE Approved = True
+        GROUP BY Shift_FK, Approved
+	  ) AS iswp
+	  ON iswp.Shift_FK  = Shift.PK
+	  JOIN Swap
+	  ON   iswp.Shift_FK  = Swap.Shift_FK
+	  AND  iswp.Timestamp = Swap.Timestamp
+      JOIN User
+      ON   User.PK = Swap.Owner
+    ) AS oswp
+	ON   oswp.Shift_FK  = Shift.PK
+    AND  Shift.Start_time >= '@PARAM'
+    AND  Shift.End_time <= '@PARAM'
+	AND  Shift.Owner = (SELECT PK FROM user Where Login = '@PARAM')
+	JOIN Swap
+	ON   Swap.Shift_FK   = Shift.PK
+    AND  Swap.Timestamp >= oswp.Timestamp
+    JOIN User
+    ON   Swap.Owner = User.PK
+    WHERE Swap.Approved IS NOT NULL
+    ";
+	
 	private $owner;
 	private $swappers;
 	private $released;
@@ -279,9 +359,28 @@ SELECT
 		$results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryUndecidedSwaps));
 		$out = array();
 		foreach($results as $row)
-		  array_push($out, self::undecidedSwapInfo($row));
+		  array_push($out, self::extendedSwapInfo($row));
         return $out;
 	}
+
+	public static function getAllDecidedSwaps($start, $end) {
+	  $conn    = DB::getNewConnection();
+	  $results = DB::query($conn,DB::injectParamaters(array($start,$end), self::$qryDecidedSwaps));
+	  $out = array();
+	  foreach($results as $row)
+	    array_push($out, self::extendedSwapInfo($row));
+	  return $out;
+	}
+	
+	public static function getAllUserDecidedSwaps($login,$start,$end) {
+	    $conn    = DB::getNewConnection();
+	    $results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryUserDecidedSwaps));
+	    $out = array();
+	    foreach($results as $row)
+	      array_push($out, self::extendedSwapInfo($row));
+	    return $out;
+    }
+
 	public function getInfo() {
 		$out = array();
 		$out['owner']     =  $this->owner;
@@ -326,7 +425,9 @@ SELECT
 
 	/* Set DB.Next = PK of $login */	
 	public function pickup($login) {
-	  if(!$this->isReleased() || in_array($login,$this->swappers))
+	  if(!$this->isReleased()
+	  || $this->owner === $login
+	  || in_array($login,$this->swappers))
 	  	return;
 
 	  array_push($this->swappers, $login);
@@ -364,21 +465,6 @@ SELECT
 		$conn = DB::getNewConnection();
 		$res  = DB::execute($conn, $sql);
 		$conn->close();
-	}
-
-	private function transferResponsiblity() {
-		$params = array($this->startTime
-				       ,$this->endTime
-			           ,$this->owner
-				       ,$this->pickuper);
-		$sql  = DB::injectParamaters($params, self::$qryInsertNewOwner);
-		$conn = DB::getNewConnection();
-		$res  = DB::execute($conn, $sql);
-		$conn->close();
-		/* Maybe don't do this and mark the object as dirty? */
-		$this->owner    = $this->pickuper;
-		$this->pickuper = null;
-		$this->released = false;
 	}
 
 	public static function toDateString($date, $time) {
@@ -436,11 +522,12 @@ SELECT
 	  $conn->close();
 //	  $this = new self($login, $this->start, $this->end, false);	   
 	}
-	private static function undecidedSwapInfo($arr) {
+
+	private static function extendedSwapInfo($arr) {
 	  return array(
-	     'owner'     => array('login'   => $arr[0] 
-	                         ,'first'   => $arr[1]
-	                         ,'last'    => $arr[2]
+	     'owner'     => array('login' => $arr[0] 
+	                         ,'first' => $arr[1]
+	                         ,'last'  => $arr[2]
 	                         )
 	    ,'swapper'   => array('login' => $arr[3]
 	                         ,'first' => $arr[4]
@@ -448,6 +535,7 @@ SELECT
 	                         )
 	    ,'startTime' => $arr[6]
 	    ,'endTime'   => $arr[7]
+	    ,'approved'  => $arr[8]
 	    );
 	}
 }
