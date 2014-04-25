@@ -503,10 +503,10 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    $list;
   
    try {
-   $list = Availability::getUsersAvailability($dataBlob->login);
+   		$list = Availability::getUsersAvailability($dataBlob->login);
    }
    catch (Exception $e) {
-   return null;
+   		return null;
    }
    return $list;
   }
