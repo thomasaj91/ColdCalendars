@@ -670,13 +670,12 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    $validation = array();
     $validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
     $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
-      $validation['userID'] = (int)isValidDateTime($dataBlob->userID);
     
    if(in_array(false,$validation))
      return $validation;
   
     try {
-		$sList = Shift::getAllUserDecidedSwaps($dataBlob->userID,$dataBlob->startTime, $dataBlob->endTime);
+		$sList = Shift::getAllUserDecidedSwaps($_COOKIE['login'],$dataBlob->startTime, $dataBlob->endTime);
 		$vList = VacationRequest::getUndecidedVacationRequests($dataBlob->userID);
 		$tList = TimeOffRequest::getUndecidedTimeOffRequests($dataBlob->userID); 
 	}
