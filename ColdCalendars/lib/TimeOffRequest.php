@@ -202,7 +202,7 @@ AND   End_time   = '@PARAM'";
     $params = array(DB::trinaryVariableToSQL($this->approved),  $this->login, $this->startTime, $this->endTime);
     $conn   = DB::getNewConnection();
     $sql    = DB::injectParamaters($params, self::$qryUpdateTimeOffRequest);
-    $result = DB::query($conn, $sql);
+    $result = DB::execute($conn, $sql);
     $conn->close();    
   }
   
