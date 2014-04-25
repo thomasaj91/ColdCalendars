@@ -16,7 +16,7 @@ VALUES (@pk,'@PARAM','@PARAM');
 INSERT INTO Swap
 VALUES (@pk,
         (SELECT PK FROM User WHERE Login = '@PARAM')
-        ,False,True,NOW());
+        ,False,True,NOW(),True);
 ";
 
 		private static $qryLoadShift = "SELECT 
@@ -113,21 +113,6 @@ WHERE Shift_FK IN
 AND Owner =
 (SELECT PK FROM User WHERE Login = '@PARAM')";
 
-
-	private static $qryInsertNewOwner = "
-set @pk :=
- (SELECT PK FROM Shift
-  JOIN Swap
-  ON   Swap.Shift_FK = Shift.PK
-  WHERE Shift.Start_time = '@PARAM'
-  AND   Shift.End_time   = '@PARAM'
-  AND   Swap.Owner = (SELECT PK FROM User WHERE Login = '@PARAM')
-  LIMIT 1);
-INSERT INTO Swap VALUES
-(@pk,
- (SELECT PK FROM User WHERE Login = '@PARAM')
- ,NULL,False,NULL,NOW());";
-
 	private static $qryInsertSwapper = "
 	set @pk :=
 	(SELECT PK
@@ -148,7 +133,7 @@ INSERT INTO Swap VALUES
 	INSERT INTO Swap VALUES
 	(@pk,
 	(SELECT PK FROM User WHERE Login = '@PARAM')
-	,False,NULL,NOW());";
+	,False,NULL,NOW(),False);";
 
 
 	private static $qryDeleteShift = "set @pk := (SELECT PK FROM Shift
@@ -256,9 +241,10 @@ SELECT
     JOIN User
     ON   Swap.Owner = User.PK
     WHERE Swap.Approved IS NOT NULL
+    AND Swap.Original = False
     ";
-	
-	
+
+
 	private static $qryUserDecidedSwaps = "
     SELECT
     oswp.Login AS 'Owner Login',
@@ -297,8 +283,9 @@ SELECT
     JOIN User
     ON   Swap.Owner = User.PK
     WHERE Swap.Approved IS NOT NULL
+	AND Swap.Original = False
     ";
-	
+
 	private $owner;
 	private $swappers;
 	private $released;
@@ -371,7 +358,7 @@ SELECT
 	    array_push($out, self::extendedSwapInfo($row));
 	  return $out;
 	}
-	
+
 	public static function getAllUserDecidedSwaps($login,$start,$end) {
 	    $conn    = DB::getNewConnection();
 	    $results = DB::query($conn,DB::injectParamaters(array($start,$end,$login), self::$qryUserDecidedSwaps));
@@ -447,6 +434,10 @@ SELECT
 	public function approve($login) {
 		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
+		foreach($this->swappers as $swapper) {
+			if($swapper!==$login)
+				$this->decideSwapper($swapper,false);
+		}
 	    $this->decideSwapper($login,true);
 	    $this->owner    = $login;
 	    $this->swappers = array();
