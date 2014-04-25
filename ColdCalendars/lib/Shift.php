@@ -447,6 +447,10 @@ SELECT
 	public function approve($login) {
 		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
+		foreach($this->swappers as $swapper)
+		  if($swapper !== $login)
+		    $this->decideSwapper($swapper, false);
+		
 	    $this->decideSwapper($login,true);
 	    $this->owner    = $login;
 	    $this->swappers = array();
