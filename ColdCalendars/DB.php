@@ -119,11 +119,11 @@ class DB {
 	}
 	
 	public static function trinaryVariableToSQL($var) {
-	  return $var==null ? 'Null' : (int) $var;
+	  return $var===null ? 'Null' : (int) $var;
 	}
 	
 	public static function sqlToTrinaryVariable($var) {
-	  return $var==null ? null : (bool) $var;
+	  return $var===null ? null : (bool) $var;
 	}
 }
 
