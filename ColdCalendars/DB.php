@@ -28,7 +28,7 @@ class DB {
 								) as swappy
 								ON swappy.Owner = u.PK
 								GROUP BY u.Login";
-	
+
 	public static function getCSVExport($start,$end) {
 	  $conn    = DB::getNewConnection();
 	  $result  = DB::query($conn, DB::injectParamaters(array($start,$end), self::$qryReport));
@@ -38,7 +38,7 @@ class DB {
 	    array_push($rows,implode(',',$row));
 	  return implode("\n",$rows);
 	}
-	
+
 	public static function getNewConnection() {
 		return new Mysqli ( self::$host, self::$user, self::$pass, self::$name );
 	}
@@ -65,15 +65,17 @@ class DB {
 		$tmp->close ();
 		return $out;
 	}
-	
+
 	public static function getSystemTime() {
 		return date('Y-m-d H:i:s',time());
 	}
 
 	public static function timeToDateTime($time) {
-	    return '1970-01-01 '.$time;
+		if(!preg_match('/^1970-01-01 .*$/',$time))
+	    	return '1970-01-01 '.$time;
+		return $time;
 	}
-	
+
 	public static function str_replace_once($needle,$replace,$haystack) {
 		$pos = strpos($haystack,$needle);
 		if ($pos === false)
@@ -86,7 +88,7 @@ class DB {
 			$sql = DB::str_replace_once('@PARAM', $param, $sql);
 		return $sql;
 	}
-	
+
 	public static function buildDatabase() {
 		$dbConn = self::getNewConnection ();
 		if ($dbConn->connect_error)
@@ -94,11 +96,11 @@ class DB {
 		    //die ( "Could not connect to database $name" . "\nat host: $host" . "\nas user: $user" . "\nerrorno: " . $dbConn->connect_errorno . "\nerror: " . $dbConn->connect_error );
 		//else
 		//	echo "Connected Successfully\n";
-		
+
 		$sqlPayload = file_get_contents ( __DIR__ . '/initiate/schema.txt' );
-		
+
 		// $payloads = explode(';', $sqlPayload);
-		
+
 		$success = $dbConn->multi_query ( $sqlPayload );
 		if (! $success)
 			return false;
@@ -106,9 +108,9 @@ class DB {
 		//else
 		//	echo "Succefully built\n";
 		$dbConn->close ();
-		
+
 		sleep ( 2 ); /* it needs to be two seconds, do NOT change */
-		
+
 		try {
 			User::create ( 'root', 'lolsecurity', 'Fname', 'LName', 'Admin', true, 0, '5558675309', 'admin@coldcalendars.preumbra.net' );
 		} catch ( Exception $e ) {
@@ -117,11 +119,11 @@ class DB {
 		}
 		return true;
 	}
-	
+
 	public static function trinaryVariableToSQL($var) {
 	  return $var===null ? 'Null' : (int) $var;
 	}
-	
+
 	public static function sqlToTrinaryVariable($var) {
 	  return $var===null ? null : (bool) $var;
 	}
