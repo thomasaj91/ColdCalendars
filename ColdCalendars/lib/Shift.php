@@ -526,7 +526,7 @@ SELECT
 	                         )
 	    ,'startTime' => $arr[6]
 	    ,'endTime'   => $arr[7]
-	    ,'approved'  => $arr[8]
+    	    ,'approved'  => DB::sqlToTrinaryVariable($arr[8])
 	    );
 	}
 }
