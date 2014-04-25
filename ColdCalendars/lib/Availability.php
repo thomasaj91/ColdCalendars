@@ -93,7 +93,8 @@ WHERE  Login      = '@PARAM'";
     $sql     = DB::injectParamaters(array($login,self::dayToNum($day),DB::timeToDateTime($start),DB::timeToDateTime($end)), self::$qryAvailabilityExists);
     $results = DB::query($conn, $sql);
     $conn->close();
-    return ($results [0] [0] === '1') ? true : false;	   
+    //echo($sql);
+    return ($results[0][0] != 0);	   
   }
 
   public static function getUsersAvailability($login) {
@@ -112,7 +113,7 @@ WHERE  Login      = '@PARAM'";
     	'login'     => $this->login,
     	'day'       => $this->day,
         'startTime' => $this->startTime,
-        'endTiem'   => $this->endTime
+        'endTime'   => $this->endTime
         );
   }
 
