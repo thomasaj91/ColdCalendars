@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>Reports</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	<link rel="stylesheet" href="../css/coldcalendar.css" />
