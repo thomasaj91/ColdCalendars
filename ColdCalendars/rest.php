@@ -61,6 +61,7 @@ function processREST() {
    case 'CreateTemplate': return createTemplate($requestData);	//TODO sprint 3
    case 'LoadTemplate': return loadTemplate($requestData);	//TODO sprint 3
    case 'RemoveTemplate': return removeTemplate($requestData);	//TODO sprint 3
+   case 'OverTimeCheck': return overTimeCheck($requestData);
    /* All Users */
    case 'UserInfo': return getUserInfo($requestData);
    case 'UserPhone': return getPhoneNumbers($requestData);
@@ -379,7 +380,12 @@ return $list;
    return $validation;
 
    /* maybe pass in correctly formatted start & end times (no date prefix) */
-   Shift::create($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+   try {
+   		Shift::create($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+   }
+   catch(Exception $e){
+   		return null;
+   }
    return $validation;
   }
   
@@ -629,7 +635,12 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   }
   
   function viewTemplate($dataBlob) { //TODO
-   return Template::loadAllTemplates();
+  	try{
+   		return Template::loadAllTemplates();
+  	}
+  	catch(Exception $e){
+  		return null;
+  	}
   }
   
   function createTemplate($dataBlob) { //TODO
@@ -639,9 +650,13 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    $validation['endDate'] = (int)isValidDateTime($dataBlob->endDate);
   
    if(in_array(false,$validation))
-   return $validation;
-  
-   Template::create($dataBlob->startDate,$dataBlob->endDate);
+   		return $validation;
+   try{
+   		Template::create($dataBlob->startDate,$dataBlob->endDate);
+   }
+   catch(Exception $e) {
+   	return null;
+   }
    return $validation;
   }
   
@@ -652,7 +667,8 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    if(in_array(false,$validation))
    return $validation;
   
-   return Template::load($dataBlob->title);
+     $template = Template::load($dataBlob->title);
+     return $template->getShiftData();
   }
   
   function removeTemplate($dataBlob) { //TODO
@@ -733,6 +749,27 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   
    $timeOff = TimeOffRequest::create($_COOKIE['login'], $dataBlob->startDate, $dataBlob->endDate);
    return $validation;
+  }
+  
+  function overTimeCheck($dataBlob) {
+  	$validation = array();
+  	$validation['userID'] = (int)isValidUserLogin($dataBlob->userID);
+  	$validation['startTime'] = (int)isValidDateTime($dataBlob->startTime);
+  	$validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
+  	
+  	if(in_array(false,$validation))
+  		return $validation;
+  	//$result = null;
+  	try {
+  		//var_dump(json_encode((int)Shift::checkOverTimeForUser($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime)));
+  		return Shift::checkOverTimeForUser($dataBlob->userID, $dataBlob->startTime, $dataBlob->endTime);
+  	}
+  	catch(Exception $e)
+  	{
+  		return null;
+  	}
+  	//var_dump($result);
+  	//return $result;
   }
 
   function logoutUser() {
