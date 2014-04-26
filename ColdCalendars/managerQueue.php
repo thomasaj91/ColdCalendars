@@ -21,10 +21,5 @@
     <ul id="Display_Queue">
     </ul>
   </div>
-  <br>
-  <br>
-  <footer id="footer" class="center">
-  <p>Copyright Â© 2014 Cold Calendars</p>
-  </footer>
 </body>
 </html>
