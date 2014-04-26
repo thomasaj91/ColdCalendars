@@ -21,7 +21,7 @@ function loadContactsPage() {
 		  
 		  var requestObject = new Object();
 		  requestObject.requestType = 'RemoveAvailability';
-		  requestObject.day = $(this).parent().attr('class');
+		  requestObject.day = $(this).parent().attr('class').split(' ')[0];
 		  requestObject.start = $(this).text().substr(0,8);
 		  requestObject.end = $(this).text().substr(11,8);
 		  
