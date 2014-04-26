@@ -4,7 +4,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Manager view</title>
+  <title>Approvals</title>
   <link rel="stylesheet" href="../css/coldcalendar.css" />
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
@@ -17,7 +17,7 @@
 
   <div class="center">
     <hr size="3" color ="black">
-     <h1>Queue</h1>
+     <h1>Approvals</h1>
     <ul id="Display_Queue">
     </ul>
   </div>
