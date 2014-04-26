@@ -13,6 +13,29 @@ function loadContactsPage() {
 
 	  //Hide create/delete buttons if not admin
 	  hideAdminButtons();
+	  $('.availabilityListItem').dblclick(function(){
+		  var userID = $(this).attr('data-login');
+		  
+		  if(userID !== parseCookie()['login'] || !confirm('Are you sure you want to delete this?'))
+			  return;
+		  
+		  var requestObject = new Object();
+		  requestObject.requestType = 'RemoveAvailability';
+		  requestObject.day = $(this).parent().attr('class');
+		  requestObject.start = $(this).text().substr(0,8);
+		  requestObject.end = $(this).text().substr(11,8);
+		  
+		  var obj = ajaxGetJSON(requestObject);
+		  
+		  if(obj === null)
+			  return;
+		  for(var e in obj){
+			  if(obj[e] === 0)
+				  return;
+		  }
+		  
+		  $(this).remove();
+	  });
 
 	  $('input:text').val('');
 
@@ -294,7 +317,7 @@ function loadContactsPage() {
 
 	   						var obj = ajaxGetJSON(availObject);	
 		      			}, 
-		   		  		"Cancel": function() { $(this).dialog("close"); } }
+		   		  		"Cancel": function() { $(this).dialog("close"); window.reload(); } }
 	   });
 
 	  //TODO AUSTIN: Phone priority dialog stuff
@@ -587,12 +610,16 @@ function loadUser()
 		  {
 			  $('<td>').appendTo(availabilityTableHeader).text(days[b]);
 			  var cell = $('<td>').appendTo(availabilityRow);
-			  $('<ul>').addClass(days[b]).appendTo($(cell));
+			  $('<ul>').addClass(days[b]).addClass('strip').appendTo($(cell));
 		  }
 		  
 		  for(var e in availability) {
 			  var list = $(availabilityTable).find('.'+availability[e]['day']);
-			  $('<li>').text(availability[e]['startTime'].substr(11) + ' - ' + availability[e]['endTime'].substr(11)).appendTo(list);
+			  $('<li>').text(availability[e]['startTime'].substr(11) + ' - ' + availability[e]['endTime'].substr(11))
+			  			.addClass('availabilityListItem')
+			  			.attr('data-login',availability[e]['login'])
+			  			.addClass('ui-state-default')
+			  			.appendTo(list);
 		  }
 
 	  }
@@ -665,7 +692,7 @@ function loadUser()
 
 	  for(var i=1; i<table.rows.length;i++)
 	  {
-		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML).attr('class','ui-state-default').attr('id','p'+i);
+		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML).addClass('ui-state-default').attr('id','p'+i);
 	  }
   }
   
@@ -694,7 +721,7 @@ function loadUser()
 
 	  for(var i=1; i<table.rows.length;i++)
 	  {
-		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML);
+		  $('<li>').appendTo(list).text(table.rows[i].cells[0].innerHTML).addClass('ui-state-default').attr('id','p'+i);
 	  }
   }
   
