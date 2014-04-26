@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Schedule</title>
 <link rel="stylesheet" href="../css/coldcalendar.css" />
 <link href='../css/fullcalendar.css' rel='stylesheet' />
 <link href='../css/fullcalendar.print.css' rel='stylesheet' media='print' />
