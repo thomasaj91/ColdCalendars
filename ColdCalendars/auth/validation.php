@@ -71,7 +71,7 @@ function isValidTime($str) {
 	$parts = explode(':',$str);
 	list($hour,$minute) = explode(':',$str);
 	return strlen($str) <= $MAX_STR_LEN
-	&& preg_match('/^[0-9]+[:][0-9]+$/',$str)
+	&& preg_match('/^[0-9]{2}:[0-9]{2}:[0-9]{2}$/',$str)
 	&& ((int)$hour >= 0 && (int)$hour <= 23)
 	&& ((int)$minute >= 0 && (int)$minute <= 59);
 }
@@ -81,9 +81,9 @@ function isValidDate($str) {
 	list($year,$month,$day) = explode('-',$str);
 	return strlen($str) <= $MAX_STR_LEN
 	&& preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',$str)
-	&& (int)$year > 1970
-	&& ((int)$month > 0 && (int)$month <= 12)
-	&& ((int)$day > 0 && (int)$day <= 31);
+	&& intval($year) > 1970
+	&& (intval($month) > 0 && intval($month) <= 12)
+	&& (intval($day) > 0 && intval($day) <= 31);
 }
 
 function isValidDay($str) {
