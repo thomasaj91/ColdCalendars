@@ -58,7 +58,6 @@ require_once(__DIR__.'/lib/User.php');
     		</tr>
     	</table>
     	<input type="submit" value="Login"/>
-    	<input type="reset" value="Cancel"/>
     </form>
     
     <p> It's like Hot Schedules, but <em>cooler!</em> </p>
