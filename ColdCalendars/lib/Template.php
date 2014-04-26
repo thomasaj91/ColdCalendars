@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display errors',3);
 require_once(__DIR__.'/../DB.php');
+require_once(__DIR__.'/Shift.php');
 
 class Template {
 	private static $qryCreateTemplate = "INSERT INTO Templates
@@ -19,7 +20,8 @@ class Template {
 			                           WHERE title = '@PARAM'";
 	
 	private static $qryGetAllTemplates = "SELECT title, start_time, end_time
-			                              FROM Templates";
+			                              FROM Templates
+										  ORDER BY Title";
 	
 	private $title;
 	private $startTime;
@@ -27,14 +29,21 @@ class Template {
 
 	public function Template($title, $start, $end, $create) {
 		if($create) {
-			$params = array($title, DB::timeToDateTime($start), DB::timeToDateTime($end));
+			$params = array($title, $start, $end);
 			$conn = DB::getNewConnection();
 			$sql = DB::injectParameters($params, self::$qryCreateTemplate);
 			$result = DB::execute($conn, $sql);
 			$conn->close();
 		}
 		else {
-			$this->title = $title;
+			$params = array($title);
+			$conn = DB::getNewConnection();
+			$sql = DB::injectParameters($params, self::$qryLoadTemplate);
+			$result = DB::query($conn, $sql);
+			$conn->close();
+			$this->title = $result[0][0];
+			$this->startTime = $result[0][1];
+			$this->endTime = $result[0][2]; 
 		}
 	}
 	
@@ -62,7 +71,7 @@ class Template {
 		$sql     = DB::injectParamaters(array($title), self::$qryTemplateExists);
 		$results = DB::query($conn, $sql);
 		$conn->close();
-		return ($results [0] [0] === '1') ? true : false;
+		return ($results [0][0] != 0);
 	}
 	
 	public static function getAllTemplates() {
@@ -72,8 +81,12 @@ class Template {
 		$conn->close();
 		$out = array();
 		foreach($result as $row)
-			array_push($out, self::load($row[0], DB::timeToDateTime($row[1]), DB::timeToDateTime($row[2]))->getInfo() );
+			array_push($out, self::load($row[0], $row[1], $row[2])->getInfo() );
 		return $out;
+	}
+	
+	public function getShiftData() {
+		return Shift::getallShifts($this->startTime,$this->endTime);
 	}
 	
 	public function getInfo() {
