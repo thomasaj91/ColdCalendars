@@ -312,10 +312,12 @@ function loadContactsPage() {
 	   						//alert(standardToMilitaryTime($('#Availability_End').val()));
 
 	   						availObject.day   = $('#Availability_Day').val();
-	   						availObject.start = standardToMilitaryTime($('#Availability_Start').val());
-	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val());
+	   						availObject.start = standardToMilitaryTime($('#Availability_Start').val())+':00';
+	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val())+':00';
 
-	   						var obj = ajaxGetJSON(availObject);	
+	   						var obj = ajaxGetJSON(availObject);
+	   						
+	   						location.reload();
 		      			}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); window.reload(); } }
 	   });
