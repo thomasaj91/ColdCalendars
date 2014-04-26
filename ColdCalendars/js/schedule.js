@@ -26,25 +26,48 @@ $(document).ready(function() {
 				    	   				var employeeName 	= $('#Employee_Name').val();
 				    	   				var shiftStart 		= parseTime($('#Shift_Start').val());
 				    	   				var shiftEnd   		= parseTime($('#Shift_End').val());	   
-		
+
 				    	   				//Formatted Shift Times
 				    	   				var startTime = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftStart.getHours(), shiftStart.getMinutes());
 				    	   				var endTime   = new Date(start1.getFullYear(), start1.getMonth(), start1.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes());
-		
+
+				    	   				var overTimeObject = new Object();
+				    	   				overTimeObject.requestType = 'OverTimeCheck';
+				    	   				overTimeObject.userID      = employeeName.split(',')[1];
+				    	   				overTimeObject.startTime   = dateObjectToDateString(startTime);
+				    	   				overTimeObject.endTime	  	 = dateObjectToDateString(endTime);
+
+				    	   				var otcheck = ajaxGetJSON(overTimeObject);
+				    	   				
+				    	   				if(otcheck === null)
+				    	   					return;
+				    	   				
+				    	   				if(otcheck !== false && otcheck !== true) {
+				    	   					for(var e in otcheck) {
+				    	   						if(otcheck[e] === 0)
+				    	   							return;
+				    	   					}
+				    	   				}
+				    	   				
+				    	   				if(otcheck === false && !confirm('That would be overtime, are you sure?')) {
+				    	   					return;
+				    	   				}
+				    	   				
+				    	   				
 				    	   				var shiftObject = new Object();
 				    	   				shiftObject.requestType = 'AddToSchedule';
 				    	   				shiftObject.userID	  = employeeName.split(',')[1];
 				    	   				shiftObject.startTime = dateObjectToDateString(startTime);
 				    	   				shiftObject.endTime	  = dateObjectToDateString(endTime);
-		
+
 										var obj = ajaxGetJSON(shiftObject);
-										
+
 										//Render shift
 										var color = window.standardShift;
-				
+
 										if(parseCookie().login === shiftObject.userID)
 											color = window.myShift;
-		
+
 					    	   			$('#calendar').fullCalendar('renderEvent',
 										{
 											title: employeeName,
@@ -53,7 +76,7 @@ $(document).ready(function() {
 											allDay: false,
 											color: color,
 										},true);
-		
+
 							    	   	$('#calendar').fullCalendar('unselect');
 							    	   	$(this).dialog("close");
 							    	   	$('#calendar').fullCalendar( 'rerenderEvents' );
@@ -103,23 +126,23 @@ $(document).ready(function() {
 
 	loadSchedulePage();
 
-	
+
 	$('#Release_Shift_Button').click(function(){
 		if(window.targetEvent.color != window.releasedShift) {
 			var shiftObject = new Object();
 			shiftObject.requestType = 'ReleaseShift';
 			shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
 			shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
-			
+
 			var obj = ajaxGetJSON(shiftObject);
-			
+
 			window.targetEvent.color = window.releasedShift;
 		}
-		
+
 		$('#Shift_Options').dialog("close");
 		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
-	
+
 	$('#Pickup_Shift_Button').click(function(){
 		if(window.targetEvent.color == window.releasedShift) {
 			var shiftObject = new Object();
@@ -127,33 +150,33 @@ $(document).ready(function() {
 			shiftObject.userID	  = window.targetEvent.title;
 			shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
 			shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
-			
+
 			var obj = ajaxGetJSON(shiftObject);
 		}
-		
+
 		$('#Shift_Options').dialog("close");
 		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
-	
+
 	$('#Delete_Shift_Button').click(function(){
 		var shiftObject = new Object();
 		shiftObject.requestType = 'RemoveFromSchedule';
 		shiftObject.userID	  = window.targetEvent.title;
 		shiftObject.startTime = dateObjectToDateString(new Date(window.targetEvent.start));
 		shiftObject.endTime	  = dateObjectToDateString(new Date(window.targetEvent.end));
-		
+
 		var obj = ajaxGetJSON(shiftObject);
-		
+
 		$('#calendar').fullCalendar('removeEvents',window.targetEvent._id);
 		$('#Shift_Options').dialog("close");
 		$('#calendar').fullCalendar( 'rerenderEvents' );
 	});
-	
+
 	$('#Edit_Shift_Button').click(function(){
 		$('#Edit_Shift').dialog('open');
 		loadNames();
 	});
-	
+
     $('#Edit_Shift').dialog(
     {
     	autoOpen: false,
@@ -166,38 +189,38 @@ $(document).ready(function() {
    					//Get old shift start/end time
    					var startTime = new Date(window.targetEvent.start);
    					var endTime = new Date(window.targetEvent.end);
-		   			
+
    					var shiftObject = new Object();
    					
    					//Info. from dialog form
 	   				var employeeName 	= $('#New_Employee_Name').val();
 	   				var shiftStart 		= parseTime($('#New_Shift_Start').val());
 	   				var shiftEnd   		= parseTime($('#New_Shift_End').val());	  
-	   				
+
 	   				//Add new shift to schedule
 	   				shiftObject.requestType = 'AddToSchedule';
 	   				shiftObject.userID	  = employeeName.split(',')[1];
 	   				shiftObject.startTime = dateObjectToDateString(new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), shiftStart.getHours(), shiftStart.getMinutes()));
 	   				shiftObject.endTime	  = dateObjectToDateString(new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate(), shiftEnd.getHours(), shiftEnd.getMinutes()));
-	   				
+
 					obj = ajaxGetJSON(shiftObject);
-					
+
 					var zero_found = false;
 					for(var e in obj){
 						if(obj[e]===0) {
 							zero_found = true;
 						}
 					}
-					
+
 					if(!zero_found)
    					{
 			   			shiftObject.requestType = 'RemoveFromSchedule';
 			   			shiftObject.userID	  = window.targetEvent.title;
 			   			shiftObject.startTime = dateObjectToDateString(startTime);
 			   			shiftObject.endTime	  = dateObjectToDateString(endTime);
-			   			
+
 			   			var obj = ajaxGetJSON(shiftObject);
-						
+
 						location.reload();
    					}
 					else
@@ -207,19 +230,19 @@ $(document).ready(function() {
 		}, 
 	   	"Cancel": function() { $(this).dialog("close"); } }
     });
-	
+
 	$('.fc-event').focus(function() {
 		$('.last-clicked-event').each(function(){
 			$(this).removeClass('last-clicked-event');
 		});
 		$(this).addClass('last-clicked-event');
 	});
-	
+
 	//Add shift timepickers
 	$('#Shift_Start').timepicker();
 
 	$('#Shift_End').timepicker();
-	
+
 	//Edit shift timepickers
 	$('#New_Shift_Start').timepicker();
 
@@ -248,8 +271,8 @@ function loadSchedulePage()
 function loadAllShifts()
 {
 	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
-	var startTime = new Date(y, m, 1);
-	var endTime = new Date(y, m+1, 1);
+	var startTime = new Date(y, m-1, 1);
+	var endTime = new Date(y, m+2, 1);
 
 	var shiftListObject = new Object();
 	shiftListObject.requestType = "ViewSchedule";
@@ -272,12 +295,12 @@ function loadAllShifts()
 				var endTime   = stringToDateObject(obj[e]["endTime"  ]);
 				var title = obj[e]["owner"];
 				var color = window.standardShift;
-		
+
 				if(parseCookie().login === title)
 					color = window.myShift;
 				if(obj[e]["released"] === true)
 					color = window.releasedShift;
-		
+
 				$('#calendar').fullCalendar('renderEvent',
 						{
 							title: title,
@@ -288,7 +311,7 @@ function loadAllShifts()
 						},true);
 				$('#calendar').fullCalendar('unselect');
 			}
-		
+
 		}
 	}
 }
@@ -306,7 +329,7 @@ function loadNames() {
 		  $( "#Employee_Name" ).autocomplete({
 		      source: list
 		    });
-		  
+
 		  $( "#New_Employee_Name" ).autocomplete({
 		      source: list
 		    });
