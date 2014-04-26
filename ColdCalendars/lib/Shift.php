@@ -285,6 +285,30 @@ SELECT
     WHERE Swap.Approved IS NOT NULL
 	AND Swap.Original = False
     ";
+	
+	private static $qryCheckOverTime = "
+			SELECT (CASE WHEN User.PTFT = True THEN (CASE WHEN Times.Hours + TIMESTAMPDIFF(HOUR,'@PARAM','@PARAM') > 40 THEN 0 ELSE 1 END)
+       ELSE (CASE WHEN Times.Hours + TIMESTAMPDIFF(HOUR,'@PARAM','@PARAM') > 32 THEN 0 ELSE 1 END) 
+       END) As isNotOverTime
+FROM User
+JOIN (SELECT 
+    Login,
+    SUM(TIMESTAMPDIFF(HOUR,Start_time,End_time)) As Hours
+	FROM Shift
+	JOIN ( SELECT Shift_FK, MAX(Timestamp) AS Timestamp
+	  FROM  Swap
+      WHERE Approved = True
+	  GROUP BY Shift_FK, Approved
+	) AS swp
+	ON   swp.Shift_FK  = Shift.PK
+	JOIN Swap
+	ON   swp.Shift_FK  = Swap.Shift_FK
+	AND  swp.Timestamp = Swap.Timestamp
+    JOIN User
+    ON   User.PK = Swap.Owner
+	WHERE WEEK(Shift.Start_time) = WEEK('@PARAM')
+    AND  Login = '@PARAM') As Times
+ON User.Login = Times.Login";
 
 	private $owner;
 	private $swappers;
@@ -367,6 +391,12 @@ SELECT
 	      array_push($out, self::extendedSwapInfo($row));
 	    return $out;
     }
+    
+    public static function checkOverTimeForUser($login, $start, $end) {
+    	$conn    = DB::getNewConnection();
+    	$results = DB::query($conn,DB::injectParamaters(array($start,$end,$start,$end,$start,$login), self::$qryCheckOverTime));
+    	return $results[0][0] != 0;
+    }
 
 	public function getInfo() {
 		$out = array();
@@ -434,17 +464,10 @@ SELECT
 	public function approve($login) {
 		if(!$this->isPickedUp() || !in_array($login, $this->swappers))
 			return;
-<<<<<<< HEAD
-		foreach($this->swappers as $swapper)
-		  if($swapper !== $login)
-		    $this->decideSwapper($swapper, false);
-		
-=======
 		foreach($this->swappers as $swapper) {
 			if($swapper!==$login)
 				$this->decideSwapper($swapper,false);
 		}
->>>>>>> a80e16869a93901b2dbcbbbc14e28b29152f3f5b
 	    $this->decideSwapper($login,true);
 	    $this->owner    = $login;
 	    $this->swappers = array();
