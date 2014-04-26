@@ -9,6 +9,8 @@ ul {
 
 .right { float: right; }
 
+.strip { margin: 0; border: 0; padding: 0;}
+
 body {
 	margin-top: 40px;
 	text-align: center;
@@ -18,6 +20,14 @@ body {
  
 .queueItem { list-style-type: none; }
 
+#Availability_List {
+	border-collapse:collapse;
+}
+
+.templateButton {
+	position: relative;
+	left: 25px;
+}
 
 #calendar {
 	width: 900px;
@@ -62,7 +72,7 @@ body {
 /*Contact Info. Page*/
 .contactInfoTable {
 	margin: 0 auto;
-	border-spacing: 75px 5px;
+	border-spacing: 10px 5px;
 }
 
 .editTitle{
