@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>Requests</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	<link rel="stylesheet" href="css/jquery.timepicker.css" />
@@ -16,6 +17,11 @@
 <body>
 
 	<?php include 'navbar.php'; ?>
+	
+	<div class="center">
+    <hr size="3" color ="black">
+     	<h1>Requests</h1>
+  	</div>
 	
 	<table class='center'>
 		<tr>
