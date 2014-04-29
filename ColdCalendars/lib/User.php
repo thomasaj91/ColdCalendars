@@ -352,6 +352,10 @@ FROM (SELECT TIMESTAMPDIFF(DAY,Start_time,End_time) + 1 As Days
     $conn = DB::getNewConnection();
     return DB::query($conn, self::$qryUserListInfo);
   }
+  public static function getFullAllNames() {
+    $conn   = DB::getNewConnection();
+    $result = DB::query($conn, self::$qryUserListInfo);
+  }
   private static function isValidVacationDays($days) {
     return is_int($days) && 0 <= $days && $days <= 365;
   }

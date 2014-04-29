@@ -484,7 +484,8 @@ function loadContactsPage() {
 function loadUser()
   {
 	    var requestObject = new Object();
-	    requestObject.requestType="UserList";
+//	    requestObject.requestType="UserList";
+	    requestObject.requestType="UserFullListInfo";
 
 		var list = ajaxGetJSON(requestObject); 
 
@@ -492,20 +493,25 @@ function loadUser()
 
 		var elem = $('#Contact_List').empty();
 		for(var e in list){
-			var info   = getInfoByLogin(list[e]);
-			var phones = getPhoneNumbersByLogin(list[e]);
-			var emails = getEmailAddressesByLogin(list[e]);
-			var availability = getAvailabilityByLogin(list[e]);
+//			var info   = getInfoByLogin(list[e]);
+//			var phones = getPhoneNumbersByLogin(list[e]);
+//			var emails = getEmailAddressesByLogin(list[e]);
+//			var availability = getAvailabilityByLogin(list[e]);
+			var info   = list[e]['info'];
+		    var phones = list[e]['phones'];
+			var emails = list[e]['emails'];
+			var availability = list[e]['availability'];
+			//alert(login);
 			//alert(availability);
-			if(info   !== null
-		    && phones !== null
-		    && emails !== null
+			if(info         !== null
+		    && phones       !== null
+		    && emails       !== null
 		    && availability !== null) {
-				appendUserDataTo(elem,info,phones,emails,list[e],availability);
+				appendUserDataTo(elem,info,phones,emails,e,availability);
 			}
 		}
 
-		$('#'+parseCookie().login+'_h3').remove().appendTo($('#Current_User_Info'));
+		$('#'+parseCookie().login+'_h3' ).remove().appendTo($('#Current_User_Info'));
 		$('#'+parseCookie().login+'_div').remove().appendTo($('#Current_User_Info'));
 
 		if(window.userType == 'Admin')

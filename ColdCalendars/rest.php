@@ -74,6 +74,7 @@ function processREST() {
    case 'RemoveEmail': return removeEmail($requestData);
    case 'UserList': return userList($requestData);
    case 'UserListInfo': return userListInfo($requestData);
+   case 'UserFullListInfo': return userFullListInfo($requestData);
    case 'GetUserAvailability':return userAvailability($requestData);
    case 'AddAvailability': return addAvailability($requestData);
    case 'RemoveAvailability': return removeAvailability($requestData);
@@ -369,6 +370,28 @@ return $list;
    }
    return $list;
   }
+
+  function userFullListInfo($dataBlob) {
+    $list;
+  
+    try {
+      $list = User::getAllLogins();
+    }
+    catch (Exception $e) {
+      return null;
+    }
+    $out = array();
+    foreach($list as $login) {
+      $out[$login] = array('info'         => getUserInfo(     (object)array('userID' => $login))
+                          ,'phones'       => getPhoneNumbers( (object)array('userID' => $login))
+                          ,'emails'       => getEmails(       (object)array('userID' => $login))
+                          ,'availability' => userAvailability((object)array('login' => $login))
+                          );
+    }
+    
+    return $out;
+  }
+  
   
   function addShift($dataBlob) {
    $validation = array();
@@ -504,8 +527,8 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   }
 
   function userAvailability($dataBlob) {
-   //$validation = array();
-   //$validation['login'] = isValidUserLogin($dataBlob->login);
+   $validation = array();
+   $validation['login'] = isValidUserLogin($dataBlob->login);
    $list;
   
    try {
@@ -741,9 +764,11 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
    //$end = new DateTime($dataBlob->endDate);
    
    $start = DateTime::createFromFormat('Y-m-d H:i:s',$dataBlob->startDate);
-   $end = DateTime::createFromFormat('Y-m-d H:i:s',$dataBlob->endDate);
+   $end   = DateTime::createFromFormat('Y-m-d H:i:s',$dataBlob->endDate);   
+   $t     = $start->diff($end,true);
+   $days  = $t->d;
    
-   if($remaining >= $total)
+   if($days + $remaining >= $total)
    		return null;
    $timeOff = VacationRequest::create($_COOKIE['login'], $dataBlob->startDate, $dataBlob->endDate);
    	return $validation;
