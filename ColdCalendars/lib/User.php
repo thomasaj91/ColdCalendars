@@ -24,6 +24,15 @@ class User {
   private static $qryInsertEmailSuffix   = "((SELECT PK FROM User WHERE Login LIKE '@PARAM'),'@PARAM',@PARAM)";
   private static $qryDeletePhone         = "DELETE FROM Phone WHERE User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')";
   private static $qryDeleteEmail         = "DELETE FROM Email WHERE User_FK = (SELECT PK FROM User WHERE Login = '@PARAM')";
+  private static $qryUsedVacationDays    = "SELECT SUM(Used_Vacation.Days)
+FROM (SELECT TIMESTAMPDIFF(DAY,Start_time,End_time) + 1 As Days
+      FROM Vacation
+      JOIN User
+      ON User_FK = PK
+      WHERE Login = '@PARAM'
+      AND Approved = True
+      AND YEAR(Start_time) = YEAR(NOW())) As Used_Vacation";
+  
   private $login;
   private $firstName;
   private $lastName;
@@ -37,6 +46,8 @@ class User {
   private $lastCommunication;
   private $phone;
   private $email;
+  private $remainingVacationDays;
+  
   public function User($login, $password = null, $firstName = null, $lastName = null, $title = null, $workStatus = null, $vacationDays = null, $phone = null, $email = null) {
     if(User::userExists($login)) {
       $this->login = $login;
@@ -57,6 +68,7 @@ class User {
     $this->email             = array ($email);
     $this->setPassword($password);
     $this->insertUserData();
+    $this->remainingVacationDays = 0;
   }
   public static function create($login, $password, $firstName, $lastName, $title, $workStatus, $vacationDays, $phone, $email) {
     if(User::userExists($login))
@@ -93,6 +105,7 @@ class User {
     $this->hash = ( string ) $userData [8];
     $this->authToken = ( string ) $userData [9];
     $this->lastCommunication = ( string ) $userData [10];
+    $this->remainingVacationDays = $this->setRemainingVacationDays();
     
     $phoneData = DB::query($conn, str_replace("@PARAM", $this->login, self::$qryUserPhone));
     $this->phone = array ();
@@ -151,6 +164,8 @@ class User {
     $out ['lastName'] = $this->lastName;
     $out ['title'] = $this->title;
     $out ['workStatus'] = $this->workStatus;
+    $out ['vacationDays'] = $this->vacationDays;
+    $out ['remainingVacationDays'] = $this->remainingVacationDays;
     return $out;
   }
   public function isAdmin() {
@@ -214,7 +229,7 @@ class User {
     return $this->email;
   }
   public function addEmailAddress($address) {
-    if(!in_array($address, $this->email))
+    if(!in_array($number, $this->email))
       array_push($this->email, $address);
   }
   public function removeEmailAddress($address) {
@@ -344,6 +359,15 @@ class User {
   }
   public function getThisWeeksShift() {
     return getAllshift($startOfThisWeek, $endOfThisWeek);
+  }
+  
+  private function setRemainingVacationDays() {
+  	$res = DB::query(DB::getNewConnection(), DB::injectParamaters(array($this->login), self::$qryUsedVacationDays));
+  	return (int)$res[0][0];
+  }
+  
+  public function getRemainingVacationDays() {
+  	return $this->remainingVacationDays;
   }
 }
 ?>
