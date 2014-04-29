@@ -1,5 +1,7 @@
-<?php ?>
-
+<?php
+require_once(__DIR__.'/auth/authentication.php');
+assertValidUserPageAccess();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,6 +35,8 @@
 			</td>
 			<td><p>Request Start Date: <input type='text' id='Request_Start_Date'></p></td>
 			<td><input type='text' class='time' id='Request_Start_Time'></td>
+		</tr>
+		<tr><td id='Vacation_Days'>Vacation Days </td>
 			<td><p>Request End Date: <input type='text' id='Request_End_Date'></p></td>
 			<td><input type='text' class='time' id='Request_End_Time'></td>
 		</tr>
