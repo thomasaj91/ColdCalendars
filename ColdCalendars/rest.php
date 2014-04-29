@@ -730,13 +730,23 @@ $validation['endTime'] = (int)isValidDateTime($dataBlob->endTime);
   function requestVacation($dataBlob) { //TODO
    $validation = array();
    $validation['startDate'] = (int)isValidDateTime($dataBlob->startDate);
-   $validation['endDate'] = (int)isValidDateTime($dataBlob->startDate);
+   $validation['endDate'] = (int)isValidDateTime($dataBlob->endDate);
   
    if(in_array(false,$validation))
-   return $validation;
-  
+   	return $validation;
+   $user = User::load($_COOKIE['login']);
+   $remaining = $user->getRemainingVacationDays();
+   $total = $user->getVacationDays();
+   //$start = new DateTime($dataBlob->startDate);
+   //$end = new DateTime($dataBlob->endDate);
+   
+   $start = DateTime::createFromFormat('Y-m-d H:i:s',$dataBlob->startDate);
+   $end = DateTime::createFromFormat('Y-m-d H:i:s',$dataBlob->endDate);
+   
+   if($remaining >= $total)
+   		return null;
    $timeOff = VacationRequest::create($_COOKIE['login'], $dataBlob->startDate, $dataBlob->endDate);
-   return $validation;
+   	return $validation;
   }
   
   function requestTimeOff($dataBlob) { //TODO
