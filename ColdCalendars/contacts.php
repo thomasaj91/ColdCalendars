@@ -67,12 +67,12 @@ assertValidUserPageAccess();
 		
 		<div id="Title_Choices">
 			<input type="radio" id="Title1" name="Title" value="Admin"><label for="radio1">Admin</label>
-			<input type="radio" id="Title2" name="Title" value="Employee"><label for="radio2">Employee</label>
+			<input type="radio" id="Title2" name="Title" value="Employee" checked><label for="radio2">Employee</label>
 			<input type="radio" id="Title3" name="Title" value="Manager"><label for="radio3">Manager</label>
 		</div>
 		
 		<div id="Work_Status">
-			<input type="radio" id="Work_Status" name="WorkStatus" value="False"><label for="radio4">Part Time</label>
+			<input type="radio" id="Work_Status" name="WorkStatus" value="False" checked><label for="radio4">Part Time</label>
 			<input type="radio" id="Work_Status" name="WorkStatus" value="True"><label for="radio5">Full Time</label>
 		</div>
 
