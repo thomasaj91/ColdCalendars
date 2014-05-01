@@ -276,9 +276,9 @@ SELECT
 	ON   oswp.Shift_FK  = Shift.PK
     AND  Shift.Start_time >= '@PARAM'
     AND  Shift.End_time <= '@PARAM'
-	AND  Shift.Owner = (SELECT PK FROM user Where Login = '@PARAM')
 	JOIN Swap
 	ON   Swap.Shift_FK   = Shift.PK
+	AND  Swap.Owner = (SELECT PK FROM User Where Login = '@PARAM')
     AND  Swap.Timestamp >= oswp.Timestamp
     JOIN User
     ON   Swap.Owner = User.PK
