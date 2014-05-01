@@ -229,8 +229,12 @@ FROM (SELECT TIMESTAMPDIFF(DAY,Start_time,End_time) + 1 As Days
     return $this->email;
   }
   public function addEmailAddress($address) {
-    if(!in_array($number, $this->email))
-      array_push($this->email, $address);
+    if(!in_array($address, $this->email))
+    //foreach($this->email as $email){
+    	//if($email == $address)
+    		//return;
+  //}
+    array_push($this->email, $address);
   }
   public function removeEmailAddress($address) {
     if(count($this->email) < 2 || !in_array($address, $this->email))
