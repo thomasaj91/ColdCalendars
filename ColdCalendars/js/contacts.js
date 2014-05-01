@@ -15,25 +15,25 @@ function loadContactsPage() {
 	  hideAdminButtons();
 	  $('.availabilityListItem').dblclick(function(){
 		  var userID = $(this).attr('data-login');
-		  
+
 		  if(userID !== parseCookie()['login'] || !confirm('Are you sure you want to delete this?'))
 			  return;
-		  
+
 		  var requestObject = new Object();
 		  requestObject.requestType = 'RemoveAvailability';
 		  requestObject.day = $(this).parent().attr('class').split(' ')[0];
 		  requestObject.start = $(this).text().substr(0,8);
 		  requestObject.end = $(this).text().substr(11,8);
-		  
+
 		  var obj = ajaxGetJSON(requestObject);
-		  
+
 		  if(obj === null)
 			  return;
 		  for(var e in obj){
 			  if(obj[e] === 0)
 				  return;
 		  }
-		  
+
 		  $(this).remove();
 	  });
 
@@ -316,7 +316,7 @@ function loadContactsPage() {
 	   						availObject.end   = standardToMilitaryTime($('#Availability_End').val())+':00';
 
 	   						var obj = ajaxGetJSON(availObject);
-	   						
+
 	   						location.reload();
 		      			}, 
 		   		  		"Cancel": function() { $(this).dialog("close"); window.reload(); } }
@@ -487,7 +487,7 @@ function loadUser()
 //	    requestObject.requestType="UserList";
 	    requestObject.requestType="UserFullListInfo";
 
-		var list = ajaxGetJSON(requestObject); 
+		var list = ajaxGetJSON(requestObject);
 
 		window.allUserList = list;
 
@@ -613,14 +613,14 @@ function loadUser()
 		  var availabilityTable = $('<table>').appendTo(availabilityData).attr('id','Availability_List').attr('border','1');
 		  var availabilityTableHeader = $('<tr>').appendTo(availabilityTable).attr('id','Availability_Header');
 		  var availabilityRow = $('<tr>').appendTo(availabilityTable);
-		  
+
 		  for(var b in days)
 		  {
 			  $('<td>').appendTo(availabilityTableHeader).text(days[b]);
 			  var cell = $('<td>').appendTo(availabilityRow);
 			  $('<ul>').addClass(days[b]).addClass('strip').appendTo($(cell));
 		  }
-		  
+
 		  for(var e in availability) {
 			  var list = $(availabilityTable).find('.'+availability[e]['day']);
 			  $('<li>').text(availability[e]['startTime'].substr(11) + ' - ' + availability[e]['endTime'].substr(11))
@@ -637,7 +637,7 @@ function loadUser()
 	  $('#DeleteLogin').empty();
 	  for(var e in window.allUserList)
 	  {
-		  $('<option>').appendTo('#DeleteLogin').attr('value',window.allUserList[e]).text(window.allUserList[e]);
+		  $('<option>').appendTo('#DeleteLogin').attr('value',e).text(e);
 	  }
   }
   
