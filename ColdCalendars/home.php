@@ -35,13 +35,14 @@ require_once(__DIR__.'/lib/User.php');
 	<!DOCTYPE html>
     <html>
     	<head>
+    		<meta charset='utf-8' />
     		<title>
     			Login page
     		</title>
     		<link rel="stylesheet" href="../css/coldcalendar.css" />
     	</head>
     <body>
-    <h1 style="font-family:Comic Sans Ms; text-align="center"; font-size:20pt; color:#00FF00;">
+    <h1 style="font-family:Comic Sans Ms; text-align=center; font-size:20pt; color:#99AAFF;">
     Cold Calendars
     </h1>
     <?php
